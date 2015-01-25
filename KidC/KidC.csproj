@@ -1,0 +1,88 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProjectGuid>{1B507325-40C2-4A21-8FCE-6046655240E0}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>KidC</RootNamespace>
+    <AssemblyName>KidC</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+    <TargetFrameworkProfile />
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup>
+    <StartupObject />
+  </PropertyGroup>
+  <ItemGroup>
+    <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Declarations.cs" />
+    <Compile Include="Enemy\Dragon.cs" />
+    <Compile Include="Enemy\Enemy.cs" />
+    <Compile Include="Font.cs" />
+    <Compile Include="Game\Context.cs" />
+    <Compile Include="Game\PlayerStats.cs" />
+    <Compile Include="HUD\Clock.cs" />
+    <Compile Include="HUD\Counter.cs" />
+    <Compile Include="HUD\HealthGuage.cs" />
+    <Compile Include="HUD\HUDLayer.cs" />
+    <Compile Include="Objects\CollectedItem.cs" />
+    <Compile Include="Objects\Collision.cs" />
+    <Compile Include="Objects\Decoration.cs" />
+    <Compile Include="Objects\Factory.cs" />
+    <Compile Include="Objects\GeneralBehavior.cs" />
+    <Compile Include="Objects\PlayerFactory.cs" />
+    <Compile Include="Objects\Prize.cs" />
+    <Compile Include="Objects\Relations.cs" />
+    <Compile Include="Player\Collision.cs" />
+    <Compile Include="Player\Helmet.cs" />
+    <Compile Include="Player\IronKnight.cs" />
+    <Compile Include="Player\Kid.cs" />
+    <Compile Include="Player\PlatformerPlayerController.cs" />
+    <Compile Include="Player\RedStealth.cs" />
+    <Compile Include="Player\SimpleDirectionController.cs" />
+    <Compile Include="Program.cs" />
+    <Compile Include="Sounds.cs" />
+    <Compile Include="TestObjects.cs" />
+    <Compile Include="Tile\BreakableTile.cs" />
+    <Compile Include="Tile\PrizeBlock.cs" />
+    <Compile Include="Tile\Tile.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Engine\Engine.csproj">
+      <Project>{6f7fa7c2-63c9-48bc-8ef8-69749a3467f4}</Project>
+      <Name>Engine</Name>
+    </ProjectReference>
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>

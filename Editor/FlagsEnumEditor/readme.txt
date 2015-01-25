@@ -1,0 +1,1 @@
+﻿http://www.codeproject.com/Articles/13793/A-UITypeEditor-for-easy-editing-of-flag-enum-prope

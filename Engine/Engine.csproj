@@ -1,0 +1,124 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.30703</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{6F7FA7C2-63C9-48BC-8EF8-69749A3467F4}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AppDesignerFolder>Properties</AppDesignerFolder>
+    <RootNamespace>Engine</RootNamespace>
+    <AssemblyName>Engine</AssemblyName>
+    <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
+    <FileAlignment>512</FileAlignment>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Debug\</OutputPath>
+    <DefineConstants>DEBUG;TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>pdbonly</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Release\</OutputPath>
+    <DefineConstants>TRACE</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.GamerServices, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=MSIL" />
+    <Reference Include="Microsoft.Xna.Framework.Graphics, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Microsoft.Xna.Framework.Xact, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
+    <Reference Include="Newtonsoft.Json">
+      <HintPath>..\Newtonsoft.Json.dll</HintPath>
+    </Reference>
+    <Reference Include="System" />
+    <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
+    <Reference Include="System.Windows.Forms" />
+    <Reference Include="System.Xml.Linq" />
+    <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="Microsoft.CSharp" />
+    <Reference Include="System.Data" />
+    <Reference Include="System.Xml" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Behavior\Behavior.cs" />
+    <Compile Include="Behavior\BehaviorChain.cs" />
+    <Compile Include="Behavior\BehaviorPresets.cs" />
+    <Compile Include="Behavior\Common.cs" />
+    <Compile Include="Behavior\Interaction.cs" />
+    <Compile Include="Collision\Border.cs" />
+    <Compile Include="Collision\CollisionManager.cs" />
+    <Compile Include="Collision\CollisionResponse.cs" />
+    <Compile Include="Collision\Hitbox.cs" />
+    <Compile Include="Collision\TileCollision.cs" />
+    <Compile Include="Collision\Object.cs" />
+    <Compile Include="Collision\CollisionTypes.cs" />
+    <Compile Include="Core\GameBase.cs" />
+    <Compile Include="Diagnostic\DebugRectangle.cs" />
+    <Compile Include="Diagnostic\DebugTracker.cs" />
+    <Compile Include="Core\EngineBase.cs" />
+    <Compile Include="Font\Font.cs" />
+    <Compile Include="Font\Enums.cs" />
+    <Compile Include="Font\Text.cs" />
+    <Compile Include="GameObject\Factory.cs" />
+    <Compile Include="GameObject\GameObject.cs" />
+    <Compile Include="GameObject\ObjectEntry.cs" />
+    <Compile Include="GameObject\Sprite.cs" />
+    <Compile Include="General\GameContext.cs" />
+    <Compile Include="General\Listener.cs" />
+    <Compile Include="General\LogicObject.cs" />
+    <Compile Include="General\Geometry.cs" />
+    <Compile Include="General\ObjectType.cs" />
+    <Compile Include="General\Sound.cs" />
+    <Compile Include="General\TimedAction.cs" />
+    <Compile Include="General\Util.cs" />
+    <Compile Include="Graphics\Animation.cs" />
+    <Compile Include="Graphics\Drawing.cs" />
+    <Compile Include="Graphics\Painter.cs" />
+    <Compile Include="Graphics\SimpleAnimation.cs" />
+    <Compile Include="Graphics\SimpleGraphic.cs" />
+    <Compile Include="Graphics\SpriteSheet.cs" />
+    <Compile Include="Graphics\TextureCache.cs" />
+    <Compile Include="Motion\Interfaces.cs" />
+    <Compile Include="Motion\ObjectMotion.cs" />
+    <Compile Include="Motion\Physics.cs" />
+    <Compile Include="Paths.cs" />
+    <Compile Include="Player\Input.cs" />
+    <Compile Include="Player\Mouse.cs" />
+    <Compile Include="Player\Player.cs" />
+    <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Resource\GamePath.cs" />
+    <Compile Include="Resource\GameResource.cs" />
+    <Compile Include="Serialization\Saving.cs" />
+    <Compile Include="SharpDX\Engine.cs" />
+    <Compile Include="World\Layer.cs" />
+    <Compile Include="World\Map.cs" />
+    <Compile Include="World\Misc.cs" />
+    <Compile Include="World\Tile.cs" />
+    <Compile Include="World\TileSet.cs" />
+    <Compile Include="World\TileUsage.cs" />
+    <Compile Include="World\World.cs" />
+    <Compile Include="XNA\Engine.cs" />
+    <Compile Include="XNA\Graphics.cs" />
+    <Compile Include="XNA\Input.cs" />
+    <Compile Include="XNA\XNAGame.cs" />
+    <Compile Include="XNA\XNASound.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
+  <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
+       Other similar extension points exist, see Microsoft.Common.targets.
+  <Target Name="BeforeBuild">
+  </Target>
+  <Target Name="AfterBuild">
+  </Target>
+  -->
+</Project>
