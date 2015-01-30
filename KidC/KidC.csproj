@@ -54,7 +54,7 @@
     <Compile Include="Objects\Decoration.cs" />
     <Compile Include="Objects\Factory.cs" />
     <Compile Include="Objects\GeneralBehavior.cs" />
-    <Compile Include="Objects\PlayerFactory.cs" />
+    <Compile Include="Player\PlayerFactory.cs" />
     <Compile Include="Objects\Prize.cs" />
     <Compile Include="Objects\Relations.cs" />
     <Compile Include="Player\Collision.cs" />
@@ -76,6 +76,9 @@
       <Project>{6f7fa7c2-63c9-48bc-8ef8-69749a3467f4}</Project>
       <Name>Engine</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Progress.txt" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

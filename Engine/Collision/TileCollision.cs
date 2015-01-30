@@ -86,7 +86,7 @@ namespace Engine.Collision
 
         private IEnumerable<CollisionEvent> GetCollisionsInLayer(TileLayer layer)
         {
-            if (layer != null)
+            if (layer != null && CollidingObject.CollisionTypes.Contains(ObjectType.Block))
             {
                 RGPointI tilePosStart = layer.Map.ScreenToTilePoint(this.CollidingObject.Area.TopLeft);
                 RGPointI tilePosEnd = layer.Map.ScreenToTilePoint(this.CollidingObject.Area.BottomRight);

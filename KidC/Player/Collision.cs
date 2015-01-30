@@ -12,6 +12,7 @@ namespace KidC
 
         private float mHitBounceSpeed;
         private bool mSecondaryHitboxIsDamaging;
+        protected override bool AllowRetrigger { get { return false; } }
 
         public PlayerHitController(Sprite s, bool secondaryHitboxIsDamaging) : base(s, 60)
         {

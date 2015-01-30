@@ -1,0 +1,5 @@
+﻿screen shake near right -> decimal issue
+red stealth - collision issue when jumping and hitting block from side
+game physics
+
+dragon has a blinking frame

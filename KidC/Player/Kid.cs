@@ -12,6 +12,11 @@ namespace KidC
         {          
             this.WalkSpeed = 1.8f;
             this.WalkAccel = .1f;
+
+            this.RunSpeed = 3.0f;
+            this.RunAccel = .1f;
+
+
             this.StopAccel = 0.3f;
 
             this.CrawlSpeed = 1.0f;
@@ -33,6 +38,7 @@ namespace KidC
         private Player mPlayer;
         private TileInstance mFlipBlock;
         private TileLayer mLayer;
+        protected override bool AllowRetrigger { get { return false; } }
 
         public KidFlipController(Sprite s, Player player) : base(s) 
         {

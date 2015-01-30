@@ -41,7 +41,7 @@ namespace Editor
 
         public override Func<EngineBase, GameBase, GameContext> GameContextCreate
         {
-            get { throw new NotImplementedException(); }
+            get { return (e, g) => new EditorContext(e, g); }
         }
 
         public override GameResource<World> StartingWorld

@@ -46,15 +46,19 @@ namespace KidC
 
             var tile = mLayer.Map.GetTileAtLocation(this.Sprite.Location);
             mSpawnTile = mLayer.Map.GetTileAtCoordinates(tile.TileLocation.X, tile.TileLocation.Y + 1);
+
+            this.Sprite.RemoveCollisionType(ObjectType.Block);
+        }
+
+        protected override void Update()
+        {
+            if (this.Sprite.Area.Top > mSpawnTile.TileArea.Bottom)
+                this.Sprite.ReAddCollisionType(ObjectType.Block);
+
         }
 
         protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
         {
-            if (cEvent.OtherArea.Equals(mSpawnTile.TileArea))
-            {
-                response.ShouldContinueHandling = false;
-                response.ShouldBlock = false;
-            }
         }
 
         protected override void OnExit()

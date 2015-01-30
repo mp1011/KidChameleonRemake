@@ -115,13 +115,13 @@ namespace KidC
 
         protected override void DoAction(HitController controller1, HitController controller2)
         {
-            int damage = controller1.GetAttackDamage(mHitEvent.AdjustTo(controller1.Sprite));
-            if (damage > 0)
-                controller2.Trigger(new HitInfo { Damage = damage, Event = mHitEvent.AdjustTo(controller1.Sprite) });
+            int damage1 = controller1.GetAttackDamage(mHitEvent.AdjustTo(controller1.Sprite));
+            if (damage1 > 0)
+                controller2.Trigger(new HitInfo { Damage = damage1, Event = mHitEvent.AdjustTo(controller1.Sprite) });
 
-            damage = controller2.GetAttackDamage(mHitEvent.AdjustTo(controller2.Sprite));
-            if (damage > 0)
-                controller1.Trigger(new HitInfo { Damage = damage, Event = mHitEvent.AdjustTo(controller2.Sprite) });
+            int damage2 = controller2.GetAttackDamage(mHitEvent.AdjustTo(controller2.Sprite));
+            if (damage2 > 0)
+                controller1.Trigger(new HitInfo { Damage = damage2, Event = mHitEvent.AdjustTo(controller2.Sprite) });
         }
     }
 

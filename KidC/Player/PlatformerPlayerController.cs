@@ -17,6 +17,10 @@ namespace KidC
 
         protected float WalkSpeed { get; set; }
         protected float WalkAccel { get; set; }
+
+        protected float RunSpeed { get; set; }
+        protected float RunAccel { get; set; }
+
         protected float StopAccel { get; set; }
         protected float TurnAccel { get; set; }
         
@@ -51,8 +55,8 @@ namespace KidC
         }
 
         protected override void OnEntrance()
-        {           
-            Sprite.MotionManager.MainMotion.Accel = WalkAccel;
+        {
+            Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
             Sprite.MotionManager.MainMotion.Decel = StopAccel;
 
             mGravityController = Sprite.GetBehavior<GravityController>();
@@ -170,10 +174,13 @@ namespace KidC
 
         private void HandleWalk()
         {
+            if (this.Player.Input.KeyDown(GameKey.Editor1))
+                Console.WriteLine("X");
+
             var player = this.Context.FirstPlayer;
 
             Sprite.MotionManager.MainMotion.Decel = StopAccel;
-            Sprite.MotionManager.MainMotion.Accel = WalkAccel;
+            Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
             var dir = player.Input.InputDirection(Orientation.Horizontal);
             if (dir == null)
             {
@@ -182,7 +189,7 @@ namespace KidC
             else
             {
                 Sprite.Direction = dir.Value;
-                Sprite.MotionManager.MainMotion.TargetSpeed = WalkSpeed;              
+                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed;              
                 Sprite.MotionManager.MainMotion.Direction = dir.Value;
             }
 
@@ -195,7 +202,11 @@ namespace KidC
             {
                 var mo = this.Sprite.MotionManager.Vector.GetMagnitudeInDirection(this.Sprite.Direction);
                 if (mo < 0)
+                {
                     this.Sprite.CurrentAnimationKey = KCAnimation.Turn;
+                    if (this.Sprite.CurrentAnimationKey != KCAnimation.Turn)
+                        this.Sprite.CurrentAnimationKey = KCAnimation.Walk;
+                }
                 else
                     this.Sprite.CurrentAnimationKey = KCAnimation.Walk;
 
@@ -206,10 +217,6 @@ namespace KidC
 
         protected override void HandleCollisionEx(CollisionEvent cEvent, CollisionResponse response)
         {
-
-            if (Player.Input.KeyDown(GameKey.Editor1))
-                Console.WriteLine("X");
-
 
             if (cEvent.OtherType.Is(ObjectType.Block))
             {
@@ -286,6 +293,7 @@ namespace KidC
 
         private bool HandleSlope()
         {
+ 
             if (!mIsOnGround)
             {
                 mCurrentSlopeDirection = Direction.Down;
@@ -294,7 +302,7 @@ namespace KidC
 
             if (mCurrentSlopeDirection == Direction.Down)
                 return false;
-            
+
             var player = this.Context.FirstPlayer;
             var dir = player.Input.InputDirection(Orientation.Horizontal);
             Sprite.MotionManager.MainMotion.Decel = 1f;
@@ -304,7 +312,7 @@ namespace KidC
             {
                 Sprite.CurrentAnimationKey = KCAnimation.ClimbDown;
                 Sprite.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);
-                Sprite.MotionManager.MainMotion.TargetSpeed = WalkSpeed + UpHillSpeedMod;
+                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + UpHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);//.RotateTowards(Direction.Down, 45);
            
                 //test Sprite.MotionManager.MainMotion.TargetSpeed =0;
@@ -313,14 +321,14 @@ namespace KidC
             {
                 Sprite.CurrentAnimationKey = KCAnimation.ClimbUp;
                 Sprite.Direction = mCurrentSlopeDirection;
-                Sprite.MotionManager.MainMotion.TargetSpeed = WalkSpeed + UpHillSpeedMod;
+                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + UpHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection;//.RotateTowards(Direction.Up, 45);
             }
             else //moving down the slope
             {
                 Sprite.CurrentAnimationKey = KCAnimation.ClimbDown;
                 Sprite.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);
-                Sprite.MotionManager.MainMotion.TargetSpeed = WalkSpeed + DownHillSpeedMod;
+                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + DownHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);//.RotateTowards(Direction.Down, 45);
             }
 
@@ -328,6 +336,28 @@ namespace KidC
 
             return true;
 
+        }
+
+        private float WalkOrRunSpeed
+        {
+            get
+            {
+                if (Player.Input.KeyDown(KCButton.Run))
+                    return RunSpeed;
+                else
+                    return WalkSpeed;
+            }
+        }
+
+        private float WalkOrRunAccel
+        {
+            get
+            {
+                if (Player.Input.KeyDown(KCButton.Run))
+                    return RunAccel;
+                else
+                    return WalkAccel;
+            }
         }
 
         private int CurrentAnimationKey

@@ -63,6 +63,7 @@
             this.pnlTransparentColor = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlImage = new Editor.BitmapPortionPanelUserControl();
+            this.chkCreateFlashTexture = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.pnlTools.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtMoveRecAmount)).BeginInit();
@@ -150,6 +151,7 @@
             // 
             // pnlTools
             // 
+            this.pnlTools.Controls.Add(this.chkCreateFlashTexture);
             this.pnlTools.Controls.Add(this.chkCenterOrigin);
             this.pnlTools.Controls.Add(this.btnCrop);
             this.pnlTools.Controls.Add(this.btnMoveToSide);
@@ -467,6 +469,16 @@
             this.pnlImage.Size = new System.Drawing.Size(819, 367);
             this.pnlImage.TabIndex = 4;
             // 
+            // chkCreateFlashTexture
+            // 
+            this.chkCreateFlashTexture.AutoSize = true;
+            this.chkCreateFlashTexture.Location = new System.Drawing.Point(154, 102);
+            this.chkCreateFlashTexture.Name = "chkCreateFlashTexture";
+            this.chkCreateFlashTexture.Size = new System.Drawing.Size(124, 17);
+            this.chkCreateFlashTexture.TabIndex = 16;
+            this.chkCreateFlashTexture.Text = "Create Flash Texture";
+            this.chkCreateFlashTexture.UseVisualStyleBackColor = true;
+            // 
             // GraphicsExtractor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -531,5 +543,6 @@
         private System.Windows.Forms.NumericUpDown txtFloodFillRes;
         private System.Windows.Forms.CheckBox chkCenterOrigin;
         private System.Windows.Forms.RadioButton rdoHitbox2;
+        private System.Windows.Forms.CheckBox chkCreateFlashTexture;
     }
 }

@@ -149,7 +149,6 @@ namespace Editor
             items.Add(newItem);
         }
 
-
         public static void AddRangeDistinct<T>(this List<T> items, IEnumerable<T> newItems, IEqualityComparer<T> comparer)
         {
             items.AddRange(newItems);
@@ -158,7 +157,6 @@ namespace Editor
             items.AddRange(distinctItems);
         }
 
-     
         public static Bitmap CloneImage(this Bitmap source)
         {
             var copy = new Bitmap(source.Width, source.Height, System.Drawing.Imaging.PixelFormat.Format32bppArgb);
@@ -180,11 +178,26 @@ namespace Editor
             return bmp;
         }
 
+        public static Bitmap CreateFlash(this Bitmap image)
+        {
+            var flash = new Bitmap(image.Width, image.Height);
+
+            for(int y = 0; y < image.Height;y++)
+                for (int x = 0; x < image.Width; x++)
+                {
+                    if (image.GetPixel(x, y).IsTransparent())
+                        flash.SetPixel(x, y, Color.Transparent);
+                    else
+                        flash.SetPixel(x, y, Color.White);
+                }
+
+            return flash;
+        }
+
         public static bool IsTransparent(this Color c)
         {
             return c.A == 0;
         }
-
 
         public static void SaveDebugImage(this Bitmap img, string name)
         {

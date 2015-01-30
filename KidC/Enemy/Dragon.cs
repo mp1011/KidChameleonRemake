@@ -20,10 +20,8 @@ namespace KidC
             dragon.AddAnimation(KCAnimation.Hurt, new Animation(spriteSheet, Direction.Left, 0));
             dragon.AddAnimation(KCAnimation.Attack, new Animation(spriteSheet, Direction.Left, 8, 9)).SetFrameDuration(2);
             dragon.AddAnimation(KCAnimation.AttackAlt, new Animation(spriteSheet, Direction.Left, 10)).SetFrameDuration(2);
-
             dragon.AddAnimation(KCAnimation.Dying, new Animation(spriteSheet, Direction.Left, false, 12, 11)).SetFrameDuration(8);
             dragon.AddAnimation(KCAnimation.Dead, new Animation(spriteSheet, Direction.Left, 13, 13, 13, 14)).SetFrameDuration(8);
-
 
             dragon.AddBehavior(new GravityController(dragon));
             var walkController = dragon.AddBehavior(new WalkController(dragon, .5f, 2f) { WalksOffLedges = false });
@@ -31,8 +29,7 @@ namespace KidC
             var hitController = dragon.AddBehavior(new EnemyHitController(dragon));
             var deathController = dragon.AddBehavior(new DyingSpriteController(dragon));
 
-            dragon.AddBehavior(new HealthController(dragon, 2));
-            
+            dragon.AddBehavior(new HealthController(dragon, 2));            
             dragon.AddBehavior(new RandomActionController<Direction?>(dragon, walkController, 120,1f, Direction.Left, Direction.Right));                      
             dragon.AddBehavior(new RandomActionController<bool>(dragon, attackController, 180, .6f));
             dragon.AddBehavior(new BehaviorExclusionController(dragon, attackController, walkController));
@@ -46,7 +43,8 @@ namespace KidC
 
         private class DragonAttackController : TriggeredController<bool>
         {
- 
+            protected override bool AllowRetrigger { get { return false; } }
+
             public DragonAttackController(Sprite s)
                 : base(s)
             {

@@ -7,7 +7,9 @@ namespace Engine
 {
     public class Paths
     {
-        public static string DataRoot = @"C:\Users\Miko\Documents\Visual Studio 2010\Projects\KidC\Data";
+        public static string DataRoot = @"C:\Users\Miko\Documents\GitHub\KidChameleonRemake\Data";
+
+
 
     }
 }

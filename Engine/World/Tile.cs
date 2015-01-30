@@ -37,6 +37,21 @@ namespace Engine
             }
         }
 
+        private static TileDef _blankSolidTile;
+        public static TileDef BlankSolid
+        {
+            get
+            {
+                if (_blankSolidTile == null)
+                {
+                    _blankSolidTile = new TileDef(TileFlags.Invisible | TileFlags.Solid,-1, 0, RGPoint.Empty, new DirectionFlags());
+                    _blankSolidTile.Usage.SingleGroup = "empty";
+                }
+
+                return _blankSolidTile;
+            }
+        }
+
         private static TileDef _oobTile;
         public static TileDef OutOfBounds
         {

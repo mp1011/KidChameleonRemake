@@ -82,6 +82,12 @@ namespace Engine
             }
         }
 
+        public bool SetAnimation(int key)
+        {
+            this.CurrentAnimationKey = key;
+            return this.CurrentAnimationKey == key;
+        }
+
         private List<SpriteBehavior> mBehaviors = new List<SpriteBehavior>();
 
         public SpriteAnimation CurrentAnimation { get { return mAnimations[mCurrentAnimationKey]; } }
@@ -208,22 +214,11 @@ namespace Engine
             return mBehaviors.OfType<T>().FirstOrDefault();
         }
 
-        public void PauseOtherBehaviors(SpriteBehavior exclusion)
+        public IEnumerable<T> GetBehaviors<T>()
         {
-            foreach (var behavior in mBehaviors)
-            {
-                if (behavior != exclusion)
-                    behavior.Pause();
-            }
+            return mBehaviors.OfType<T>();
         }
 
-        public void ResumeAllBehaviors()
-        {
-            foreach (var behavior in mBehaviors)
-            {
-                behavior.Resume();
-            }
-        }
 
         #endregion
 

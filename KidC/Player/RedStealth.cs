@@ -45,6 +45,16 @@ namespace KidC
             mLayer = this.Sprite.DrawLayer as TileLayer;
         }
 
+        private bool CanAttack()
+        {
+            if (this.Sprite.CurrentAnimationKey == KCAnimation.Crawl)
+                return false;
+
+            if (this.Sprite.CurrentAnimationKey == KCAnimation.ClimbDown)
+                return false;
+
+            return true;
+        }
 
         protected override void Update()
         {
@@ -75,7 +85,7 @@ namespace KidC
                         mPlatformCtl.NoAnimationChanges = true;
                     }
                 }
-                else
+                else if(CanAttack())
                 {
                     mPlatformCtl.Pause();
                     this.Sprite.CurrentAnimationKey = KCAnimation.Attack;

@@ -25,7 +25,7 @@ namespace KidC
             var layer = world.AddLayer(new TileLayer(ctx, map, RGPoint.Empty, LayerDepth.Foreground));
             var kid = KCObjectType.JamesKid.CreateInstance<Sprite>(layer, ctx);
             layer.AddObject(kid);
-            kid.Location = new RGPoint(317.498f, 96.2f);
+         //   kid.Location = new RGPoint(317.498f, 96.2f);
 
 
             var dragon = KCObjectType.Dragon.CreateInstance<Sprite>(layer, ctx);

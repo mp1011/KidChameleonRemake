@@ -137,6 +137,7 @@ namespace Engine
 
     public interface ITriggerable
     {
+        int ID { get; }
         bool Triggered { get; }
     }
 
@@ -154,6 +155,7 @@ namespace Engine
     public abstract class TriggeredController<T> : SpriteBehavior, ITriggerable <T>
     {
         public TriggeredController(Sprite s) : base(s) { }
+        protected abstract bool AllowRetrigger { get; }
 
         public bool Triggered { get; private set; }
         private bool mRanStartMethod;
@@ -162,7 +164,7 @@ namespace Engine
 
         public void Trigger(T state)
         {
-            if (this.Triggered)
+            if (this.Triggered && !AllowRetrigger)
                 return;
 
             this.mState = state;
@@ -281,6 +283,10 @@ namespace Engine
         private bool mWasTriggered;
         protected override void Update()
         {
+
+            if (mBehaviorsToPause.Length == 0)
+                mBehaviorsToPause = this.Sprite.GetBehaviors<SpriteBehavior>().Where(p => p.ID != this.ID && p.ID != mTrigger.ID).ToArray();
+
             if (mTrigger.Triggered)
             {
                 mWasTriggered = true;

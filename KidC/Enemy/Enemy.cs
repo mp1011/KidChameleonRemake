@@ -6,6 +6,7 @@ namespace KidC
     class EnemyHitController : HitController
     {
         public EnemyHitController(Sprite s) : base(s, 30) { }
+        protected override bool AllowRetrigger { get { return true; } }
 
         protected override bool ShouldHandleCollision(Engine.Collision.CollisionEvent evt)
         {
@@ -53,6 +54,7 @@ namespace KidC
     {
 
         public DyingSpriteController(Sprite s) : base(s) { }
+        protected override bool AllowRetrigger { get { return false; } }
 
         protected override Switch OnTriggered(bool state)
         {

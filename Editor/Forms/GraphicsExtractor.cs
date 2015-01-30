@@ -395,6 +395,14 @@ namespace Editor.Forms
                     var bitmap = ss.Image.GetImage();
                     bitmap.Save(ss.Image.Path.FullPath);
                     BackupManager.CreateBackup(ss.Image.Path.FullPath);
+
+                    if (chkCreateFlashTexture.Checked)
+                    {
+                        var flash = bitmap.CreateFlash();
+                        flash.Save(ss.Image.Path.FullPath.Replace(".png", "_flash.png"));
+                    }
+
+                    
                     return ss;
                 });
 

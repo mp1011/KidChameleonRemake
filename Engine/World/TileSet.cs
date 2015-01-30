@@ -43,6 +43,8 @@ namespace Engine
         {
             if (tileID == 0)
                 return TileDef.Blank;
+            else if (tileID == -1)
+                return TileDef.BlankSolid;
             else if (tileID >= mTiles.Length)
             {
                 return mTiles.FirstOrDefault(p => p.TileID == tileID) ?? TileDef.Blank;

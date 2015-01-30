@@ -71,7 +71,7 @@ namespace KidC
 
         protected override void OnEntrance()
         {
-            mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, TileDef.Blank.TileID);
+            mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, TileDef.BlankSolid.TileID);
         }
        
         protected override void Update()
@@ -95,7 +95,7 @@ namespace KidC
 
                 var puff = KCObjectType.Puff.CreateInstance<Sprite>(mLayer, this.Context);
                 puff.Location = this.Location.Offset(0, -24);
-              
+
                 puff.AddBehavior(new CreateObjectWhenDestroyed(puff, mPrize, RGPoint.Empty));
             }
         }

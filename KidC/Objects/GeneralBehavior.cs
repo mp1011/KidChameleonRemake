@@ -12,6 +12,8 @@ namespace KidC
         public float WalkSpeed { get; set; }
         public float WalkAccel { get; set; }
 
+        protected override bool AllowRetrigger { get { return true; } }
+
         public WalkController(Sprite sprite, float speed, float accel)
             : base(sprite)
         {

@@ -95,7 +95,6 @@
     <Compile Include="Player\Input.cs" />
     <Compile Include="Player\Mouse.cs" />
     <Compile Include="Player\Player.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Resource\GamePath.cs" />
     <Compile Include="Resource\GameResource.cs" />
     <Compile Include="Serialization\Saving.cs" />
@@ -112,6 +111,9 @@
     <Compile Include="XNA\Input.cs" />
     <Compile Include="XNA\XNAGame.cs" />
     <Compile Include="XNA\XNASound.cs" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Properties\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
