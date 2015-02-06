@@ -55,9 +55,9 @@ namespace Engine
 
 
 
-        public RGRectangle GetDestRec(int tileX, int tileY)
+        public RGRectangleI GetDestRec(int tileX, int tileY)
         {
-            return RGRectangle.FromXYWH(tileX * TileSize.Width, tileY * TileSize.Height, this.TileSize.Width, this.TileSize.Height);
+            return RGRectangleI.FromXYWH(tileX * TileSize.Width, tileY * TileSize.Height, this.TileSize.Width, this.TileSize.Height);
         }
 
         public void UpdateAnimation(GameContext ctx)

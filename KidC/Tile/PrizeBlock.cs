@@ -48,14 +48,14 @@ namespace KidC
         private RGPointI mTileLocation;
 
         private ObjectType mPrize;
-        private float mInitialY;
-        private float mMotion = 2;
-        private float mRange = 2;
+        private int mInitialY;
+        private int mMotion = 2;
+        private int mRange = 2;
 
         public BreakingPrizeTile(GameContext ctx, RGSizeI tileSize, RGPointI tileLocation, TileLayer layer, ObjectType prize)
             : base(ctx, BreakingPrizeTile.CreateGraphic(ctx, layer))
         {
-            this.Location = new RGPoint((tileLocation.X * tileSize.Width) + (tileSize.Width / 2), (tileLocation.Y * tileSize.Height) + (tileSize.Height / 2));
+            this.Location = new RGPointI((tileLocation.X * tileSize.Width) + (tileSize.Width / 2), (tileLocation.Y * tileSize.Height) + (tileSize.Height / 2));
             this.mLayer = layer;
             this.mPrize = prize;
 

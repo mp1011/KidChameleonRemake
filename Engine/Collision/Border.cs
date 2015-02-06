@@ -8,10 +8,10 @@ namespace Engine.Collision
 {
     class BorderEdge : ICollidable
     {
-        private RGRectangle mArea;
+        private RGRectangleI mArea;
         private Side mSide;
 
-        public BorderEdge(RGRectangle area, Side side)
+        public BorderEdge(RGRectangleI area, Side side)
         {
             mArea = area;
             mSide = side;
@@ -33,9 +33,9 @@ namespace Engine.Collision
             set;
         }
 
-        public RGRectangle SecondaryCollisionArea
+        public RGRectangleI SecondaryCollisionArea
         {
-            get { return RGRectangle.Empty; }
+            get { return RGRectangleI.Empty; }
         }
 
         public void HandleCollision(CollisionEvent collision, CollisionResponse response)
@@ -48,7 +48,7 @@ namespace Engine.Collision
             get { throw new NotImplementedException(); }
         }
 
-        public RGPoint Location
+        public RGPointI Location
         {
             get
             {
@@ -60,25 +60,20 @@ namespace Engine.Collision
             }
         }
 
-        public RGPoint LocationOffset
-        {
-            get { return RGPoint.Empty; }
-        }
-
-        public RGRectangle Area
+        public RGRectangleI Area
         {
             get 
             {
                 int thickness = 200;
                 switch (mSide)
                 {
-                    case Side.Left: return RGRectangle.FromXYWH(mArea.Left - thickness, -thickness, thickness, mArea.Height + (thickness * 2));
-                    case Side.Right: return RGRectangle.FromXYWH(mArea.Right, -thickness, thickness, mArea.Height + (thickness * 2));
-                    case Side.Top: return RGRectangle.FromXYWH(-thickness, -thickness, mArea.Width + (thickness * 2), thickness);
-                    case Side.Bottom: return RGRectangle.FromXYWH(-thickness, mArea.Bottom, mArea.Width + (thickness * 2), thickness);
+                    case Side.Left: return RGRectangleI.FromXYWH(mArea.Left - thickness, -thickness, thickness, mArea.Height + (thickness * 2));
+                    case Side.Right: return RGRectangleI.FromXYWH(mArea.Right, -thickness, thickness, mArea.Height + (thickness * 2));
+                    case Side.Top: return RGRectangleI.FromXYWH(-thickness, -thickness, mArea.Width + (thickness * 2), thickness);
+                    case Side.Bottom: return RGRectangleI.FromXYWH(-thickness, mArea.Bottom, mArea.Width + (thickness * 2), thickness);
                 }
 
-                return RGRectangle.Empty;
+                return RGRectangleI.Empty;
             }
         }
 
@@ -92,7 +87,7 @@ namespace Engine.Collision
             get { return ObjectMotion.NoMotion; }
         }
 
-        public void Move(RGPoint offset)
+        public void Move(RGPointI offset)
         {
             throw new NotImplementedException();
         }
@@ -101,10 +96,10 @@ namespace Engine.Collision
     class BorderCollisionmanager<T> : CollisionManager<T> where T : LogicObject, ICollidable    
     {
 
-        private Func<Layer, RGRectangle> mGetBounds;
+        private Func<Layer, RGRectangleI> mGetBounds;
         private DirectionFlags mCheckSides;
 
-        public BorderCollisionmanager(T obj, Func<Layer, RGRectangle> fnGetBounds, DirectionFlags checkSides)
+        public BorderCollisionmanager(T obj, Func<Layer, RGRectangleI> fnGetBounds, DirectionFlags checkSides)
             : base(obj)
         {
             mGetBounds = fnGetBounds;
@@ -128,7 +123,7 @@ namespace Engine.Collision
 
         }
 
-        private CollisionEvent GetBorderCollisionEvent(RGRectangle bounds, Side side)
+        private CollisionEvent GetBorderCollisionEvent(RGRectangleI bounds, Side side)
         {
             return new CollisionEvent(this.CollidingObject, new BorderEdge(bounds, side), true, true, true, true, true, HitboxType.Primary, HitboxType.Primary);
         }

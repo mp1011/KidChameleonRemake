@@ -184,9 +184,9 @@ namespace Engine
 
         #endregion
 
-        public float? GetYIntercept(RGRectangle tileLocation, float x)
+        public int? GetYIntercept(RGRectangleI tileLocation, int x)
         {
-            float yIntercept, yLeft, yRight;
+            int yIntercept, yLeft, yRight;
 
             if (Sides.Left)
             {
@@ -206,8 +206,8 @@ namespace Engine
                 return null;
 
             var yDiff = yRight - yLeft;
-            var xPct = (cx - tileLocation.Left) / tileLocation.Width;
-            yIntercept = yLeft + (yDiff * xPct);
+            var xPct = (float)(cx - tileLocation.Left) / tileLocation.Width;
+            yIntercept = (int)(yLeft + (yDiff * xPct));
 
             return yIntercept;
         }
@@ -227,12 +227,12 @@ namespace Engine
         [JsonIgnore]
         public Map Map { get; set; }
 
-        public RGRectangle TileArea
+        public RGRectangleI TileArea
         {
             get
             {
                 if (Map == null)
-                    return RGRectangle.Empty;
+                    return RGRectangleI.Empty;
 
                 return Map.GetTileLocation(TileLocation.X, TileLocation.Y);
             }

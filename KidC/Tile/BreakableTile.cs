@@ -47,7 +47,7 @@ namespace KidC
         public BreakingTile(GameContext ctx, RGSizeI tileSize, RGPointI tileLocation, TileLayer layer)
             : base(ctx, BreakingTile.CreateGraphic(ctx))
         {
-            this.Location = new RGPoint((tileLocation.X * tileSize.Width) + (tileSize.Width /2), (tileLocation.Y * tileSize.Height) + (tileSize.Height /2));
+            this.Location = new RGPointI((tileLocation.X * tileSize.Width) + (tileSize.Width /2), (tileLocation.Y * tileSize.Height) + (tileSize.Height /2));
             this.mLayer = layer;
             this.mTileLocation = tileLocation;
         }

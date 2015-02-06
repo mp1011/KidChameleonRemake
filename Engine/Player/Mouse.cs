@@ -13,9 +13,9 @@ namespace Engine.Input
 
     public abstract class MouseInput : GenericInputDevice
     {
-        private RGPoint mPreviousPosition;
+        private RGPointI mPreviousPosition;
 
-        public RGPoint Position { get; private set; }
+        public RGPointI Position { get; private set; }
 
         public RGLine MotionLine { get { return new RGLine(mPreviousPosition, Position); } }
 
@@ -26,7 +26,7 @@ namespace Engine.Input
             this.SetKeyMapping(GameKey.Button2, 2);
         }
 
-        public RGPoint PositionInLayer(Layer layer)
+        public RGPointI PositionInLayer(Layer layer)
         {
             return layer.ScreenPointToLayerPoint(this.Position);
         }
@@ -37,7 +37,7 @@ namespace Engine.Input
             this.Position = GetMousePosition();
         }
 
-        protected abstract RGPoint GetMousePosition();
+        protected abstract RGPointI GetMousePosition();
 
         protected override Direction? GetInputDirection(Orientation orientation)
         {
@@ -78,15 +78,15 @@ namespace Engine.Input
                 mCursorGraphic.SourceIndex = 0;
         }
 
-        public RGPoint Location
+        public RGPointI Location
         {
             get;
             set;
         }
 
-        public RGRectangle Area
+        public RGRectangleI Area
         {
-            get { return RGRectangle.Create(Location.Offset(-8f, -8f), new RGSize(16f, 16f)); }
+            get { return RGRectangleI.Create(Location.Offset(-8, -8), new RGSizeI(16, 16)); }
         }
 
         public Direction Direction
@@ -94,16 +94,16 @@ namespace Engine.Input
             get { return (Direction)(Context.Mouse.InputDirection(Orientation.None) ?? Direction.Right); }
         }
 
-        public void Draw(Graphics.Painter painter, RGRectangle canvas)
+        public void Draw(Graphics.Painter painter, RGRectangleI canvas)
         {
             mCursorGraphic.Position = this.Location;
             painter.Paint(canvas, mCursorGraphic);
         }
 
 
-        public RGPoint LocationOffset
+        public RGPointI LocationOffset
         {
-            get { return new RGPoint(8, 8); }
+            get { return new RGPointI(8, 8); }
         }
     }
 

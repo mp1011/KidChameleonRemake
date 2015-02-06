@@ -19,7 +19,7 @@ namespace Engine
     {
         private List<IDrawableRemovable> mSprites = new List<IDrawableRemovable>();
 
-        public RGPoint Position
+        public RGPointI Position
         {
             get
             {
@@ -27,11 +27,11 @@ namespace Engine
             }
             set
             {
-                Location = RGRectangle.FromXYWH(value.X, value.Y, Location.Width, Location.Height);
+                Location = RGRectangleI.FromXYWH(value.X, value.Y, Location.Width, Location.Height);
             }
         }
 
-        public RGRectangle Location { get; private set; }
+        public RGRectangleI Location { get; private set; }
 
         public RGPoint ParallaxSpeed { get; protected set; }
 
@@ -66,7 +66,7 @@ namespace Engine
             AddObject(s);
         }
 
-        protected Layer(GameContext ctx, RGRectangle location, LayerDepth depth)
+        protected Layer(GameContext ctx, RGRectangleI location, LayerDepth depth)
             : base(LogicPriority.World, ctx)
         {
             this.Depth = depth;
@@ -84,12 +84,12 @@ namespace Engine
 
         protected virtual void UpdateEx() { }
 
-        protected virtual void DrawLayer(Graphics.Painter painter, RGRectangle canvas, RGPoint origin) { }
+        protected virtual void DrawLayer(Graphics.Painter painter, RGRectangleI canvas, RGPointI origin) { }
 
-        public void Draw(Graphics.Painter painter, RGRectangle canvas)
+        public void Draw(Graphics.Painter painter, RGRectangleI canvas)
         {
-            canvas.X = (float)Math.Floor(canvas.X * ParallaxSpeed.X);
-            canvas.Y = (float)Math.Floor(canvas.Y * ParallaxSpeed.Y);
+            canvas.X = (int)Math.Floor(canvas.X * ParallaxSpeed.X);
+            canvas.Y = (int)Math.Floor(canvas.Y * ParallaxSpeed.Y);
 
 
 
@@ -123,7 +123,7 @@ namespace Engine
                 painter.Paint(canvas, sprite);
         }
 
-        public RGPoint ScreenPointToLayerPoint(RGPoint screenPoint)
+        public RGPointI ScreenPointToLayerPoint(RGPointI screenPoint)
         {
             if (this.ParallaxSpeed.X == 0 && this.ParallaxSpeed.Y == 0)
                 return screenPoint;
@@ -135,7 +135,7 @@ namespace Engine
         }
 
 
-        public RGPoint LayerPointToScreenPoint(RGPoint layerPoint)
+        public RGPointI LayerPointToScreenPoint(RGPointI layerPoint)
         {
             if (this.ParallaxSpeed.X == 0 && this.ParallaxSpeed.Y == 0)
                 return layerPoint;
@@ -153,24 +153,24 @@ namespace Engine
     public class FixedLayer : Layer
     {
         public FixedLayer(GameContext ctx, LayerDepth depth)
-            : base(ctx, RGRectangle.FromXYWH(0, 0, ctx.Engine.GameSize.Width, ctx.Engine.GameSize.Height), depth)
+            : base(ctx, RGRectangleI.FromXYWH(0, 0, ctx.Engine.GameSize.Width, ctx.Engine.GameSize.Height), depth)
         {
             this.ParallaxSpeed = RGPoint.Empty;
         }
 
-        public FixedLayer(GameContext ctx) : base(ctx, RGRectangle.Empty, LayerDepth.Background) { }
+        public FixedLayer(GameContext ctx) : base(ctx, RGRectangleI.Empty, LayerDepth.Background) { }
     }
 
     public class ImageLayer : Layer
     {
         private SimpleGraphic mGraphic;
 
-        public ImageLayer(GameContext ctx, SimpleGraphic graphic) : base(ctx, RGRectangle.FromXYWH(0,0, graphic.SourceRec.Width,graphic.SourceRec.Height), LayerDepth.Background) 
+        public ImageLayer(GameContext ctx, SimpleGraphic graphic) : base(ctx, RGRectangleI.FromXYWH(0,0, graphic.SourceRec.Width,graphic.SourceRec.Height), LayerDepth.Background) 
         {
             mGraphic = graphic;
         }
 
-        protected override void DrawLayer(Graphics.Painter painter, RGRectangle canvas, RGPoint origin)
+        protected override void DrawLayer(Graphics.Painter painter, RGRectangleI canvas, RGPointI origin)
         {
             mGraphic.CornerPosition = origin;
             mGraphic.Draw(painter,canvas);
@@ -191,10 +191,10 @@ namespace Engine
     {
         public Map Map { get; private set; }
 
-        public TileLayer(GameContext ctx) : base(ctx, RGRectangle.Empty, LayerDepth.Background) { }
+        public TileLayer(GameContext ctx) : base(ctx, RGRectangleI.Empty, LayerDepth.Background) { }
 
-        public TileLayer(GameContext ctx, Map map, RGPoint location, LayerDepth depth)
-            : base(ctx, RGRectangle.Create(location, map.Size), depth)
+        public TileLayer(GameContext ctx, Map map, RGPointI location, LayerDepth depth)
+            : base(ctx, RGRectangleI.Create(location, map.Size), depth)
         {
             Map = map;
         }
@@ -204,7 +204,7 @@ namespace Engine
             Map.Tileset.UpdateAnimation(this.Context);
         }
 
-        protected override void DrawLayer(Graphics.Painter painter, RGRectangle canvas, RGPoint location)
+        protected override void DrawLayer(Graphics.Painter painter, RGRectangleI canvas, RGPointI location)
         {
             Map.Draw(painter, canvas,location);
         } 

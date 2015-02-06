@@ -27,9 +27,9 @@ namespace Engine
             set;
         }
 
-        public RGPoint Position { get; set; }
+        public RGPointI Position { get; set; }
 
-        public RGPoint CornerPosition
+        public RGPointI CornerPosition
         {
             get
             {
@@ -41,10 +41,10 @@ namespace Engine
             }
         }
 
-        private RGRectangle? mDestination;
-        public RGRectangle DestinationRec
+        private RGRectangleI? mDestination;
+        public RGRectangleI DestinationRec
         {
-            get { return mDestination ?? RGRectangle.Create(CornerPosition, SourceRec.Size.ToSizeF()); }
+            get { return mDestination ?? RGRectangleI.Create(CornerPosition, SourceRec.Size); }
             set { mDestination = value; }
         }
 
@@ -67,7 +67,7 @@ namespace Engine
             get { return mSources.GetItem(this.SourceIndex); }
         }
 
-        public void Draw(Graphics.Painter p, RGRectangle canvas)
+        public void Draw(Graphics.Painter p, RGRectangleI canvas)
         {
             this.DrawTexture(p, canvas);
         }

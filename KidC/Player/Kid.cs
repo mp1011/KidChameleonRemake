@@ -10,7 +10,7 @@ namespace KidC
     {
         public KidController(Sprite sprite, Player player) : base(sprite, player) 
         {          
-            this.WalkSpeed = 1.8f;
+            this.WalkSpeed = 2.0f;
             this.WalkAccel = .1f;
 
             this.RunSpeed = 3.0f;
@@ -18,18 +18,23 @@ namespace KidC
 
 
             this.StopAccel = 0.3f;
+            this.AirDecel = 0.03f;
 
             this.CrawlSpeed = 1.0f;
             this.CrawlAccel = .05f;
             this.CrawlDecel = .1f;
 
-            this.JumpVaryDuration = 20;
+            this.LongJumpDuration = 24;
+            this.ShortJumpDuration = 10;
+
             this.JumpSpeed =3.0f;
+            this.RunJumpSpeedMod = 0.1f;
 
             this.UpHillSpeedMod = -1.5f;
             this.DownHillSpeedMod = -0.5f;
 
         }
+
     }
 
     class KidFlipController : TriggeredController<Direction>
@@ -59,9 +64,9 @@ namespace KidC
             this.Sprite.CurrentAnimationKey = KCAnimation.Flip;
             
             if (flipDir == Direction.Left)
-                this.Sprite.Location = new RGPoint(mFlipBlock.TileArea.Left, mFlipBlock.TileArea.Top);
+                this.Sprite.Location = new RGPointI(mFlipBlock.TileArea.Left, mFlipBlock.TileArea.Top);
             if (flipDir == Direction.Right)
-                this.Sprite.Location = new RGPoint(mFlipBlock.TileArea.Right, mFlipBlock.TileArea.Top);
+                this.Sprite.Location = new RGPointI(mFlipBlock.TileArea.Right, mFlipBlock.TileArea.Top);
 
             this.Sprite.MotionManager.StopMotionInDirection(new DirectionFlags(Direction.Down));
             if (this.Sprite.CurrentAnimation.Finished)           
@@ -110,9 +115,9 @@ namespace KidC
 
             blockPoint = blockPoint.Offset(0, -8);
             if (flipDir == Direction.Left)
-                blockPoint = new RGPoint(this.Sprite.Area.Left - 2, blockPoint.Y);
+                blockPoint = new RGPointI(this.Sprite.Area.Left - 2, blockPoint.Y);
             else if (flipDir == Direction.Right)
-                blockPoint = new RGPoint(this.Sprite.Area.Right + 2, blockPoint.Y);
+                blockPoint = new RGPointI(this.Sprite.Area.Right + 2, blockPoint.Y);
 
             var tile = mLayer.Map.GetTileAtLocation(blockPoint);
             if (tile.TileDef.IsPassable)

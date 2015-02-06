@@ -209,7 +209,7 @@ namespace Engine
             get { return this.CurrentDirectedAnimationFrame.Source; }
         }
 
-        public RGRectangle DestinationRec
+        public RGRectangleI DestinationRec
         {
             get
             {
@@ -217,7 +217,7 @@ namespace Engine
                 var rec = this.SourceRec;
                 var frame = this.CurrentDirectedAnimationFrame;
 
-                return AdjustFrameRectangle(RGRectangleI.FromXYWH(0,0,frame.Source.Width,frame.Source.Height)).ToRecF();
+                return AdjustFrameRectangle(RGRectangleI.FromXYWH(0,0,frame.Source.Width,frame.Source.Height));
             }
         }
 
@@ -236,11 +236,10 @@ namespace Engine
             else
                 offY = frame.Origin.Y - rec.Top;
 
-            return RGRectangleI.FromXYWH(mSprite.Location.X - offX, mSprite.Location.Y - offY, rec.Width, rec.Height);
-
+            return RGRectangleI.FromXYWH(mSprite.Location.X - offX, mSprite.Location.Y - offY, rec.Width, rec.Height);          
         }
 
-        public RGRectangle CollisionRec
+        public RGRectangleI CollisionRec
         {
             get
             {
@@ -248,7 +247,7 @@ namespace Engine
             }
         }
 
-        public RGRectangle SecondaryCollisionRec
+        public RGRectangleI SecondaryCollisionRec
         {
             get
             {
@@ -256,7 +255,8 @@ namespace Engine
             }
         }
 
-        private RGRectangle GetCollisionRec(HitboxType t)
+
+        private RGRectangleI GetCollisionRec(HitboxType t)
         {
             var frame = this.CurrentDirectedAnimationFrame;
             var rec = frame.GetHitbox(t);
@@ -265,10 +265,10 @@ namespace Engine
                 if (t == HitboxType.Primary)
                     rec = frame.Source;
                 else
-                    return RGRectangle.Empty;
+                    return RGRectangleI.Empty;
             }
 
-            return AdjustFrameRectangle(rec).ToRecF();
+            return AdjustFrameRectangle(rec);
         }
 
         private RenderOptions mRenderOptions;
@@ -283,7 +283,7 @@ namespace Engine
         #endregion
 
 
-        public void Draw(Graphics.Painter p, RGRectangle canvas)
+        public void Draw(Graphics.Painter p, RGRectangleI canvas)
         {
             this.DrawTexture(p, canvas);
         }

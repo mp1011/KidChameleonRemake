@@ -29,6 +29,12 @@ namespace Engine
             return GetList(o).Reverse<T>().Take(maxItems).ToArray();
         }
 
+        public static T[] GetData(object o, int maxItems)
+        {
+            var a = GetList(o);
+            return a.Skip(a.Count - maxItems).ToArray();
+        }
+
         public static void AddLog(object o, T data)
         {
             var list = GetList(o);            

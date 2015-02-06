@@ -37,12 +37,12 @@ namespace KidC
             this.AddObject(GemsCounter);
             this.AddObject(HealthGuage);
 
-            this.Clock.Location = new RGPoint(20, 20);
-            this.LivesCounter.Location = new RGPoint(304, 16);
-            this.GemsCounter.Location = new RGPoint(304, 36);
-            this.HealthGuage.Location = new RGPoint(23,32);
+            this.Clock.Location = new RGPointI(20, 20);
+            this.LivesCounter.Location = new RGPointI(304, 16);
+            this.GemsCounter.Location = new RGPointI(304, 36);
+            this.HealthGuage.Location = new RGPointI(23,32);
 
-            mDebugMessage = new GameText(this.Context, FontManager.ScoreFont, "", new RGPoint(50,100), 100, Alignment.Near, Alignment.Near);
+            mDebugMessage = new GameText(this.Context, FontManager.ScoreFont, "", new RGPointI(50,100), 100, Alignment.Near, Alignment.Near);
             this.AddObject(mDebugMessage);
         }
 
@@ -52,10 +52,8 @@ namespace KidC
             this.HealthGuage.CurrentHealth = mStats.CurrentHealth;
             this.HealthGuage.MaxHealth = mStats.MaxHealth;
 
-            if (Context.DebugNumber1.HasValue)
-                mDebugMessage.Text = this.Context.DebugNumber1.Value.ToString("0.0000");
-            else
-                mDebugMessage.Text = "";
+            var debugText = Context.DebugNumbers.Where(p => p != null && p.HasValue).Select(p => p.Value.ToString("0.0000")).ToArray().StringJoin(" ");
+            mDebugMessage.Text = debugText;
         }
     }
 

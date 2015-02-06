@@ -13,7 +13,7 @@ namespace Engine
             this.mGraphic = graphic;
         }
 
-        public RGPoint Location
+        public RGPointI Location
         {
             get
             {
@@ -25,7 +25,7 @@ namespace Engine
             }
         }
 
-        public RGRectangle Area
+        public RGRectangleI Area
         {
             get { return mGraphic.DestinationRec; }
         }
@@ -40,17 +40,12 @@ namespace Engine
         #region Drawing
 
         private SimpleGraphic mGraphic;
-        void IDrawable.Draw(Graphics.Painter p, RGRectangle canvas)
+        void IDrawable.Draw(Graphics.Painter p, RGRectangleI canvas)
         {
             mGraphic.Draw(p, canvas);
         }
 
         #endregion
 
-
-        public RGPoint LocationOffset
-        {
-            get { return RGPoint.Empty; }
-        }
     }
 }

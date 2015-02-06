@@ -41,7 +41,7 @@ namespace Engine.XNA
             mDevice = device;
         }
 
-        protected override void PaintToScreen(TextureResource textureResource, RGRectangleI source, RGRectangle dest, RenderOptions options)
+        protected override void PaintToScreen(TextureResource textureResource, RGRectangleI source, RGRectangleI dest, RenderOptions options)
         {
             var texture = XNATextureCache.Instance.GetTexture(textureResource, mDevice);
 

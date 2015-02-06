@@ -30,7 +30,7 @@ namespace KidC
 
     class PrizeController : SpriteBehavior 
     {
-        private RGPoint mOriginalPosition;
+        private RGPointI mOriginalPosition;
         private TileLayer mLayer;
         private TileInstance mSpawnTile;
 

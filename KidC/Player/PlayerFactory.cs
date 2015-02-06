@@ -13,7 +13,7 @@ namespace KidC
         private static Sprite CreatePlayer(GameContext ctx, Layer layer, ObjectType playerType, int maxHealth, bool secondaryHitboxIsDamaging) 
         {
             var sprite = new Sprite(ctx, layer, playerType);
-            sprite.Location = new RGPoint(120, 125);
+            sprite.Location = new RGPointI(120, 125);
 
             IGameInputDevice input = ctx.Engine.CreateInputDevice(sprite.Context);
 
@@ -57,7 +57,7 @@ namespace KidC
             player.AddAnimation(KCAnimation.ClimbDown, new Animation(spriteSheet, Direction.Left, 19, 20, 21, 22, 23, 24)).SetFrameDuration(5);
 
             player.AddAnimation(KCAnimation.Crawl, new Animation(spriteSheet, Direction.Right, 7, 8, 9, 8)).SetFrameDuration(10);
-            player.AddAnimation(KCAnimation.Flip, new Animation(spriteSheet, Direction.Left, false, 25, 26, 27, 28, 29, 30, 31)).SetFrameDuration(5);
+            player.AddAnimation(KCAnimation.Flip, new Animation(spriteSheet, Direction.Left, false, 25, 26, 27, 28, 29, 30, 31)).SetFrameDuration(3);
             player.AddAnimation(KCAnimation.Dead, new Animation(spriteSheet, Direction.Right, 32));
 
             player.AddBehavior(new PlayerDieController(player));

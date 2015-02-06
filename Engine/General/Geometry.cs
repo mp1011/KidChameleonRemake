@@ -173,8 +173,9 @@ namespace Engine
             }
             return false;
         }
-        public static RGPoint GetLineIntersection(RGPoint a1, RGPoint a2, RGPoint b1, RGPoint b2)
-        {
+
+        public static RGPoint GetLineIntersection(RGPointI a1, RGPointI a2, RGPointI b1, RGPointI b2)
+        {       
             // Denominator for ua and ub are the same, so store this calculation
             double d =
                (b2.Y - b1.Y) * (a2.X - a1.X)
@@ -593,9 +594,27 @@ namespace Engine
         public int X;
         public int Y;
 
+        public bool IsInfinity
+        {
+            get { return (float.IsPositiveInfinity(this.X) || float.IsPositiveInfinity(this.Y) || float.IsNegativeInfinity(this.X) || float.IsNegativeInfinity(this.Y)); }
+        }
+
         public bool IsEmpty
         {
             get { return this.X == 0 && this.Y == 0; }
+        }
+
+        public Direction GetDirectionTo(RGPointI other)
+        {
+            return Engine.Direction.FromRad(Util.GetLineAngleR(this, other));
+        }
+
+
+        public float GetDistanceTo(RGPointI other)
+        {
+            float x = this.X - other.X;
+            float y = this.Y - other.Y;
+            return (float)Math.Sqrt(x * x + y * y);
         }
 
         public RGPointI(int pX, int pY)
@@ -647,6 +666,11 @@ namespace Engine
             return this.Offset((int)pt.X, (int)pt.Y);
         }
 
+        public RGPointI Offset(Direction d, float distance)
+        {
+            var pt = d.ToPoint(distance);
+            return this.Offset((int)pt.X, (int)pt.Y);
+        }
 
         //TBD - replace with next fn
         public RGPointI Translate(RGRectangleI originalArea, RGRectangleI newArea)
@@ -714,43 +738,38 @@ namespace Engine
 
     public struct RGLine
     {
-        public static RGLine Empty { get { return new RGLine(RGPoint.Empty, RGPoint.Empty); } }
+        public static RGLine Empty { get { return new RGLine(RGPointI.Empty, RGPointI.Empty); } }
 
         public bool IsEmpty { get { return PointA.IsEmpty && PointB.IsEmpty; } }
 
-        public RGPoint PointA { get; private set; }
-        public RGPoint PointB { get; private set; }
+        public RGPointI PointA { get; private set; }
+        public RGPointI PointB { get; private set; }
 
         public Direction Angle { get { return Direction.FromRad(GeometryUtil.GetLineAngleR(PointA, PointB)); } }
 
         public float Length { get { return PointA.GetDistanceTo(PointB); } }
 
-        public RGLine(RGPoint a, RGPoint b)
+        public RGLine(RGPointI a, RGPointI b)
             : this()
         {
             PointA = a;
             PointB = b;
         }
 
-        public RGLine(RGPoint src, Direction dir, float distance)
+        public RGLine(RGPointI src, Direction dir, float distance)
             : this()
         {
             PointA = src;
             PointB = src.Offset(dir, distance);
         }
-
-        public RGLine Round(int numDecimals)
+    
+        public RGPointI GetIntersectionPoint(RGLine other)
         {
-            return new RGLine(PointA.Round(numDecimals), PointB.Round(numDecimals));
-        }
-
-        public RGPoint GetIntersectionPoint(RGLine other)
-        {
-            return GeometryUtil.GetLineIntersection(this.PointA, this.PointB, other.PointA, other.PointB);
+            return GeometryUtil.GetLineIntersection(this.PointA, this.PointB, other.PointA, other.PointB).ToPointI();
         }
 
 
-        public RGLine GetIntersectingLine(RGRectangle rec)
+        public RGLine GetIntersectingLine(RGRectangleI rec)
         {
             var lines = new RGLine[] { new RGLine(rec.TopLeft, rec.TopRight), new RGLine(rec.TopLeft, rec.BottomLeft), new RGLine(rec.BottomLeft, rec.BottomRight), new RGLine(rec.TopRight, rec.BottomRight) };
 
@@ -765,14 +784,14 @@ namespace Engine
             return new RGPoint(PointB.X - PointA.X, PointB.Y - PointA.Y);
         }
 
-        public IEnumerable<RGPoint> GetIntersectionPoints(RGRectangle other)
+        public IEnumerable<RGPointI> GetIntersectionPoints(RGRectangleI other)
         {
             var top = this.GetIntersectionPoint(new RGLine(other.TopLeft, other.TopRight));
             var left = this.GetIntersectionPoint(new RGLine(other.TopLeft, other.BottomLeft));
             var bottom = this.GetIntersectionPoint(new RGLine(other.BottomLeft, other.BottomRight));
             var right = this.GetIntersectionPoint(new RGLine(other.TopRight, other.BottomRight));
 
-            RGPoint[] pt = new RGPoint[] { top, left, bottom, right };
+            RGPointI[] pt = new RGPointI[] { top, left, bottom, right };
             return pt.Where(p => !p.IsInfinity);
         }
 
@@ -949,11 +968,6 @@ namespace Engine
             return RGRectangle.FromTLBR(this.Top - amount, this.Left - amount, this.Bottom + amount, this.Right + amount);
         }
 
-        public RGLine TopSide { get { return new RGLine(this.TopLeft, this.TopRight); } }
-        public RGLine LeftSide { get { return new RGLine(this.TopLeft, this.BottomLeft); } }
-        public RGLine RightSide { get { return new RGLine(this.TopRight, this.BottomRight); } }
-        public RGLine BottomSide { get { return new RGLine(this.BottomLeft, this.BottomRight); } }
-
         public RGPoint GetOppositePoint(RGPoint pt, Orientation orientation)
         {
             if (orientation == Orientation.Horizontal)
@@ -1062,6 +1076,12 @@ namespace Engine
         public RGPointI BottomRight { get { return new RGPointI(Right, Bottom); } }
         public RGPointI BottomLeft { get { return new RGPointI(Left, Bottom); } }
 
+        public RGLine TopSide { get { return new RGLine(this.TopLeft, this.TopRight); } }
+        public RGLine LeftSide { get { return new RGLine(this.TopLeft, this.BottomLeft); } }
+        public RGLine RightSide { get { return new RGLine(this.TopRight, this.BottomRight); } }
+        public RGLine BottomSide { get { return new RGLine(this.BottomLeft, this.BottomRight); } }
+
+
         public RGPoint Center { get { return new RGPoint(X + (Width / 2), Y + (Height / 2)); } }
 
         public override string ToString()
@@ -1077,6 +1097,26 @@ namespace Engine
             rec.Bottom = (int)bottom;
             rec.Right = (int)right;
             return rec;
+        }
+
+        public RGPointI? GetClosestSurfacePoint(RGPointI src)
+        {
+            bool lr = (src.Y >= this.Top && src.Y <= this.Bottom);
+            bool ud = (src.X >= this.Left && src.X <= this.Right);
+
+            if (src.X < this.Left && lr)
+                return new RGPointI(this.Left, src.Y);
+
+            if (src.X > this.Right && lr)
+                return new RGPointI(this.Right, src.Y);
+
+            if (src.Y < this.Top && ud)
+                return new RGPointI(src.X, this.Top);
+
+            if (src.Y > this.Bottom && ud)
+                return new RGPointI(src.X, this.Bottom);
+
+            return null;
         }
 
         public static RGRectangleI FromTLBR(int top, int left, int bottom, int right)
@@ -1148,7 +1188,7 @@ namespace Engine
 
         public bool CollidesWith(RGRectangleI other)
         {
-            return (this.Bottom > other.Top && this.Top < other.Bottom && this.Right > other.Left && this.Left < other.Right);
+            return (this.Bottom >= other.Top && this.Top <= other.Bottom && this.Right >= other.Left && this.Left <= other.Right);
         }
 
         public bool CollidesWith(RGRectangle other)

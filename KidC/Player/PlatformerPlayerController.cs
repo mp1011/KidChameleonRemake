@@ -11,6 +11,7 @@ namespace KidC
     public abstract class PlatformerPlayerController : SpriteBehavior, IDamager
     {
         private TimedAction<GravityController> mJump;
+        private float mJumpSpeed;
         private GravityController mGravityController;
         
         public Player Player { get; private set;}
@@ -22,6 +23,7 @@ namespace KidC
         protected float RunAccel { get; set; }
 
         protected float StopAccel { get; set; }
+        protected float AirDecel { get; set; }
         protected float TurnAccel { get; set; }
         
         protected float CrawlSpeed { get; set; }
@@ -32,7 +34,10 @@ namespace KidC
         protected float DownHillSpeedMod { get; set; }
 
         protected float JumpSpeed { get;set;}
-        protected ulong JumpVaryDuration { get; set; }
+        protected float RunJumpSpeedMod { get; set; }
+
+        protected ulong LongJumpDuration { get; set; }
+        protected ulong ShortJumpDuration { get; set; }
 
         private ulong mJumpBeginFrame;
         private bool mIsOnGround = false;
@@ -60,13 +65,11 @@ namespace KidC
             Sprite.MotionManager.MainMotion.Decel = StopAccel;
 
             mGravityController = Sprite.GetBehavior<GravityController>();
-            mJump = new TimedAction<GravityController>(mGravityController,a=> a.CurrentYSpeed = -1 * JumpSpeed);
+            mJump = new TimedAction<GravityController>(mGravityController,a=> a.CurrentYSpeed = -1 * mJumpSpeed);
         }
 
         protected override void Update()
-        {
-            Context.DebugNumber1 = (mIsOnGround ? 1 : 0);
-
+        {           
             if (Player.Input.KeyDown(GameKey.Editor1))
                 this.Context.FPS = 10;
             else
@@ -147,7 +150,7 @@ namespace KidC
             }
 
             if (Player.Input.KeyReleased(KCButton.Jump))
-                mJump.Duration = 0;
+                mJump.Duration = ShortJumpDuration;
         }
 
         public bool CheckWallJump()
@@ -164,7 +167,9 @@ namespace KidC
         {
             SoundManager.PlaySound(Sounds.Jump);
             mJumpBeginFrame = Context.CurrentFrameNumber;
-            mJump.Start(JumpVaryDuration);
+
+            mJumpSpeed = JumpSpeed + this.Sprite.MotionManager.MainMotion.CurrentSpeed * RunJumpSpeedMod;
+            mJump.Start(LongJumpDuration);
         }
 
         private bool PlayerCanJump()
@@ -174,17 +179,18 @@ namespace KidC
 
         private void HandleWalk()
         {
-            if (this.Player.Input.KeyDown(GameKey.Editor1))
-                Console.WriteLine("X");
-
             var player = this.Context.FirstPlayer;
 
-            Sprite.MotionManager.MainMotion.Decel = StopAccel;
+            if(mIsOnGround)
+                Sprite.MotionManager.MainMotion.Decel = StopAccel;
+            else
+                Sprite.MotionManager.MainMotion.Decel = AirDecel;
+
             Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
             var dir = player.Input.InputDirection(Orientation.Horizontal);
             if (dir == null)
             {
-                 Sprite.MotionManager.MainMotion.TargetSpeed = 0;
+                Sprite.MotionManager.MainMotion.TargetSpeed = 0;
             }
             else
             {
@@ -267,13 +273,13 @@ namespace KidC
             if (groundTile == null)
                 return;
 
-            float? yIntercept = groundTile.TileDef.GetYIntercept(groundTile.TileArea, this.Sprite.X);
+            int? yIntercept = groundTile.TileDef.GetYIntercept(groundTile.TileArea, this.Sprite.X);
             if (yIntercept.HasValue)
             {
                 if (Math.Abs(yIntercept.Value - this.Sprite.Y) > 16)
                     return;
 
-                this.Sprite.Location = new RGPoint(this.Sprite.X, yIntercept.Value);
+                this.Sprite.Location = new RGPointI(this.Sprite.X, yIntercept.Value);
                 this.mIsOnGround = true;
 
                 if (groundTile.TileDef.Sides.Left)

@@ -13,7 +13,7 @@ namespace KidC
         private ulong mClockStart;
         private int mStartSeconds = 120;
 
-        public RGPoint Location { get; set; }
+        public RGPointI Location { get; set; }
 
         public Clock(Layer layer)
             : base(LogicPriority.World, layer.Context)
@@ -39,7 +39,7 @@ namespace KidC
         }
 
 
-        public void Draw(Engine.Graphics.Painter p, RGRectangle canvas)
+        public void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
         {
             if (this.mLabel == null)
                 return;

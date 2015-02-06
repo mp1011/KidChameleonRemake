@@ -35,10 +35,10 @@ namespace Engine
     {
        
 
-        private Func<T,RGRectangle> mGetLocation;
+        private Func<T,RGRectangleI> mGetLocation;
         private T mObject;
 
-        public DebugRectangle(T obj, Func<T, RGRectangle> getLocation, DebugRectangle.RecColor color)
+        public DebugRectangle(T obj, Func<T, RGRectangleI> getLocation, DebugRectangle.RecColor color)
         {
             mGetLocation = getLocation;
             mObject = obj;
@@ -53,7 +53,7 @@ namespace Engine
             }
         }
 
-        public void Draw(Graphics.Painter p, RGRectangle canvas)
+        public void Draw(Graphics.Painter p, RGRectangleI canvas)
         {
             this.DrawTexture(p, canvas);
         }
@@ -64,7 +64,7 @@ namespace Engine
             private set;
         }
 
-        public RGRectangle DestinationRec
+        public RGRectangleI DestinationRec
         {
             get { return mGetLocation(mObject); }
         }

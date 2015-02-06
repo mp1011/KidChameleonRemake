@@ -70,7 +70,7 @@ namespace KidC
                     mHitBounceSpeed = Math.Max(2f, ySpeed);
 
                 response.ShouldBlock = true;
-                response.CorrectionVector = new RGPoint(0, -(cEvent.ThisCollisionTimeArea.Bottom - cEvent.OtherCollisionTimeArea.Top));
+                response.CorrectionVector = new RGPointI(0, -(cEvent.ThisCollisionTimeArea.Bottom - cEvent.OtherCollisionTimeArea.Top));
             }
 
             base.HandleCollisionEx(cEvent, response);

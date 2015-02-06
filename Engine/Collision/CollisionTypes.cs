@@ -63,6 +63,7 @@ namespace Engine.Collision
 {
     public enum Side
     {
+        None,
         Top,
         Left,
         Bottom,
@@ -75,18 +76,12 @@ namespace Engine.Collision
         public RGRectangleI Rec;
     }
 
-    struct CorrectionRecF
-    {
-        public Side Side;
-        public RGRectangle Rec;
-    }
-
     public interface ICollidable : IWithPosition, IMoveable
     {
         LayerDepth LayerDepth { get; }
         ObjectType ObjectType { get; }
         ObjectType[] CollisionTypes { get; set; }
-        RGRectangle SecondaryCollisionArea { get; }
+        RGRectangleI SecondaryCollisionArea { get; }
 
         void HandleCollision(CollisionEvent collision, CollisionResponse response);
     }
@@ -100,8 +95,8 @@ namespace Engine.Collision
 
         #region Collision Time Values
 
-        public RGRectangle ThisCollisionTimeArea { get; private set; }
-        public RGRectangle OtherCollisionTimeArea { get; private set; }
+        public RGRectangleI ThisCollisionTimeArea { get; private set; }
+        public RGRectangleI OtherCollisionTimeArea { get; private set; }
 
         public RGPoint ThisCollisionTimeSpeed { get; private set; }
         public RGPoint OtherCollisionTimeSpeed { get; private set; }
@@ -122,8 +117,8 @@ namespace Engine.Collision
         public bool OtherRightExposed { get; private set; }
         public bool OtherBottomExposed { get; private set; }
 
-        public RGRectangle ThisArea { get { return mThisPosition.Area; } }
-        public RGRectangle OtherArea { get { return mOtherPosition.Area; } }
+        public RGRectangleI ThisArea { get { return mThisPosition.Area; } }
+        public RGRectangleI OtherArea { get { return mOtherPosition.Area; } }
 
         public ObjectType ThisType { get { return mThisPosition.ObjectType; } }
         public ObjectType OtherType { get { return mOtherPosition.ObjectType; } }
@@ -136,6 +131,9 @@ namespace Engine.Collision
         public RGLine OtherLeft { get { if (OtherLeftExposed) return OtherArea.LeftSide; else return new RGLine(OtherArea.TopLeft, OtherArea.TopLeft); } }
         public RGLine OtherRight { get { if (OtherRightExposed) return OtherArea.RightSide; else return new RGLine(OtherArea.TopRight, OtherArea.TopRight); } }
 
+        /// <summary>
+        /// Side of the this object that collided
+        /// </summary>
         public Side CollisionSide { get; set; }
 
         public RGPoint SlopeIntersectionPoint { get; set; }
@@ -202,13 +200,13 @@ namespace Engine.Collision
             this.CollisionSpeed = obj.MotionManager.MotionOffset.Offset(this.OtherObject.MotionManager.MotionOffset);
         }
 
-        public RGRectangle ThisObjectPreviousPosition
+        public RGRectangleI ThisObjectPreviousPosition
         {
             get
             {
                 var speed = ThisCollisionTimeSpeed;
                 speed = speed.Scale(-1f, -1f);
-                return ThisCollisionTimeArea.Offset(speed);
+                return ThisCollisionTimeArea.Offset(speed.ToPointI());
             }
         }
     }

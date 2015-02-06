@@ -77,17 +77,17 @@ namespace Engine.Collision
             var originalArea = CollidingObject.Area;
             var originalCArea = collisionEvent.OtherArea;
 
-            var collisionLocation = RGRectangle.Create(CollidingObject.Location.Round(0), CollidingObject.Area.Size);
+            var collisionLocation = RGRectangleI.Create(CollidingObject.Location, CollidingObject.Area.Size);
 
             var coA = CollidingObject.Area;
             var oA = collisionEvent.OtherArea;
 
-            var leftCorrection = new CorrectionRecF { Side = Side.Right, Rec = collisionEvent.OtherLeftExposed ? RGRectangle.FromXYWH(oA.Left - coA.Width, coA.Y, coA.Width, coA.Height) : RGRectangle.Empty };
-            var rightCorrection = new CorrectionRecF { Side = Side.Left, Rec = collisionEvent.OtherRightExposed ? RGRectangle.FromXYWH(oA.Right, coA.Y, coA.Width, coA.Height) : RGRectangle.Empty };
-            var upCorrection = new CorrectionRecF { Side = Side.Bottom, Rec = collisionEvent.OtherTopExposed ? RGRectangle.FromXYWH(coA.X, oA.Top - coA.Height, coA.Width, coA.Height) : RGRectangle.Empty };
-            var downCorrection = new CorrectionRecF { Side = Side.Top, Rec = collisionEvent.OtherBottomExposed ? RGRectangle.FromXYWH(coA.X, oA.Bottom, coA.Width, coA.Height) : RGRectangle.Empty };
+            var leftCorrection = new CorrectionRec { Side = Side.Right, Rec = collisionEvent.OtherLeftExposed ? RGRectangleI.FromXYWH(oA.Left - coA.Width, coA.Y, coA.Width, coA.Height) : RGRectangleI.Empty };
+            var rightCorrection = new CorrectionRec { Side = Side.Left, Rec = collisionEvent.OtherRightExposed ? RGRectangleI.FromXYWH(oA.Right, coA.Y, coA.Width, coA.Height) : RGRectangleI.Empty };
+            var upCorrection = new CorrectionRec { Side = Side.Bottom, Rec = collisionEvent.OtherTopExposed ? RGRectangleI.FromXYWH(coA.X, oA.Top - coA.Height, coA.Width, coA.Height) : RGRectangleI.Empty };
+            var downCorrection = new CorrectionRec { Side = Side.Top, Rec = collisionEvent.OtherBottomExposed ? RGRectangleI.FromXYWH(coA.X, oA.Bottom, coA.Width, coA.Height) : RGRectangleI.Empty };
 
-            var possibleRectangles = new List<CorrectionRecF>();
+            var possibleRectangles = new List<CorrectionRec>();
             var m = CollidingObject.MotionManager.Vector.MotionOffset;
             if (m.X >= 0)
                 possibleRectangles.Add(leftCorrection);
@@ -101,7 +101,7 @@ namespace Engine.Collision
 
             possibleRectangles = possibleRectangles.Where(p => !p.Rec.IsEmpty).ToList();
 
-            CorrectionRecF correctionRectangle = new CorrectionRecF { Rec = RGRectangle.Empty };
+            CorrectionRec correctionRectangle = new CorrectionRec { Rec = RGRectangleI.Empty };
 
             if (possibleRectangles.Count == 0)
                 return new CollisionResponse { ShouldBlock = false };
@@ -124,25 +124,20 @@ namespace Engine.Collision
             collisionEvent.CollisionSide = correctionRectangle.Side;
 
             var collisionResponse = new CollisionResponse() { CorrectionVector = correctionVector, ShouldBlock = true };
-            var finalX = correctionRectangle.Rec.X + CollidingObject.LocationOffset.X;
-            var finalY = correctionRectangle.Rec.Y + CollidingObject.LocationOffset.Y;
+            var finalX = CollidingObject.Location.X + correctionVector.X;
+            var finalY = CollidingObject.Location.Y + correctionVector.Y;
 
-            if (Math.Abs(correctionVector.X) < .05)
-                finalX = CollidingObject.Location.X;
-            if (Math.Abs(correctionVector.Y) < .05)
-                finalY = CollidingObject.Location.Y;
-
-            collisionResponse.NewLocation = new RGPoint(finalX, finalY);
+            collisionResponse.NewLocation = new RGPointI(finalX, finalY);
             return collisionResponse;
         }
 
         private CollisionResponse HandleSlopeCollision(CollisionEvent collisionEvent)
         {
-            var correctionVector = new RGPoint(CollidingObject.Location.X-collisionEvent.SlopeIntersectionPoint.X, CollidingObject.Location.Y - collisionEvent.SlopeIntersectionPoint.Y);
-            return new CollisionResponse { ShouldBlock=true, CorrectionVector = correctionVector, NewLocation = new RGPoint(CollidingObject.Location.X, collisionEvent.SlopeIntersectionPoint.Y) };
+            var correctionVector = new RGPointI(CollidingObject.Location.X-collisionEvent.SlopeIntersectionPoint.X, CollidingObject.Location.Y - collisionEvent.SlopeIntersectionPoint.Y);
+            return new CollisionResponse { ShouldBlock=true, CorrectionVector = correctionVector, NewLocation = new RGPointI(CollidingObject.Location.X, collisionEvent.SlopeIntersectionPoint.Y) };
         }
 
-        private RGPoint GetCorrectionVector(RGRectangle collidingRec, RGPoint pt, RGPoint motionVector, RGLine hSide, RGLine vSide)
+        private RGPointI GetCorrectionVector(RGRectangleI collidingRec, RGPointI pt, RGPoint motionVector, RGLine hSide, RGLine vSide)
         {
 
             var motionLine = new RGLine(pt, pt.Offset(motionVector.Reverse())).ExtendB(motionVector.Magnitude);
@@ -162,27 +157,27 @@ namespace Engine.Collision
                 if (!collisionPoint.IsInfinity)
                 {
                     var dist = hSide.PointA.Y - collisionPoint.Y;
-                    var pt2 = pt.Offset(0, dist);
+                    var pt2 = pt.Offset(0, (int)dist);
                     if (collidingRec.Contains(pt2))
                         return collisionPoint.Difference(pt);
                 }
             }
 
-            return RGPoint.Empty;
+            return RGPointI.Empty;
 
         }
 
         private RGRectangleI GetCollisionLocationI(CollisionEvent cEvent)
         {
-            return GetCollisionLocation(cEvent).ToRecI();
+            return GetCollisionLocation(cEvent);
         }
 
-        private RGRectangle GetCollisionLocation(CollisionEvent cEvent)
+        private RGRectangleI GetCollisionLocation(CollisionEvent cEvent)
         {
             var correctionVector = CollidingObject.MotionManager.Vector.MotionOffset.Reverse().ToPointI();
 
             var closeRec = CollidingObject.Area; 
-            var farRec = closeRec.Offset(correctionVector.ToPointF());
+            var farRec = closeRec.Offset(correctionVector);
 
             while (closeRec.CollidesWith(cEvent.OtherArea) && !farRec.CollidesWith(cEvent.OtherArea))
             {
@@ -190,7 +185,11 @@ namespace Engine.Collision
                 if (difference.Magnitude <= 1)
                     return farRec;
 
-                var mid = closeRec.Offset(difference.Scale(.5f, .5f));
+                difference = difference.Scale(.5f, .5f);
+                if (difference.IsEmpty)
+                    return farRec;
+
+                var mid = closeRec.Offset(difference);
 
                 if (mid.CollidesWith(cEvent.OtherArea))
                     closeRec = mid;

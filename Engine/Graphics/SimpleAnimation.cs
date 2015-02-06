@@ -14,7 +14,7 @@ namespace Engine
         private int mCurrentFrame;
         private ulong mLastFrameChangeTime;
 
-        public RGPoint Location
+        public RGPointI Location
         {
             get { return mGraphic.Position; }
             set
@@ -52,7 +52,7 @@ namespace Engine
         }
 
 
-        public void Draw(Graphics.Painter p, RGRectangle canvas)
+        public void Draw(Graphics.Painter p, RGRectangleI canvas)
         {
             mGraphic.Draw(p, canvas);
         }

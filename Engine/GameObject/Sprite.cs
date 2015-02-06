@@ -12,8 +12,8 @@ namespace Engine
 
         private Dictionary<int, SpriteAnimation> mAnimations = new Dictionary<int, SpriteAnimation>();
 
-        private RGPoint mLocation;
-        public RGPoint Location
+        private RGPointI mLocation;
+        public RGPointI Location
         {
             get
             {
@@ -34,7 +34,7 @@ namespace Engine
 
         public Direction Direction { get; set; }
 
-        public RGRectangle Area
+        public RGRectangleI Area
         {
             get
             {
@@ -42,7 +42,7 @@ namespace Engine
             }
         }
 
-        public RGRectangle SecondaryCollisionArea
+        public RGRectangleI SecondaryCollisionArea
         {
             get
             {
@@ -50,20 +50,10 @@ namespace Engine
             }
         }
 
-        public RGPoint LocationOffset
-        {
-            get 
-            {
-                var hitbox = CurrentAnimation.CurrentDirectedAnimationFrame.HitBox;
-                var origin = CurrentAnimation.CurrentDirectedAnimationFrame.Origin;
-                return new RGPoint(origin.X - hitbox.X, origin.Y - hitbox.Y);
-            }
-        }
-
         public LayerDepth LayerDepth { get; private set; }
 
-        public float X { get { return this.Location.X; } }
-        public float Y { get { return this.Location.Y; } }
+        public int X { get { return this.Location.X; } }
+        public int Y { get { return this.Location.Y; } }
 
         private int mCurrentAnimationKey = 0;   
         public int CurrentAnimationKey
@@ -130,7 +120,7 @@ namespace Engine
         public Sprite(GameContext ctx, Layer drawLayer, ObjectType type)
             : base(LogicPriority.Behavior, ctx)
         {
-            this.Location = RGPoint.Empty;
+            this.Location = RGPointI.Empty;
             this.LayerDepth = drawLayer.Depth;
             this.ObjectType = type;
 
@@ -237,7 +227,7 @@ namespace Engine
         }
     
 
-        public void Draw(Engine.Graphics.Painter painter, RGRectangle canvas)
+        public void Draw(Engine.Graphics.Painter painter, RGRectangleI canvas)
         {
             painter.Paint(canvas, this.CurrentAnimation);
         }
@@ -268,10 +258,9 @@ namespace Engine
 
         public void BeforeCollision(CollisionEvent collision)
         {
-            this.Location = this.Location.Round(0);
         }
 
-        public void Move(RGPoint offset)
+        public void Move(RGPointI offset)
         {
             this.Location = this.Location.Offset(offset);
         }

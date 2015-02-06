@@ -48,27 +48,27 @@ namespace Engine
 
         public int FPS { get { return Engine.FPS; } set { Engine.FPS = value; } }
 
-        public RGRectangle ScreenLocation
+        public RGRectangleI ScreenLocation
         {
             get
             {
                 var size = Engine.GameSize;
-                var Screen = RGRectangle.FromXYWH(mCameraCenter.Location.X - (size.Width / 2f), mCameraCenter.Location.Y - (size.Height / 2f), size.Width, size.Height);
+                var Screen = RGRectangleI.FromXYWH(mCameraCenter.Location.X - (size.Width / 2f), mCameraCenter.Location.Y - (size.Height / 2f), size.Width, size.Height);
 
                 if (CurrentWorld == null)
                     return Screen;
 
                 if (Screen.Left < 0)
-                    Screen = RGRectangle.FromXYWH(0, Screen.Y, size.Width, size.Height);
+                    Screen = RGRectangleI.FromXYWH(0, Screen.Y, size.Width, size.Height);
 
                 if (Screen.Top < 0)
-                    Screen = RGRectangle.FromXYWH(Screen.X, 0, size.Width, size.Height);
+                    Screen = RGRectangleI.FromXYWH(Screen.X, 0, size.Width, size.Height);
 
                 if (Screen.Right > CurrentWorld.Area.Right)
-                    Screen = RGRectangle.FromXYWH(CurrentWorld.Area.Right - Screen.Width, Screen.Y, size.Width, size.Height);
+                    Screen = RGRectangleI.FromXYWH(CurrentWorld.Area.Right - Screen.Width, Screen.Y, size.Width, size.Height);
 
                 if (Screen.Bottom > CurrentWorld.Area.Bottom)
-                    Screen = RGRectangle.FromXYWH(Screen.X, CurrentWorld.Area.Bottom - size.Height, size.Width, size.Height);
+                    Screen = RGRectangleI.FromXYWH(Screen.X, CurrentWorld.Area.Bottom - size.Height, size.Width, size.Height);
 
                 return Screen;
             }
@@ -99,8 +99,8 @@ namespace Engine
             get { return mPlayers[0]; }
         }
 
-        public double? DebugNumber1;
-
+        public double?[] DebugNumbers = new double?[3];
+      
         public void Update()
         {
             CurrentFrameNumber++;
@@ -122,6 +122,11 @@ namespace Engine
         public int ElapsedFramesSince(ulong startFrame)
         {
             return (int)(CurrentFrameNumber - startFrame);
+        }
+
+        public bool DebugKeyDown()
+        {
+            return this.FirstPlayer.Input.KeyDown(GameKey.Editor1);
         }
     }
 

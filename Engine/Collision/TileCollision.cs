@@ -17,9 +17,9 @@ namespace Engine.Collision
 
         public ObjectType[] CollisionTypes { get; set; }
 
-        public RGRectangle SecondaryCollisionArea { get { return RGRectangle.Empty; } }
+        public RGRectangleI SecondaryCollisionArea { get { return RGRectangleI.Empty; } }
 
-        public RGPoint Location
+        public RGPointI Location
         {
             get { return Area.TopLeft; }
             set
@@ -28,7 +28,7 @@ namespace Engine.Collision
             }
         }
 
-        public RGRectangle Area
+        public RGRectangleI Area
         {
             get { return Tile.TileArea; }
         }
@@ -58,16 +58,11 @@ namespace Engine.Collision
         }
 
 
-        public void Move(RGPoint offset)
+        public void Move(RGPointI offset)
         {
             throw new NotImplementedException();
         }
 
-
-        public RGPoint LocationOffset
-        {
-            get { return RGPoint.Empty; }
-        }
     }
 
     class TileCollisionManager<T> : CollisionManager<T> where T : LogicObject, ICollidable
@@ -137,7 +132,7 @@ namespace Engine.Collision
 
             var rec = layer.Map.GetTileLocation(tileX, tileY);
 
-            float? yIntercept = tileDef.GetYIntercept(rec, CollidingObject.Location.X);
+            int? yIntercept = tileDef.GetYIntercept(rec, CollidingObject.Location.X);
             if (!yIntercept.HasValue)
                 return null;
 

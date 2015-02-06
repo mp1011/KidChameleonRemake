@@ -35,7 +35,7 @@ namespace KidC
         private int mDefaultMaxHealth;
         private bool mPlayIntroAnimation = false;
         private HelmetController mPickedUpHelmet;
-        private RGPoint mLockPosition = RGPoint.Empty;
+        private RGPointI mLockPosition = RGPointI.Empty;
         protected override bool AllowRetrigger { get { return false; } }
 
         public TransformationController(Sprite s, int maxHealth) : base(s) 

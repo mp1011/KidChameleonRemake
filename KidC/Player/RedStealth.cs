@@ -19,7 +19,7 @@ namespace KidC
             this.CrawlAccel = .01f;
             this.CrawlDecel = .1f;
 
-            this.JumpVaryDuration = 20;
+           // this.JumpVaryDuration = 20;
             this.JumpSpeed = 3.0f;
 
             this.CanClimbSlopes = false;

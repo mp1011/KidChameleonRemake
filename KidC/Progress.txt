@@ -1,5 +1,8 @@
-﻿screen shake near right -> decimal issue
-red stealth - collision issue when jumping and hitting block from side
-game physics
+﻿create a system where values can be read from a file and updated on the fly
 
-dragon has a blinking frame
+turning in midair should "brake"
+uphill and autodownhill faster and same speed
+faster brake when turning
+no brake in air otherwise
+
+samurai - when turning shows standing animation for one frame

@@ -21,7 +21,7 @@ namespace KidC
             this.CrawlAccel = .01f;
             this.CrawlDecel = .1f;
 
-            this.JumpVaryDuration = 20;
+           //' this.JumpVaryDuration = 20;
             this.JumpSpeed = 3.0f;
 
             this.UpHillSpeedMod = -1.5f;
@@ -96,17 +96,10 @@ namespace KidC
             mClimbMotion = new XYMotion("Iron Knight Climb");
             this.Sprite.MotionManager.AddComponent(mClimbMotion);
             mLayer = this.Sprite.DrawLayer as TileLayer;
-
-            mDebugText = new GameText(this.Context, FontManager.ScoreFont, "0", new RGPoint(100, 100), 100, Alignment.Near, Alignment.Center);
-
-            this.Context.CurrentWorld.ScreenLayer.AddObject(mDebugText);
         }
 
-        private GameText mDebugText;
         protected override void Update()
-        {
-            mDebugText.Text = (this.Climbing ? "1" : "0");
-
+        {        
             if (Climbing && mPlatformController.CheckWallJump())
             {
                 this.Climbing = false;
@@ -143,7 +136,7 @@ namespace KidC
   //              this.Sprite.Location = new RGPoint(mCurrentWallX, this.Sprite.Y);          
         }
 
-        private bool IsPointFacingWall(RGPoint pt)
+        private bool IsPointFacingWall(RGPointI pt)
         {
             if (mLayer == null)
                 return false;

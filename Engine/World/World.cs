@@ -99,7 +99,7 @@ namespace Engine
                 top = previousLayer.Location.Bottom;
 
             AddLayer(newLayer);
-            newLayer.Position = new RGPoint(newLayer.Position.X, top);
+            newLayer.Position = new RGPointI(newLayer.Position.X, top);
 
             return newLayer;
         }
@@ -120,13 +120,13 @@ namespace Engine
             return mLayers.Single(p => p.LayerID == id);
         }
 
-        public void Draw(Painter painter, RGRectangle canvas)
+        public void Draw(Painter painter, RGRectangleI canvas)
         {
             foreach (var layer in mLayers)
                 layer.Draw(painter, canvas);
         }
 
-        public TileInstance GetTopmostTile(RGPoint worldLocation, Predicate<TileInstance> condition)
+        public TileInstance GetTopmostTile(RGPointI worldLocation, Predicate<TileInstance> condition)
         {
             foreach (var layer in mLayers.OrderByDescending(p => p.Depth))
             {

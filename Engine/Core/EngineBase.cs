@@ -78,7 +78,7 @@ namespace Engine.Core
         public void DrawFrame()
         {
             var painter = this.CreatePainter();
-            painter.Paint(this.Context.ScreenLocation.Floor(), this.Context.CurrentWorld);
+            painter.Paint(this.Context.ScreenLocation, this.Context.CurrentWorld);
         }
 
         #endregion

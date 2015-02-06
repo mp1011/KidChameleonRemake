@@ -25,7 +25,7 @@ namespace KidC
     class FlyingDebris 
     {
 
-        public static void Create(RGPoint location, Layer layer, Direction d, float speed, int ySpeed, string spriteSheetName, int frame)
+        public static void Create(RGPointI location, Layer layer, Direction d, float speed, int ySpeed, string spriteSheetName, int frame)
         {
             var debris = new Sprite(layer.Context, layer, ObjectType.Decoration);
 

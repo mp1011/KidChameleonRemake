@@ -10,7 +10,7 @@ namespace Engine
         public WorldPoint(GameContext ctx, float x, float y)
         {
             this.Context = ctx;
-            this.Location = new RGPoint(x, y);
+            this.Location = new RGPointI(x, y);
         }
 
         public GameContext Context
@@ -19,15 +19,15 @@ namespace Engine
             private set;
         }
 
-        public RGPoint Location
+        public RGPointI Location
         {
             get;
             set;
         }
 
-        public RGRectangle Area
+        public RGRectangleI Area
         {
-            get { return RGRectangle.Create(Location, RGSize.Empty); }
+            get { return RGRectangleI.Create(Location, RGSizeI.Empty); }
         }
 
         public Direction Direction
@@ -36,11 +36,11 @@ namespace Engine
         }
 
 
-        public RGPoint LocationOffset
+        public RGPointI LocationOffset
         {
             get
             {
-                return RGPoint.Empty;
+                return RGPointI.Empty;
             }
         }
     }

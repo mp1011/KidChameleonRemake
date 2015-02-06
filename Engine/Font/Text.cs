@@ -70,8 +70,8 @@ namespace Engine
 
         #region Position
 
-        private RGPoint mLocation;
-        public RGPoint Location
+        private RGPointI mLocation;
+        public RGPointI Location
         {
             get { return mLocation; }
             set
@@ -80,19 +80,10 @@ namespace Engine
                 PositionText(false);
             }
         }
-
-        public RGPointI LocationI { get { return new RGPointI(Location.X, Location.Y); } }
-
-        public RGRectangle Area
+      
+        public RGRectangleI Area
         {
-            get { return this.TextArea.ToRecF(); }
-        }
-
-
-
-        public RGPoint LocationOffset
-        {
-            get { return Area.TopLeft.Difference(this.Location); }
+            get { return this.TextArea; }
         }
 
         public Direction Direction
@@ -100,7 +91,6 @@ namespace Engine
             get { return Direction.Right; }
         }
         #endregion
-
 
         private RGRectangleI m_TextArea = RGRectangleI.Empty;
 
@@ -139,7 +129,7 @@ namespace Engine
             }
         }
 
-        public GameText(GameContext context, GameFont font, String message, RGPoint location, int maxWidth, Alignment p_halignment, Alignment p_valignment)
+        public GameText(GameContext context, GameFont font, String message, RGPointI location, int maxWidth, Alignment p_halignment, Alignment p_valignment)
             : base(LogicPriority.World, context)
         {
 
@@ -152,14 +142,14 @@ namespace Engine
             SetText(message);
         }
 
-        public GameText(GameContext context, GameFont font, String message, RGPoint location, int maxWidth)
+        public GameText(GameContext context, GameFont font, String message, RGPointI location, int maxWidth)
             : this(context, font, message, location, maxWidth, Alignment.Near, Alignment.Near) { }
 
-        public GameText(GameContext context, GameFont font, String message, RGPoint location)
+        public GameText(GameContext context, GameFont font, String message, RGPointI location)
             : this(context, font, message, location, 0, Alignment.Near, Alignment.Near) { }
 
 
-        public void Reposition(RGPoint location, int maxWidth)
+        public void Reposition(RGPointI location, int maxWidth)
         {
             MaxTextWidth = maxWidth;
             this.Location = location;
@@ -192,7 +182,7 @@ namespace Engine
             if (this.Font == null)
                 return;
 
-            cursor = new RGPointI(LocationI.X - Font.CellSize.Width, LocationI.Y);
+            cursor = new RGPointI(Location.X - Font.CellSize.Width, Location.Y);
 
             if (letters == null)
                 letters = new List<Letter>();
@@ -210,13 +200,13 @@ namespace Engine
                     currentWord.Clear();
                     AlignLine(cursor.Y);
 
-                    cursor.X = LocationI.X - Font.CellSize.Width;
+                    cursor.X = Location.X - Font.CellSize.Width;
                     cursor.Y += (int)(Font.CellSize.Height * 1.5f);
                 }
                 else if (c == ' ')
                 {
                     currentWord.Clear();
-                    if (cursor.X > LocationI.X - Font.CellSize.Width)
+                    if (cursor.X > Location.X - Font.CellSize.Width)
                         cursor.X += Font.CellSize.Width;
                 }
                 else
@@ -309,7 +299,7 @@ namespace Engine
             if (hAlignment == Alignment.Center)
             {
                 lineWidth += spaceBefore + spaceAfter;
-                int xPos = this.LocationI.X + ((MaxTextWidth - lineWidth) / 2);
+                int xPos = this.Location.X + ((MaxTextWidth - lineWidth) / 2);
                 foreach (var letter in letters)
                 {
                     if (letter.location.Y != lineY)
@@ -321,7 +311,7 @@ namespace Engine
             }
             else if (hAlignment == Alignment.Far)
             {
-                int xPos = this.LocationI.X + (MaxTextWidth - lineWidth);
+                int xPos = this.Location.X + (MaxTextWidth - lineWidth);
                 foreach (var letter in letters)
                 {
                     if (letter.location.Y != lineY)
@@ -336,12 +326,12 @@ namespace Engine
         private void MoveCursor(List<Letter> currentWord)
         {
             cursor.X += this.Font.CellSize.Width;
-            if (MaxTextWidth > 0 && cursor.X + this.Font.CellSize.Width > this.LocationI.X + MaxTextWidth)
+            if (MaxTextWidth > 0 && cursor.X + this.Font.CellSize.Width > this.Location.X + MaxTextWidth)
             {
-                int lineStart = LocationI.X;
+                int lineStart = Location.X;
                 if (currentWord.Count > 0)
                 {
-                    int offset = currentWord.First().location.X - LocationI.X;
+                    int offset = currentWord.First().location.X - Location.X;
                     foreach (var letter in currentWord)
                     {
                         letter.location.Y += (int)(this.Font.CellSize.Height * 1.5f);
@@ -377,7 +367,7 @@ namespace Engine
 
         #region IDrawable Members
 
-        public void Draw(Painter painter, RGRectangle canvas)
+        public void Draw(Painter painter, RGRectangleI canvas)
         {
             if (!Visible)
                 return;
@@ -434,13 +424,13 @@ namespace Engine
             this.DrawX(painter, canvas);
         }
 
-        private void DrawX(Painter painter, RGRectangle canvas)
+        private void DrawX(Painter painter, RGRectangleI canvas)
         {
-            RGRectangle dest;
+            RGRectangleI dest;
 
             foreach (var letter in this.GetLetters())
             {
-                dest = RGRectangle.FromXYWH(letter.location.X, letter.location.Y, this.Font.CellSize.Width, this.Font.CellSize.Height);
+                dest = RGRectangleI.FromXYWH(letter.location.X, letter.location.Y, this.Font.CellSize.Width, this.Font.CellSize.Height);
 
                 var letterColor = letter.color;
                 //if (letter.color == RGColor.White)

@@ -11,8 +11,8 @@ namespace Engine
         public bool ShouldBlock { get; set;}
         public float BounceModifier { get; set;}
       
-        public RGPoint CorrectionVector { get; set; }
-        public RGPoint? NewLocation { get; set; }
+        public RGPointI CorrectionVector { get; set; }
+        public RGPointI? NewLocation { get; set; }
 
         public ExitCode DestroyType { get; set; }
 

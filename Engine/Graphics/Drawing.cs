@@ -8,20 +8,20 @@ namespace Engine
 {
     public interface IDrawable
     {
-        void Draw(Painter p, RGRectangle canvas);
+        void Draw(Painter p, RGRectangleI canvas);
     }
 
     public interface IHasTextureInfo
     {
         TextureResource Texture { get; }
-        RGRectangle DestinationRec { get;  }
+        RGRectangleI DestinationRec { get;  }
         RenderOptions RenderOptions { get; }
         RGRectangleI SourceRec { get; }
     }
 
     public static class IHasTextureInfoUtil
     {
-        public static void DrawTexture(this IHasTextureInfo i, Painter p, RGRectangle canvas)
+        public static void DrawTexture(this IHasTextureInfo i, Painter p, RGRectangleI canvas)
         {
             p.Paint(canvas, i.Texture, i.SourceRec, i.DestinationRec, i.RenderOptions);  
         }

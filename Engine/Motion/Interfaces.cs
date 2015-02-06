@@ -8,16 +8,15 @@ namespace Engine
     public interface IWithPosition
     {
         GameContext Context { get; }
-        RGPoint Location { get; set; }
-        RGPoint LocationOffset { get; }
-        RGRectangle Area { get; }
+        RGPointI Location { get; set; }
+        RGRectangleI Area { get; }
         Direction Direction { get; }
     }
 
     public interface IMoveable
     {
         ObjectMotion MotionManager { get; }
-        void Move(RGPoint offset);
+        void Move(RGPointI offset);
     }
 
     public static class IMoveableExtensions

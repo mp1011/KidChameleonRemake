@@ -60,9 +60,12 @@ namespace Engine
             return (float)this.MotionOffset.DotProduct(unit);
         }
 
-        public MotionVector() { }
+        public MotionVector() 
+        {
+            mOffset = RGPoint.Empty;
+        }
 
-        public MotionVector(Direction dir, float speed)
+        public MotionVector(Direction dir, float speed) : this()
         {
             mDirection = dir;
             Magnitude = speed;
@@ -83,10 +86,6 @@ namespace Engine
             return MotionOffset.ToString();
         }
 
-        public void Round(int decimals)
-        {
-            this.MotionOffset = this.MotionOffset.Round(decimals);
-        }
     }
 
     public class SpeedInfo
@@ -100,7 +99,10 @@ namespace Engine
         {
             get
             {
-                return Current / Target;
+                if (Target == 0)
+                    return 0f;
+                else 
+                    return Current / Target;
             }
             set
             {

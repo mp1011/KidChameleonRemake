@@ -14,13 +14,13 @@ namespace Engine.Graphics
             mContext = ctx;
         }
 
-        public void Paint(RGRectangle canvas, IDrawable drawable)
+        public void Paint(RGRectangleI canvas, IDrawable drawable)
         {
             if (drawable != null)                
                 drawable.Draw(this, canvas);
         }
 
-        public void Paint(RGRectangle canvas, TextureResource texture, RGRectangleI source, RGRectangle dest, RenderOptions options)
+        public void Paint(RGRectangleI canvas, TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options)
         {
             if (!options.CheckVisible(mContext))
                 return;
@@ -35,7 +35,7 @@ namespace Engine.Graphics
             PaintToScreen(texture, source, dest, options);
         }
 
-        protected abstract void PaintToScreen(TextureResource texture, RGRectangleI source, RGRectangle dest, RenderOptions options);
+        protected abstract void PaintToScreen(TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options);
 
     }
 

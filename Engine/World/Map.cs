@@ -73,7 +73,7 @@ namespace Engine
                 mSpecialTiles.Add(t);                            
         }
 
-        public TileInstance GetTileAtLocation(RGPoint location)
+        public TileInstance GetTileAtLocation(RGPointI location)
         {
             int x = (int)(location.X / this.Tileset.TileSize.Width);
             int y = (int)(location.Y / this.Tileset.TileSize.Height);
@@ -81,20 +81,20 @@ namespace Engine
             return GetTileAtCoordinates(x, y);
         }
 
-        public RGRectangle GetTileLocation(int x, int y)
+        public RGRectangleI GetTileLocation(int x, int y)
         {
             return Tileset.GetDestRec(x, y);
         }
 
-        public RGSize Size { get { return new RGSize(mTiles.GetLength(0) * Tileset.TileSize.Width, mTiles.GetLength(1) * Tileset.TileSize.Height); } }
+        public RGSizeI Size { get { return new RGSizeI(mTiles.GetLength(0) * Tileset.TileSize.Width, mTiles.GetLength(1) * Tileset.TileSize.Height); } }
         public RGSizeI TileDimensions { get { return new RGSizeI(mTiles.GetLength(0), mTiles.GetLength(1)); } }
 
-        public RGPointI ScreenToTilePoint(RGPoint screenPoint)
+        public RGPointI ScreenToTilePoint(RGPointI screenPoint)
         {
             return new RGPointI((int)(screenPoint.X / this.Tileset.TileSize.Width), (int)(screenPoint.Y / this.Tileset.TileSize.Height));
         }
 
-        public void Draw(Graphics.Painter painter, RGRectangle canvas, RGPoint layerLocation)
+        public void Draw(Graphics.Painter painter, RGRectangleI canvas, RGPointI layerLocation)
         {
             if (layerLocation.X != 0 || layerLocation.Y != 0)
                 throw new NotImplementedException(); // need to offset

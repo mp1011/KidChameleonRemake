@@ -11,7 +11,7 @@ namespace KidC
 
         private SimpleGraphic mCellGraphic;
         private GameText mAmountText;
-        public RGPoint Location { get; set; }
+        public RGPointI Location { get; set; }
        
         public int MaxHealth { get; set; }
         public int CurrentHealth { get; set; }
@@ -26,7 +26,7 @@ namespace KidC
             this.CurrentHealth = 2;
         }
 
-        public void Draw(Engine.Graphics.Painter p, RGRectangle canvas)
+        public void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
         {
             var cursor = this.Location;
 

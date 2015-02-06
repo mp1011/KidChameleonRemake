@@ -74,6 +74,7 @@
     <Compile Include="GameObject\ObjectEntry.cs" />
     <Compile Include="GameObject\Sprite.cs" />
     <Compile Include="General\GameContext.cs" />
+    <Compile Include="General\intx.cs" />
     <Compile Include="General\Listener.cs" />
     <Compile Include="General\LogicObject.cs" />
     <Compile Include="General\Geometry.cs" />

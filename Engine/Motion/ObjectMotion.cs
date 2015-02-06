@@ -31,7 +31,7 @@ namespace Engine
                 get { return ObjectMotion.NoMotion; }
             }
 
-            public void Move(RGPoint offset)
+            public void Move(RGPointI offset)
             {
             }
         }
@@ -41,7 +41,7 @@ namespace Engine
         private List<IMotionComponent> mMotionComponents = new List<IMotionComponent>();
         private IMoveable mObject;
 
-        private MotionVector mMainVector = new MotionVector();
+        private MotionVector mMainVector;
         public MotionVector Vector
         {
             get
@@ -57,6 +57,7 @@ namespace Engine
         public ObjectMotion(GameContext ctx, IMoveable obj) : base(LogicPriority.Motion, ctx) { 
             mObject = obj;
 
+            this.mMainVector = new MotionVector();                
             SetNoMotion(ctx);
         }
 
@@ -86,6 +87,13 @@ namespace Engine
             mMotionComponents.Add(a);
         }
 
+        private IntegerX mOffsetX, mOffsetY;
+
+        protected override void OnEntrance()
+        {
+            mOffsetX = new IntegerX(0);
+            mOffsetY = new IntegerX(0);
+        }
         protected override void Update()
         {
             var originalVector = this.Vector;
@@ -100,9 +108,15 @@ namespace Engine
                 }
             }
 
-            mObject.Move(this.Vector.MotionOffset);
+            var motionOffset = this.Vector.MotionOffset;
 
-            this.Vector.Round(3);
+            mOffsetX.FValue = motionOffset.X;
+            mOffsetY.FValue = motionOffset.Y;
+
+
+
+            mObject.Move(new RGPointI(mOffsetX.Value, mOffsetY.Value));
+
         }
 
         public void Reset()
@@ -113,11 +127,6 @@ namespace Engine
 
         public void StopMotionInDirection(DirectionFlags dir)
         {
-            if (Context.FirstPlayer.Input.KeyDown(GameKey.Editor2) && (this.mObject.ToString().Contains("kid") || this.mObject.ToString().Contains("iron")))
-            {
-                if (dir.Down || dir.Up)
-                    Console.WriteLine("X");
-            }
 
             var thisFlags = new DirectionFlags(this.Direction);
             if ((thisFlags.Up && dir.Up) || (thisFlags.Down && dir.Down))

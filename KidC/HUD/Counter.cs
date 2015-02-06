@@ -11,8 +11,8 @@ namespace KidC
         private SimpleAnimation mAnimation;
         private GameText mAmountText;
        
-        public RGPoint Location { get; set; }
-        public RGRectangle Area
+        public RGPointI Location { get; set; }
+        public RGRectangleI Area
         {
             get { throw new NotImplementedException();  }
         }
@@ -32,7 +32,7 @@ namespace KidC
 
         protected override void OnEntrance()
         {
-            mAmountText = new GameText(this.Context, FontManager.ClockFont, "9x", RGPoint.Empty, 16, Alignment.Far, Alignment.Center);
+            mAmountText = new GameText(this.Context, FontManager.ClockFont, "9x", RGPointI.Empty, 16, Alignment.Far, Alignment.Center);
         }
 
         protected override void Update()
@@ -56,7 +56,7 @@ namespace KidC
             return new Counter(layer, animation);
         }
 
-        public void Draw(Engine.Graphics.Painter p, RGRectangle canvas)
+        public void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
         {
             if (mAmountText == null || mAnimation == null)
                 return;
@@ -69,9 +69,9 @@ namespace KidC
 
 
 
-        public RGPoint LocationOffset
+        public RGPointI LocationOffset
         {
-            get { return RGPoint.Empty; }
+            get { return RGPointI.Empty; }
         }
     }
 }
