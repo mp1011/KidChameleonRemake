@@ -247,9 +247,23 @@ namespace Editor
         public delegate void MouseActionEventHandler(object sender, ImageEventArgs e);
         public event MouseActionEventHandler MouseAction;
 
+        private bool ShouldDrawRectangle
+        {
+            get
+            {
+                switch (this.DrawRectangle)
+                {
+                    case DrawRectangleType.None: return false;
+                    case DrawRectangleType.Drag: return true;
+                    case DrawRectangleType.ShiftDrag: return Control.ModifierKeys == Keys.Shift;
+                    default: return false;
+                }
+            }
+        }
+
         private void ImagePanel_MouseMove(object sender, MouseEventArgs e)
-        {          
-            if (this.DrawRectangle)
+        {
+            if (this.ShouldDrawRectangle && mDrawRectangleEventArgs != null)
             {
                 ResizeRectangle(e.X, e.Y);
                 RefreshImage();
@@ -261,8 +275,8 @@ namespace Editor
 
         private void ImagePanel_MouseDown(object sender, MouseEventArgs e)
         {
-            if (this.DrawRectangle)
-            BeginRectangle(e.X, e.Y);
+            if (this.ShouldDrawRectangle)
+                BeginRectangle(e.X, e.Y);
             else if (MouseAction != null)
                 MouseAction(this, new ImageEventArgs(this.CreateEditorPoint(e.X, e.Y), e.Button, MouseActionType.MouseDown));
         }
@@ -277,12 +291,18 @@ namespace Editor
         {
             if (MouseAction != null)
             {
-                if (this.DrawRectangle)
+                if (this.ShouldDrawRectangle)
                 {
                     ResizeRectangle(e.X, e.Y);
-                    MouseAction(this, mDrawRectangleEventArgs);
+
+                    if(mDrawRectangleEventArgs != null)
+                        MouseAction(this, mDrawRectangleEventArgs);
+
                     mDrawRectangleEventArgs = null;
                     this.RefreshImage();
+
+                    if (this.DrawRectangle == DrawRectangleType.ShiftDrag)
+                        ClearRectangle();
                 }
                 else
                     MouseAction(this, new ImageEventArgs(this.CreateEditorPoint(e.X, e.Y), e.Button, MouseActionType.Click));
@@ -303,15 +323,15 @@ namespace Editor
         private DrawRectangleEventArgs mDrawRectangleEventArgs = null;
         private OverlayRectangle mDrawRecOverlay = null;
 
-        private bool mDrawRectangle = false;
+        private DrawRectangleType mDrawRectangle = DrawRectangleType.None;
 
-        public bool DrawRectangle
+        public DrawRectangleType DrawRectangle
         {
             get { return mDrawRectangle; }
             set
             {
                 mDrawRectangle = value;
-                if (!value)
+                if (value == DrawRectangleType.None)
                     ClearRectangle();
             }
         }
@@ -372,4 +392,10 @@ namespace Editor
     }
 
 
+    enum DrawRectangleType
+    {
+        None,
+        Drag,
+        ShiftDrag
+    }
 }

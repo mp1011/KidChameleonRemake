@@ -10,6 +10,11 @@ namespace KidC
     {
         protected override World CreateNewObject(GameContext ctx)
         {
+            var stats = new PlayerMotionStats();
+            var text = Serializer.ToJSON<PlayerMotionStats>(stats);
+            System.IO.File.WriteAllText(new GamePath(PathType.Stats, "test").FullPath, text);
+
+
             var world = new World(ctx);
             var map = GameResource<Map>.Load(new GamePath(PathType.Maps, "test2"), ctx);
 

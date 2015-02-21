@@ -1,0 +1,18 @@
+{
+	"WalkSpeed" : 2.0,
+	"WalkAccel" : 0.1,
+	"RunSpeed" : 2.5,
+	"RunAccel" : 0.1,
+	"StopAccel" : 0.1,
+	"AirDecel" : 0.1,
+	"TurnAccel" : 0.1,
+	"CrawlSpeed" : 0.5,
+	"CrawlAccel" : 0.1,
+	"CrawlDecel" : 0.1,
+	"UpHillSpeedMod" : 0.1,
+	"DownHillSpeedMod" : 0.1,
+	"JumpSpeed" : 4.2,
+	"RunJumpSpeedMod" : 0.1,
+	"LongJumpDuration" : 12,
+	"ShortJumpDuration" : 6
+}

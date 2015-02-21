@@ -60,8 +60,8 @@ namespace Editor.Forms
             pnlMap.ImagePanel.MouseAction += new ImagePanel.MouseActionEventHandler(Map_MouseAction);
             pnlMap.SelectionGrid.SelectionChanged += new EventHandler(SelectionGrid_SelectionChanged);
 
-            cboObjectType.DataSource = this.PlaceableObjectTypes;
-        
+            cboObject.DataSource = this.PlaceableObjectTypes;
+         
             try
             {
                 var lastMap = System.IO.File.ReadAllText("lastmap");
@@ -73,7 +73,9 @@ namespace Editor.Forms
 
             }
         }
-  
+
+     
+
         private MapInfo MapInfo
         {
             get
@@ -85,6 +87,8 @@ namespace Editor.Forms
             }
         }
 
+
+    
         private OverlayRectangle mCursor;
 
 
@@ -201,8 +205,7 @@ namespace Editor.Forms
         {
             None = 0,
             Select = 1,
-            Draw = 2,
-            PlaceObject = 3
+            Draw = 2
         }
 
         private EditorAction mCurrentAction;
@@ -210,9 +213,7 @@ namespace Editor.Forms
         {
             get
             {
-                if (tabMain.SelectedTab == pgeObjects)
-                    return EditorAction.PlaceObject;
-                else if (chkDraw.Checked)
+                if (chkDraw.Checked)
                     return EditorAction.Draw;
                 else if (chkSelect.Checked)
                     return EditorAction.Select;
@@ -271,7 +272,6 @@ namespace Editor.Forms
             {
                 case EditorAction.Draw: DrawTile(gridPoint, e); break;
                 case EditorAction.Select: SelectTile(gridPoint, e); break;
-                case EditorAction.PlaceObject: HandleObjectMouseClick(gridPoint, e); break;
             }
           
             if (e.Buttons != System.Windows.Forms.MouseButtons.None || !originalCursorPos.Equals(mCursor.Area.TopLeft.ImagePoint))
@@ -481,15 +481,15 @@ namespace Editor.Forms
         #region Objects
 
         private ObjectType[] mPlaceableObjectTypes;
-        private ObjectType[] PlaceableObjectTypes
+        private ObjectType[]  PlaceableObjectTypes
         {
-            get
+            get 
             {
-                if (mPlaceableObjectTypes != null)
+                if(mPlaceableObjectTypes != null)
                     return mPlaceableObjectTypes;
 
-                mPlaceableObjectTypes = ReflectionHelper.GetAssembly(Program.EditorGame).GetTypesByAttribute<EditorVisibleAttribute>().SelectMany(p =>
-                    p.GetPropertiesByAttribute<EditorVisibleAttribute>().Select(k => (ObjectType)k.GetValue(null, null))).ToArray();
+                  mPlaceableObjectTypes = ReflectionHelper.GetAssembly(Program.EditorGame).GetTypesByAttribute<EditorVisibleAttribute>().SelectMany(p=>
+                      p.GetPropertiesByAttribute<EditorVisibleAttribute>().Select(k=> (ObjectType)k.GetValue(null,null))).ToArray();
 
                 return mPlaceableObjectTypes;
             }
@@ -527,9 +527,9 @@ namespace Editor.Forms
 
         private ObjectType SelectedObjectType
         {
-            get { return (ObjectType)cboObjectType.SelectedValue; }
+            get { return (ObjectType)cboObject.SelectedValue; }
         }
-
+        
         private void cboObject_SelectedIndexChanged(object sender, EventArgs e)
         {
             pbObjectPreview.Image = GetObjectTypeImage(SelectedObjectType);
@@ -547,46 +547,12 @@ namespace Editor.Forms
         {
             get
             {
-                return (pgObject.SelectedObject as ObjectEntry) ?? UpdateObjectEntry(this.SelectedObjectType);
+               return (pgObject.SelectedObject as ObjectEntry) ?? UpdateObjectEntry(this.SelectedObjectType);
             }
             set
             {
                 pgObject.SelectedObject = value;
             }
-        }
-
-        private void HandleObjectMouseClick(EditorGridPoint pt, ImageEventArgs args)
-        {
-            var objectUnderCursor = GetObjectFromPoint(args.Point.ImagePoint);
-
-            if (args.Buttons == System.Windows.Forms.MouseButtons.Right)
-                RemoveObject(objectUnderCursor);
-            else if (args.Buttons == System.Windows.Forms.MouseButtons.Left)
-            {
-                if (objectUnderCursor == null)
-                    PlaceObject(pt.ImagePoint);
-                else
-                {
-                    //update selected
-                }
-            }
-
-        }
-
-        private ObjectEntry GetObjectFromPoint(RGPointI point)
-        {
-            throw new NotImplementedException();
-
-        }
-
-        private void RemoveObject(ObjectEntry obj)
-        {
-            throw new NotImplementedException();
-        }
-
-        private void PlaceObject(RGPointI point)
-        {
-            throw new NotImplementedException();
         }
 
         #endregion

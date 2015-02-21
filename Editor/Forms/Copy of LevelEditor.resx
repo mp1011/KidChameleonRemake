@@ -171,25 +171,250 @@
   <data name="pnlLeftRight.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 24</value>
   </data>
-  <data name="pnlMap.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="pnlMapContainer.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="pnlMapContainer.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 0</value>
   </data>
-  <data name="pnlMap.Size" type="System.Drawing.Size, System.Drawing">
-    <value>607, 565</value>
+  <data name="pnlMapContainer.Size" type="System.Drawing.Size, System.Drawing">
+    <value>483, 589</value>
   </data>
-  <data name="pnlMap.TabIndex" type="System.Int32, mscorlib">
+  <data name="pnlMapContainer.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="&gt;&gt;pnlMap.Name" xml:space="preserve">
-    <value>pnlMap</value>
-  </data>
-  <data name="&gt;&gt;pnlMap.Type" xml:space="preserve">
-    <value>Editor.TilePanelUserControl, Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;pnlMap.Parent" xml:space="preserve">
+  <data name="&gt;&gt;pnlMapContainer.Name" xml:space="preserve">
     <value>pnlMapContainer</value>
   </data>
-  <data name="&gt;&gt;pnlMap.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;pnlMapContainer.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlMapContainer.Parent" xml:space="preserve">
+    <value>pnlLeftRight.Panel1</value>
+  </data>
+  <data name="&gt;&gt;pnlMapContainer.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel1.Name" xml:space="preserve">
+    <value>pnlLeftRight.Panel1</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel1.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel1.Parent" xml:space="preserve">
+    <value>pnlLeftRight</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel1.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="mapProperties.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="mapProperties.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 53</value>
+  </data>
+  <data name="mapProperties.Size" type="System.Drawing.Size, System.Drawing">
+    <value>495, 507</value>
+  </data>
+  <data name="mapProperties.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;mapProperties.Name" xml:space="preserve">
+    <value>mapProperties</value>
+  </data>
+  <data name="&gt;&gt;mapProperties.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PropertyGrid, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;mapProperties.Parent" xml:space="preserve">
+    <value>pgeMap</value>
+  </data>
+  <data name="&gt;&gt;mapProperties.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="btnApplyMapInfo.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnApplyMapInfo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 8</value>
+  </data>
+  <data name="btnApplyMapInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>74, 27</value>
+  </data>
+  <data name="btnApplyMapInfo.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="btnApplyMapInfo.Text" xml:space="preserve">
+    <value>Apply</value>
+  </data>
+  <data name="&gt;&gt;btnApplyMapInfo.Name" xml:space="preserve">
+    <value>btnApplyMapInfo</value>
+  </data>
+  <data name="&gt;&gt;btnApplyMapInfo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnApplyMapInfo.Parent" xml:space="preserve">
+    <value>pnlMapInfo</value>
+  </data>
+  <data name="&gt;&gt;btnApplyMapInfo.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="pnlMapInfo.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="pnlMapInfo.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 3</value>
+  </data>
+  <data name="pnlMapInfo.Size" type="System.Drawing.Size, System.Drawing">
+    <value>495, 50</value>
+  </data>
+  <data name="pnlMapInfo.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;pnlMapInfo.Name" xml:space="preserve">
+    <value>pnlMapInfo</value>
+  </data>
+  <data name="&gt;&gt;pnlMapInfo.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlMapInfo.Parent" xml:space="preserve">
+    <value>pgeMap</value>
+  </data>
+  <data name="&gt;&gt;pnlMapInfo.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="pgeMap.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 22</value>
+  </data>
+  <data name="pgeMap.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="pgeMap.Size" type="System.Drawing.Size, System.Drawing">
+    <value>501, 563</value>
+  </data>
+  <data name="pgeMap.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
+  </data>
+  <data name="pgeMap.Text" xml:space="preserve">
+    <value>Map Properties</value>
+  </data>
+  <data name="&gt;&gt;pgeMap.Name" xml:space="preserve">
+    <value>pgeMap</value>
+  </data>
+  <data name="&gt;&gt;pgeMap.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pgeMap.Parent" xml:space="preserve">
+    <value>tabMain</value>
+  </data>
+  <data name="&gt;&gt;pgeMap.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="pgeTiles.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 22</value>
+  </data>
+  <data name="pgeTiles.Padding" type="System.Windows.Forms.Padding, System.Windows.Forms">
+    <value>3, 3, 3, 3</value>
+  </data>
+  <data name="pgeTiles.Size" type="System.Drawing.Size, System.Drawing">
+    <value>501, 563</value>
+  </data>
+  <data name="pgeTiles.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="pgeTiles.Text" xml:space="preserve">
+    <value>Tiles</value>
+  </data>
+  <data name="&gt;&gt;pgeTiles.Name" xml:space="preserve">
+    <value>pgeTiles</value>
+  </data>
+  <data name="&gt;&gt;pgeTiles.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pgeTiles.Parent" xml:space="preserve">
+    <value>tabMain</value>
+  </data>
+  <data name="&gt;&gt;pgeTiles.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="pgeObjects.Location" type="System.Drawing.Point, System.Drawing">
+    <value>4, 22</value>
+  </data>
+  <data name="pgeObjects.Size" type="System.Drawing.Size, System.Drawing">
+    <value>501, 563</value>
+  </data>
+  <data name="pgeObjects.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="pgeObjects.Text" xml:space="preserve">
+    <value>Objects</value>
+  </data>
+  <data name="&gt;&gt;pgeObjects.Name" xml:space="preserve">
+    <value>pgeObjects</value>
+  </data>
+  <data name="&gt;&gt;pgeObjects.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pgeObjects.Parent" xml:space="preserve">
+    <value>tabMain</value>
+  </data>
+  <data name="&gt;&gt;pgeObjects.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="tabMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
+  <data name="tabMain.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="tabMain.Size" type="System.Drawing.Size, System.Drawing">
+    <value>509, 589</value>
+  </data>
+  <data name="tabMain.TabIndex" type="System.Int32, mscorlib">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;tabMain.Name" xml:space="preserve">
+    <value>tabMain</value>
+  </data>
+  <data name="&gt;&gt;tabMain.Type" xml:space="preserve">
+    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;tabMain.Parent" xml:space="preserve">
+    <value>pnlLeftRight.Panel2</value>
+  </data>
+  <data name="&gt;&gt;tabMain.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel2.Name" xml:space="preserve">
+    <value>pnlLeftRight.Panel2</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel2.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel2.Parent" xml:space="preserve">
+    <value>pnlLeftRight</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Panel2.ZOrder" xml:space="preserve">
+    <value>1</value>
+  </data>
+  <data name="pnlLeftRight.Size" type="System.Drawing.Size, System.Drawing">
+    <value>996, 589</value>
+  </data>
+  <data name="pnlLeftRight.SplitterDistance" type="System.Int32, mscorlib">
+    <value>483</value>
+  </data>
+  <data name="pnlLeftRight.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Name" xml:space="preserve">
+    <value>pnlLeftRight</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Type" xml:space="preserve">
+    <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.Parent" xml:space="preserve">
+    <value>$this</value>
+  </data>
+  <data name="&gt;&gt;pnlLeftRight.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="btnRandomize.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
@@ -360,171 +585,6 @@
   <data name="&gt;&gt;pnlTop.Type" xml:space="preserve">
     <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;pnlTop.Parent" xml:space="preserve">
-    <value>pnlMapContainer</value>
-  </data>
-  <data name="&gt;&gt;pnlTop.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="pnlMapContainer.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="pnlMapContainer.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="pnlMapContainer.Size" type="System.Drawing.Size, System.Drawing">
-    <value>483, 589</value>
-  </data>
-  <data name="pnlMapContainer.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pnlMapContainer.Name" xml:space="preserve">
-    <value>pnlMapContainer</value>
-  </data>
-  <data name="&gt;&gt;pnlMapContainer.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlMapContainer.Parent" xml:space="preserve">
-    <value>pnlLeftRight.Panel1</value>
-  </data>
-  <data name="&gt;&gt;pnlMapContainer.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel1.Name" xml:space="preserve">
-    <value>pnlLeftRight.Panel1</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel1.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel1.Parent" xml:space="preserve">
-    <value>pnlLeftRight</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel1.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="mapProperties.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="mapProperties.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 50</value>
-  </data>
-  <data name="mapProperties.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 513</value>
-  </data>
-  <data name="mapProperties.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;mapProperties.Name" xml:space="preserve">
-    <value>mapProperties</value>
-  </data>
-  <data name="&gt;&gt;mapProperties.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PropertyGrid, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;mapProperties.Parent" xml:space="preserve">
-    <value>pgeMap</value>
-  </data>
-  <data name="&gt;&gt;mapProperties.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="btnApplyMapInfo.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="btnApplyMapInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 8</value>
-  </data>
-  <data name="btnApplyMapInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>74, 27</value>
-  </data>
-  <data name="btnApplyMapInfo.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="btnApplyMapInfo.Text" xml:space="preserve">
-    <value>Apply</value>
-  </data>
-  <data name="&gt;&gt;btnApplyMapInfo.Name" xml:space="preserve">
-    <value>btnApplyMapInfo</value>
-  </data>
-  <data name="&gt;&gt;btnApplyMapInfo.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;btnApplyMapInfo.Parent" xml:space="preserve">
-    <value>pnlMapInfo</value>
-  </data>
-  <data name="&gt;&gt;btnApplyMapInfo.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="pnlMapInfo.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Top</value>
-  </data>
-  <data name="pnlMapInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="pnlMapInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 50</value>
-  </data>
-  <data name="pnlMapInfo.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="&gt;&gt;pnlMapInfo.Name" xml:space="preserve">
-    <value>pnlMapInfo</value>
-  </data>
-  <data name="&gt;&gt;pnlMapInfo.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlMapInfo.Parent" xml:space="preserve">
-    <value>pgeMap</value>
-  </data>
-  <data name="&gt;&gt;pnlMapInfo.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="pgeMap.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 22</value>
-  </data>
-  <data name="pgeMap.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 563</value>
-  </data>
-  <data name="pgeMap.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="pgeMap.Text" xml:space="preserve">
-    <value>Map</value>
-  </data>
-  <data name="&gt;&gt;pgeMap.Name" xml:space="preserve">
-    <value>pgeMap</value>
-  </data>
-  <data name="&gt;&gt;pgeMap.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pgeMap.Parent" xml:space="preserve">
-    <value>tabMain</value>
-  </data>
-  <data name="&gt;&gt;pgeMap.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="pnlTileset.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="pnlTileset.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 218</value>
-  </data>
-  <data name="pnlTileset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 345</value>
-  </data>
-  <data name="pnlTileset.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pnlTileset.Name" xml:space="preserve">
-    <value>pnlTileset</value>
-  </data>
-  <data name="&gt;&gt;pnlTileset.Type" xml:space="preserve">
-    <value>Editor.TilePanelUserControl, Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</value>
-  </data>
-  <data name="&gt;&gt;pnlTileset.Parent" xml:space="preserve">
-    <value>pgeTiles</value>
-  </data>
-  <data name="&gt;&gt;pnlTileset.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="propSpecialTile.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Fill</value>
   </data>
@@ -532,7 +592,7 @@
     <value>153, 0</value>
   </data>
   <data name="propSpecialTile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>348, 218</value>
+    <value>342, 218</value>
   </data>
   <data name="propSpecialTile.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -577,10 +637,10 @@
     <value>Top</value>
   </data>
   <data name="panel1.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+    <value>3, 3</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 218</value>
+    <value>495, 218</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -591,62 +651,11 @@
   <data name="&gt;&gt;panel1.Type" xml:space="preserve">
     <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;panel1.Parent" xml:space="preserve">
-    <value>pgeTiles</value>
-  </data>
-  <data name="&gt;&gt;panel1.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="pgeTiles.Location" type="System.Drawing.Point, System.Drawing">
-    <value>4, 22</value>
-  </data>
-  <data name="pgeTiles.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 563</value>
-  </data>
-  <data name="pgeTiles.TabIndex" type="System.Int32, mscorlib">
-    <value>1</value>
-  </data>
-  <data name="pgeTiles.Text" xml:space="preserve">
-    <value>Tiles</value>
-  </data>
-  <data name="&gt;&gt;pgeTiles.Name" xml:space="preserve">
-    <value>pgeTiles</value>
-  </data>
-  <data name="&gt;&gt;pgeTiles.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pgeTiles.Parent" xml:space="preserve">
-    <value>tabMain</value>
-  </data>
-  <data name="&gt;&gt;pgeTiles.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="pgObject.Location" type="System.Drawing.Point, System.Drawing">
-    <value>15, 66</value>
-  </data>
-  <data name="pgObject.Size" type="System.Drawing.Size, System.Drawing">
-    <value>274, 397</value>
-  </data>
-  <data name="pgObject.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="&gt;&gt;pgObject.Name" xml:space="preserve">
-    <value>pgObject</value>
-  </data>
-  <data name="&gt;&gt;pgObject.Type" xml:space="preserve">
-    <value>System.Windows.Forms.PropertyGrid, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pgObject.Parent" xml:space="preserve">
-    <value>pgeObjects</value>
-  </data>
-  <data name="&gt;&gt;pgObject.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
   <data name="pbObjectPreview.Location" type="System.Drawing.Point, System.Drawing">
-    <value>306, 19</value>
+    <value>0, 0</value>
   </data>
   <data name="pbObjectPreview.Size" type="System.Drawing.Size, System.Drawing">
-    <value>187, 170</value>
+    <value>176, 164</value>
   </data>
   <data name="pbObjectPreview.TabIndex" type="System.Int32, mscorlib">
     <value>1</value>
@@ -658,112 +667,76 @@
     <value>System.Windows.Forms.PictureBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;pbObjectPreview.Parent" xml:space="preserve">
-    <value>pgeObjects</value>
+    <value>tabPage3</value>
   </data>
   <data name="&gt;&gt;pbObjectPreview.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="cboObjectType.Location" type="System.Drawing.Point, System.Drawing">
-    <value>15, 19</value>
+  <data name="cboObject.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Left, Right</value>
   </data>
-  <data name="cboObjectType.Size" type="System.Drawing.Size, System.Drawing">
-    <value>275, 21</value>
+  <data name="cboObject.Location" type="System.Drawing.Point, System.Drawing">
+    <value>14, 19</value>
   </data>
-  <data name="cboObjectType.TabIndex" type="System.Int32, mscorlib">
+  <data name="cboObject.Size" type="System.Drawing.Size, System.Drawing">
+    <value>297, 21</value>
+  </data>
+  <data name="cboObject.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
   </data>
-  <data name="&gt;&gt;cboObjectType.Name" xml:space="preserve">
-    <value>cboObjectType</value>
+  <data name="&gt;&gt;cboObject.Name" xml:space="preserve">
+    <value>cboObject</value>
   </data>
-  <data name="&gt;&gt;cboObjectType.Type" xml:space="preserve">
+  <data name="&gt;&gt;cboObject.Type" xml:space="preserve">
     <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="&gt;&gt;cboObjectType.Parent" xml:space="preserve">
-    <value>pgeObjects</value>
+  <data name="&gt;&gt;cboObject.Parent" xml:space="preserve">
+    <value>tabPage3</value>
   </data>
-  <data name="&gt;&gt;cboObjectType.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;cboObject.ZOrder" xml:space="preserve">
     <value>2</value>
   </data>
-  <data name="pgeObjects.Location" type="System.Drawing.Point, System.Drawing">
+  <data name="pgObject.Anchor" type="System.Windows.Forms.AnchorStyles, System.Windows.Forms">
+    <value>Top, Bottom, Left, Right</value>
+  </data>
+  <data name="pgObject.Location" type="System.Drawing.Point, System.Drawing">
+    <value>14, 46</value>
+  </data>
+  <data name="pgObject.Size" type="System.Drawing.Size, System.Drawing">
+    <value>297, 494</value>
+  </data>
+  <data name="pgObject.TabIndex" type="System.Int32, mscorlib">
+    <value>2</value>
+  </data>
+  <data name="&gt;&gt;pgObject.Name" xml:space="preserve">
+    <value>pgObject</value>
+  </data>
+  <data name="&gt;&gt;pgObject.Type" xml:space="preserve">
+    <value>System.Windows.Forms.PropertyGrid, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pgObject.Parent" xml:space="preserve">
+    <value>tabPage3</value>
+  </data>
+  <data name="&gt;&gt;pgObject.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="tabPage3.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 22</value>
   </data>
-  <data name="pgeObjects.Size" type="System.Drawing.Size, System.Drawing">
+  <data name="tabPage3.Size" type="System.Drawing.Size, System.Drawing">
     <value>501, 563</value>
   </data>
-  <data name="pgeObjects.TabIndex" type="System.Int32, mscorlib">
+  <data name="tabPage3.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
   </data>
-  <data name="pgeObjects.Text" xml:space="preserve">
+  <data name="tabPage3.Text" xml:space="preserve">
     <value>Objects</value>
   </data>
-  <data name="&gt;&gt;pgeObjects.Name" xml:space="preserve">
-    <value>pgeObjects</value>
+  <data name="&gt;&gt;tabPage3.Name" xml:space="preserve">
+    <value>tabPage3</value>
   </data>
-  <data name="&gt;&gt;pgeObjects.Type" xml:space="preserve">
+  <data name="&gt;&gt;tabPage3.Type" xml:space="preserve">
     <value>System.Windows.Forms.TabPage, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pgeObjects.Parent" xml:space="preserve">
-    <value>tabMain</value>
-  </data>
-  <data name="&gt;&gt;pgeObjects.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="tabMain.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Fill</value>
-  </data>
-  <data name="tabMain.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
-  </data>
-  <data name="tabMain.Size" type="System.Drawing.Size, System.Drawing">
-    <value>509, 589</value>
-  </data>
-  <data name="tabMain.TabIndex" type="System.Int32, mscorlib">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;tabMain.Name" xml:space="preserve">
-    <value>tabMain</value>
-  </data>
-  <data name="&gt;&gt;tabMain.Type" xml:space="preserve">
-    <value>System.Windows.Forms.TabControl, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;tabMain.Parent" xml:space="preserve">
-    <value>pnlLeftRight.Panel2</value>
-  </data>
-  <data name="&gt;&gt;tabMain.ZOrder" xml:space="preserve">
-    <value>0</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel2.Name" xml:space="preserve">
-    <value>pnlLeftRight.Panel2</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel2.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitterPanel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel2.Parent" xml:space="preserve">
-    <value>pnlLeftRight</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Panel2.ZOrder" xml:space="preserve">
-    <value>1</value>
-  </data>
-  <data name="pnlLeftRight.Size" type="System.Drawing.Size, System.Drawing">
-    <value>996, 589</value>
-  </data>
-  <data name="pnlLeftRight.SplitterDistance" type="System.Int32, mscorlib">
-    <value>483</value>
-  </data>
-  <data name="pnlLeftRight.TabIndex" type="System.Int32, mscorlib">
-    <value>5</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Name" xml:space="preserve">
-    <value>pnlLeftRight</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Type" xml:space="preserve">
-    <value>System.Windows.Forms.SplitContainer, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.Parent" xml:space="preserve">
-    <value>$this</value>
-  </data>
-  <data name="&gt;&gt;pnlLeftRight.ZOrder" xml:space="preserve">
-    <value>0</value>
   </data>
   <metadata name="$this.Localizable" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
     <value>True</value>

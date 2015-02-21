@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Drawing;
 using Engine;
+using System.Windows.Forms;
 
 namespace Editor
 {
@@ -112,6 +113,9 @@ namespace Editor
 
     class SelectionGrid<T> : IDrawable
     {
+
+        public SelectionMode SelectionMode { get; set; }
+
         public EditorGridPoint TopLeft { get; private set; }
         public EditorGridPoint BottomRight { get; private set; }
         public bool ShowGridLines { get; set; }
@@ -174,22 +178,65 @@ namespace Editor
                 }
             }
 
-            var cell1 = this.TopLeft;
-            var cell2 = this.TopLeft.OffsetGrid(1, 1);
-            var cellWidth = cell2.ClientPoint.X - cell1.ClientPoint.X;
-            var cellHeight = cell2.ClientPoint.Y - cell1.ClientPoint.Y;
-
-            cell2.RecalcClientPoint();
-
             for (int y = 0; y < GridSize.Height; y++)
                 for (int x = 0; x < GridSize.Width; x++)
                 {
                     if (mSelected[x, y])
-                        g.FillRectangle(fillBrush, new Rectangle(cell1.ClientPoint.X + (x * cellWidth), cell1.ClientPoint.Y + (y * cellHeight), cellWidth, cellHeight));
+                    {
+                        var cell = this.TopLeft.OffsetGrid(x, y);
+                        var cell2 = cell.OffsetGrid(1,1);
+                        g.FillRectangle(fillBrush, new Rectangle(cell.ClientPoint.X, cell.ClientPoint.Y, cell2.ClientPoint.X - cell.ClientPoint.X, cell2.ClientPoint.Y - cell.ClientPoint.Y));
+                    }
                 }
 
         }
 
+
+
+        private List<ImageEventArgs> mMouseEvents = new List<ImageEventArgs>();
+
+        public void HandleMouseAction(ImageEventArgs args)
+        {
+            if (SelectionMode == Editor.SelectionMode.None)
+                return;
+
+            var gridPoint = (args.Point as EditorGridPoint);
+            bool isFirstClick = args.Buttons == MouseButtons.Left && !mMouseEvents.Any(p => p.Buttons == MouseButtons.Left);
+            mMouseEvents.Add(args);
+
+            bool isSingleCellClick = mMouseEvents.All(p => p.Point.Equals(mMouseEvents.First().Point));
+
+            if (SelectionMode == Editor.SelectionMode.Single || (isFirstClick && Control.ModifierKeys != Keys.Shift))
+                this.ClearSelection();
+
+            if (args.Action == MouseActionType.Click)            
+                mMouseEvents.Clear();
+
+            if (args.Buttons == MouseButtons.Left)            
+                this.SetSelection(gridPoint, true);
+            else if (args.Buttons == MouseButtons.Right)
+            {
+                this.SetSelection(gridPoint, false);
+                mMouseEvents.Clear();
+            }
+            else if (args.Buttons == MouseButtons.None)
+                mMouseEvents.Clear();
+
+            if (args.Action == MouseActionType.RectangleSelection)
+            {
+                var rectangleEventArgs = args as DrawRectangleEventArgs;
+                
+                if (rectangleEventArgs != null)
+                {
+                    var topLeft = (rectangleEventArgs.Point as EditorGridPoint).GridPoint;
+                    var bottomRight = (rectangleEventArgs.Point2 as EditorGridPoint).GridPoint;
+
+                    for(int x = topLeft.X; x <= bottomRight.X;x++)
+                        for (int y = topLeft.Y; y <= bottomRight.Y; y++)                        
+                            SetSelection(x, y, true);                        
+                }
+            }
+        }
 
         public void ClearSelection()
         {
@@ -214,8 +261,13 @@ namespace Editor
         public void SetSelection(EditorGridPoint point, bool selected)
         {
             var pt = point.GridPoint;
-            if (mSelected.ContainsIndex(pt.X, pt.Y))
-                mSelected[pt.X, pt.Y] = selected;
+            SetSelection(pt.X, pt.Y, selected);
+        }
+
+        public void SetSelection(int x, int y, bool selected)
+        {
+            if (mSelected.ContainsIndex(x, y))
+                mSelected[x,y] = selected;
 
             if (SelectionChanged != null)
                 SelectionChanged(this, new EventArgs());

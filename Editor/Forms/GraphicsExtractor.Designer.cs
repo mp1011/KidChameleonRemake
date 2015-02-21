@@ -460,7 +460,7 @@
             this.pnlImage.DisplayOrigin = null;
             this.pnlImage.DisplayPortionOnly = false;
             this.pnlImage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlImage.DrawRectangle = false;
+            this.pnlImage.DrawRectangle = DrawRectangleType.None;
             this.pnlImage.EnableSelector = false;
             this.pnlImage.Image = null;
             this.pnlImage.Location = new System.Drawing.Point(0, 149);

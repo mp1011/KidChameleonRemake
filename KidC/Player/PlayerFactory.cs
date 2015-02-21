@@ -70,10 +70,12 @@ namespace KidC
         private static Sprite CreateIronKnight(GameContext ctx, Layer layer)
         {
             var player = CreatePlayer(ctx, layer, KCObjectType.IronKnight,4,false);
- 
-            var platformCtl = player.AddBehavior(new IronKnightController(player, ctx.FirstPlayer));
+
+            var platformCtl = player.AddBehavior(new PlatformerPlayerController(player, ctx.FirstPlayer));
             player.AddBehavior(new IronKnightClimbController(player, ctx.FirstPlayer, platformCtl));
-        
+
+            player.AddBehavior(new IronKnightBrickBreakerController(player));
+
             var spriteSheet = GameResource<SpriteSheet>.Load(new GamePath(PathType.SpriteSheets, "ironknight"), ctx);
             player.AddAnimation(KCAnimation.Stand, new Animation(spriteSheet, Direction.Left, 0));
             player.AddAnimation(KCAnimation.Walk, new Animation(spriteSheet, Direction.Left, 1, 2, 3, 4, 5, 6)).SetFrameDuration(6);
@@ -101,7 +103,7 @@ namespace KidC
         private static Sprite CreateRedStealth(GameContext ctx, Layer layer)
         {
             var player = CreatePlayer(ctx, layer, KCObjectType.RedStealth,3,true);
-            var platformCtl = player.AddBehavior(new RedStealthController(player, ctx.FirstPlayer));
+            var platformCtl = player.AddBehavior(new PlatformerPlayerController(player, ctx.FirstPlayer));
      
             player.AddBehavior(new RedStealthSwordController(player, platformCtl));
 

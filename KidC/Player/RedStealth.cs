@@ -6,35 +6,13 @@ using Engine;
 
 namespace KidC
 {
-    class RedStealthController : PlatformerPlayerController
-    {
-        public RedStealthController(Sprite s, Player player)
-            : base(s, player)
-        {
-            this.WalkSpeed = 1.8f;
-            this.WalkAccel = .1f;
-            this.StopAccel = 0.3f;
-
-            this.CrawlSpeed = 1.0f;
-            this.CrawlAccel = .01f;
-            this.CrawlDecel = .1f;
-
-           // this.JumpVaryDuration = 20;
-            this.JumpSpeed = 3.0f;
-
-            this.CanClimbSlopes = false;
-            this.DownHillSpeedMod = 0;
-
-        }
-    }
-
     class RedStealthSwordController : SpriteBehavior 
     {
-        private RedStealthController mPlatformCtl;
+        private PlatformerPlayerController mPlatformCtl;
         private TileLayer mLayer;
         private bool mNoAirSword = false;
 
-        public RedStealthSwordController(Sprite s, RedStealthController platformCtl)
+        public RedStealthSwordController(Sprite s, PlatformerPlayerController platformCtl)
             : base(s)
         {
             mPlatformCtl = platformCtl;

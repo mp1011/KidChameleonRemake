@@ -9,7 +9,7 @@ namespace Editor
 {
     static class Program
     {
-        public static EditorGame EditorGame { get; private set; }
+        public static GameBase EditorGame { get; private set; }
         public static GameContext EditorContext { get; private set; }
 
         /// <summary>
@@ -18,35 +18,15 @@ namespace Editor
         [STAThread]
         static void Main()
         {
-            Program.EditorGame = new EditorGame();
-            Program.EditorContext = Program.EditorGame.GameContextCreate(new EditorEngine(), Program.EditorGame);
-    
+            var engine = new EditorEngine();
+            Program.EditorGame = new KidC.KidCGame();
+            Program.EditorContext = Program.EditorGame.GameContextCreate(engine, Program.EditorGame);
+
+            engine.Run(EditorGame);
+
             Application.EnableVisualStyles();
             Application.SetCompatibleTextRenderingDefault(false);
             Application.Run(new Editor.Forms.Main());
-        }
-    }
-
-    public class EditorGame : GameBase    {
-
-        public override ObjectTypeRelations Relations
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override Func<TileInstance> TileInstanceCreate
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public override Func<EngineBase, GameBase, GameContext> GameContextCreate
-        {
-            get { return (e, g) => new EditorContext(e, g); }
-        }
-
-        public override GameResource<World> StartingWorld
-        {
-            get { throw new NotImplementedException(); }
         }
     }
 
@@ -59,17 +39,17 @@ namespace Editor
 
         protected override RGSizeI SetWindowSize(RGSizeI desiredWindowSize)
         {
-            throw new NotImplementedException();
+            return desiredWindowSize;
         }
 
         protected override RGSizeI SetGameSize(RGSizeI desiredGameSize)
         {
-            throw new NotImplementedException();
+            return desiredGameSize;
         }
 
         protected override RGRectangleI WindowLocation
         {
-            get { throw new NotImplementedException(); }
+            get { return RGRectangleI.Empty; }
         }
 
         protected override Engine.Graphics.Painter CreatePainter()
@@ -79,7 +59,7 @@ namespace Editor
 
         public override IGameInputDevice CreateInputDevice(GameContext context)
         {
-            throw new NotImplementedException();
+            return new NullInputDevice();
         }
 
         public override ISoundManager SoundManager
@@ -89,7 +69,6 @@ namespace Editor
 
         protected override void StartGame()
         {
-            throw new NotImplementedException();
         }
     }
 

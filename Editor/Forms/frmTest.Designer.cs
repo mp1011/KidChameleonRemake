@@ -48,7 +48,7 @@
             this.bitmapPortionPanelUserControl1.DisplayOrigin = null;
             this.bitmapPortionPanelUserControl1.DisplayPortionOnly = false;
             this.bitmapPortionPanelUserControl1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.bitmapPortionPanelUserControl1.DrawRectangle = false;
+            this.bitmapPortionPanelUserControl1.DrawRectangle = DrawRectangleType.None;
             this.bitmapPortionPanelUserControl1.EnableSelector = false;
             this.bitmapPortionPanelUserControl1.Image = null;
             this.bitmapPortionPanelUserControl1.Location = new System.Drawing.Point(0, 0);

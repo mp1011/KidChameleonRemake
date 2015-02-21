@@ -1,8 +1,8 @@
-﻿create a system where values can be read from a file and updated on the fly
+﻿instead of saving maps - must save levels
+game specific
+	for kidc
+		map 
+		list of object entries
+		theme (controls other layers)
+		custom properties like par time
 
-turning in midair should "brake"
-uphill and autodownhill faster and same speed
-faster brake when turning
-no brake in air otherwise
-
-samurai - when turning shows standing animation for one frame

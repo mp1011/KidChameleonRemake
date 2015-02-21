@@ -15,7 +15,7 @@ namespace Editor
 
         private SelectionGrid<TileInstance> mSelectionGrid = new SelectionGrid<TileInstance>();
 
-        public SelectionMode SelectionMode { get; set; }
+        public SelectionMode SelectionMode { get { return mSelectionGrid.SelectionMode; } set { mSelectionGrid.SelectionMode = value; } }
 
         public Map Map { get; private set; }
 
@@ -24,33 +24,37 @@ namespace Editor
         public SelectionGrid<TileInstance> SelectionGrid { get { return mSelectionGrid; } }
 
         public TilePanel ImagePanel { get; private set; }
-       
+
+        public bool mIsTileset;
+
         public TilePanelUserControl() : base()
         {           
             this.InitializeComponent();
             this.ImagePanel = new TilePanel(this);
 
             this.ImagePanel.MouseAction += new Editor.ImagePanel.MouseActionEventHandler(ImagePanel_ImageClicked);
+            this.Resize += TilePanelUserControl_Resize;
+            this.ImagePanel.DrawRectangle = DrawRectangleType.ShiftDrag;
         }
+
+        void TilePanelUserControl_Resize(object sender, EventArgs e)        
+        {
+            if (this.Map == null)
+                return;
+            else if (mIsTileset)
+                this.SetFromTileset(this.Tileset);
+            else
+                this.SetFromMap(this.Map);
+        }
+
 
         void ImagePanel_ImageClicked(object sender, ImageEventArgs e)
         {
-            if (SelectionMode == Editor.SelectionMode.None)
-                return;
-
-            if (e.Buttons == MouseButtons.Left && e.Action == MouseActionType.Click) 
-            {
-                var gridPoint = e.Point as EditorGridPoint;
-
-                if (SelectionMode == Editor.SelectionMode.Single || Control.ModifierKeys != Keys.Shift)
-                    SelectionGrid.ClearSelection();
-
-                SelectionGrid.ToggleSelection(gridPoint);
-                RefreshImage();
-            }
+            mSelectionGrid.HandleMouseAction(e);
+            this.RefreshImage();
         }
 
-        public void SetMap(Map m)
+        public void SetFromMap(Map m)
         {
             this.Map = m;
             this.ClearOverlay();
@@ -60,9 +64,11 @@ namespace Editor
             this.RefreshImage();
         }
 
-        public void SetTiles(TileSet ts, int tilesPerRow)
+        public void SetFromTileset(TileSet ts)
         {
+            this.mIsTileset = true;
             var tiles = ts.GetTiles().ToArray();
+            int tilesPerRow = DetermineTilesPerRow(ts.GetTiles().Count());
             Map = new Map(Program.EditorContext, new InMemoryResource<TileSet>(ts), tilesPerRow, (int)Math.Ceiling((float)(tiles.Length + 1) / tilesPerRow));
 
             int i = 0;
@@ -77,6 +83,25 @@ namespace Editor
             this.AddOverlayItem(mSelectionGrid);
 
             this.RefreshImage();
+        }
+
+
+        private int DetermineTilesPerRow(int tileCount)
+        {
+            int totalHeight = Int32.MaxValue;
+            int tileSize = 64;
+            int tilesPerRow=8;
+
+            while (totalHeight > this.Height && tileSize > 16)
+            {
+                tilesPerRow = this.Width / tileSize;
+                int numColumns =(int)Math.Ceiling((float)(tileCount + 1) / tilesPerRow);
+                totalHeight = numColumns * tileSize;
+
+                tileSize -= 2;
+            }
+
+            return tilesPerRow;
         }
 
         public IEnumerable<TileInstance> SelectedTiles()

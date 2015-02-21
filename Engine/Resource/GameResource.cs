@@ -40,9 +40,14 @@ namespace Engine
 
         public GameResource() : base(GamePath.Undefined) { }
 
+        protected virtual bool NeedsLoad()
+        {
+            return !mLoaded;
+        }
+
         public T GetObject(GameContext context)
         {
-            if (mLoaded)
+            if (!NeedsLoad())
                 return content;
 
             content = CreateNewObject(context);

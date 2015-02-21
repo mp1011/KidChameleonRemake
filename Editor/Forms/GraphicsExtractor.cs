@@ -138,13 +138,13 @@ namespace Editor.Forms
             set
             {
                 pnlTransparentColor.Tag = null;
-                pnlImage.DrawRectangle = false;
+                pnlImage.DrawRectangle = DrawRectangleType.None;
                 switch (value)
                 {
                     case EditorAction.PickSprite: rdoPickSprite.Checked = true; return;
                     case EditorAction.PickTile: rdoPickTile.Checked = true; return;
                     case EditorAction.PickTransparentColor: pnlTransparentColor.Tag = true; rdoNoAction.Checked = true; return;
-                    case EditorAction.Crop: rdoCrop.Checked = true; pnlImage.DrawRectangle = true; return;
+                    case EditorAction.Crop: rdoCrop.Checked = true; pnlImage.DrawRectangle = DrawRectangleType.Drag; return;
                     case EditorAction.SetOrigin: rdoSetOrigin.Checked = true; return;
                     case EditorAction.SetHitbox: rdoHitbox.Checked = true; return;
                     case EditorAction.SetSecondaryHitbox: rdoHitbox2.Checked = true; return;
@@ -213,9 +213,9 @@ namespace Editor.Forms
             var offsetY = CurrentImage.Origin.Y - regionRec.Top;
             foreach(var img in this.ImagesForAction)            
                 img.SetHitbox(hitboxType, RGRectangleI.FromXYWH(img.Origin.X - offsetX, img.Origin.Y - offsetY, regionRec.Width, regionRec.Height));
-            
-            pnlImage.DrawRectangle = false;
-            pnlImage.DrawRectangle = true;
+
+            pnlImage.DrawRectangle = DrawRectangleType.None;
+            pnlImage.DrawRectangle = DrawRectangleType.Drag;
         }
 
         private void PickTransparentColor(RGPointI pt)
@@ -302,7 +302,7 @@ namespace Editor.Forms
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var loadedItem = FileDialog.ShowOpenDialog(Paths.ScreenshotsPath,"bmp;png", filename => new { Path = System.IO.Path.GetDirectoryName(filename), Image = new BitmapPortion(filename) });
+            var loadedItem = FileDialog.ShowOpenDialog(Paths.ScreenshotsPath,"bmp;png", filename => new { Path = System.IO.Path.GetDirectoryName(filename), Image = new BitmapPortion(filename) }).Data;
             if (loadedItem == null)
                 return;
 
@@ -370,7 +370,7 @@ namespace Editor.Forms
 
         private void OpenSpriteSheet()
         {
-            var sheet = FileDialog.ShowLoad<SpriteSheet>(PathType.SpriteSheets);
+            var sheet = FileDialog.ShowLoad<SpriteSheet>(PathType.SpriteSheets).Data;
             if (sheet == null)
                 return;
                      
@@ -426,7 +426,10 @@ namespace Editor.Forms
 
         private void rdoCrop_CheckedChanged(object sender, EventArgs e)
         {
-            pnlImage.DrawRectangle = rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked;
+            if (rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked)
+                pnlImage.DrawRectangle = DrawRectangleType.Drag;
+            else
+                pnlImage.DrawRectangle = DrawRectangleType.None;
         }
 
         private void chkShowRegion_CheckedChanged(object sender, EventArgs e)
@@ -436,13 +439,19 @@ namespace Editor.Forms
 
         private void rdoHitbox_CheckedChanged(object sender, EventArgs e)
         {
-            pnlImage.DrawRectangle = rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked;
+            if (rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked)
+                pnlImage.DrawRectangle = DrawRectangleType.Drag;
+            else
+                pnlImage.DrawRectangle = DrawRectangleType.None;
             this.ResetOverlay();
         }
 
         private void rdoHitbox2_CheckedChanged(object sender, EventArgs e)
         {
-            pnlImage.DrawRectangle = rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked;
+            if (rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked)
+                pnlImage.DrawRectangle = DrawRectangleType.Drag;
+            else
+                pnlImage.DrawRectangle = DrawRectangleType.None;
             this.ResetOverlay();
         }
 

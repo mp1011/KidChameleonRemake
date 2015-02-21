@@ -7,25 +7,11 @@ using Engine.Collision;
 
 namespace KidC
 {
-    class IronKnightController : PlatformerPlayerController 
+    class IronKnightBrickBreakerController : SpriteBehavior 
     {
-        public IronKnightController(Sprite s, Player player)
-            : base(s,player)
+        public IronKnightBrickBreakerController(Sprite s)
+            : base(s)
         {
-
-            this.WalkSpeed = 1.8f;
-            this.WalkAccel = .1f;
-            this.StopAccel = 0.3f;
-
-            this.CrawlSpeed = 1.0f;
-            this.CrawlAccel = .01f;
-            this.CrawlDecel = .1f;
-
-           //' this.JumpVaryDuration = 20;
-            this.JumpSpeed = 3.0f;
-
-            this.UpHillSpeedMod = -1.5f;
-            this.DownHillSpeedMod = -0.5f;
         }
 
         protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
@@ -37,9 +23,9 @@ namespace KidC
         }
     }
 
-    class IronKnightHitsBrick : Interaction<IronKnightController, IBreakableTile>
+    class IronKnightHitsBrick : Interaction<IronKnightBrickBreakerController, IBreakableTile>
     {
-        protected override void DoAction(IronKnightController controller1, IBreakableTile controller2)
+        protected override void DoAction(IronKnightBrickBreakerController controller1, IBreakableTile controller2)
         {
             var knight = controller1.Sprite;
 

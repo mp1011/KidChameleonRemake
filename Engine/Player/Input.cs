@@ -41,6 +41,70 @@ namespace Engine
         void CancelInput();
     }
 
+    public class NullInputDevice : IGameInputDevice
+    {
+
+        public bool KeyPressed(GameKey key)
+        {
+            return false;
+        }
+
+        public bool KeyReleased(GameKey key)
+        {
+            return false;
+        }
+
+        public bool KeyDown(GameKey key)
+        {
+            return false;
+        }
+
+        public bool KeyUp(GameKey key)
+        {
+            return false;
+        }
+
+        public int GetFirstPressedKey()
+        {
+            return 0;
+        }
+
+        public int GetKeyMapping(GameKey keycode)
+        {
+            return 0;
+        }
+
+        public void SetDirectionKeyMapping(GameKey keycode, int keycommand, Direction inputDirection)
+        {
+        }
+
+        public void SetKeyMapping(GameKey keycode, int keycommand)
+        {
+        }
+
+        public Dictionary<int, GameKey> ButtonMappings
+        {
+            get
+            {
+                return new Dictionary<int, GameKey>();
+            }
+            set
+            {
+                throw new NotImplementedException();
+            }
+        }
+
+        public Direction? InputDirection(Orientation orientation)
+        {
+            throw new NotImplementedException();
+        }
+
+        public void CancelInput()
+        {
+            throw new NotImplementedException();
+        }
+    }
+
     public static class IGameInputDeviceExtensions
     {
         public static bool KeyPressed(this IGameInputDevice device, int button)

@@ -6,7 +6,7 @@ using Engine;
 
 namespace KidC
 {
-    class PlayerStats
+    class PlayerStats 
     {
         public const bool InfiniteHealth=true;
 

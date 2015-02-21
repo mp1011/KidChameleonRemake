@@ -53,7 +53,7 @@
             this.imagePanel.DisplayOrigin = null;
             this.imagePanel.DisplayPortionOnly = true;
             this.imagePanel.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.imagePanel.DrawRectangle = false;
+            this.imagePanel.DrawRectangle = DrawRectangleType.None;
             this.imagePanel.EnableSelector = false;
             this.imagePanel.Image = null;
             this.imagePanel.Location = new System.Drawing.Point(0, 0);

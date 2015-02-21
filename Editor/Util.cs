@@ -10,9 +10,17 @@ using Editor.Forms;
 
 namespace Editor
 {
+    class FileResult<T>
+    {
+        public string Path { get; set; }
+        public string Name { get { return System.IO.Path.GetFileNameWithoutExtension(this.Path); } }
+
+        public T Data { get; set; }
+    }
+
     class FileDialog
     {
-        public static T ShowOpenDialog<T>(string path, string extension, Func<string,T> onFileSelected)
+        public static FileResult<T> ShowOpenDialog<T>(string path, string extension, Func<string, T> onFileSelected)
         {
             try
             {
@@ -23,15 +31,15 @@ namespace Editor
                 ofd.DefaultExt = extensions[0];
                 ofd.Filter = typeof(T).Name + " Files | " + String.Join(";", extensions.Select(ext=> "*." + ext).ToArray());
                 if (ofd.ShowDialog() == DialogResult.OK)
-                    return onFileSelected(ofd.FileName);
-                else                
-                    return default(T);
+                    return new FileResult<T>{ Path = ofd.FileName, Data= onFileSelected(ofd.FileName)};
+                else
+                    return new FileResult<T> { Path = ofd.FileName, Data = default(T) };
                 
             }
             catch (Exception ex)
             {
                 MessageBox.Show(ex.Message, "Error", MessageBoxButtons.OK);
-                return default(T);
+                return new FileResult<T> { Path = "", Data = default(T) };
             }
         }
 
@@ -77,7 +85,7 @@ namespace Editor
                 });
         }
 
-        public static T ShowLoad<T>(PathType path) where T : new()
+        public static FileResult<T> ShowLoad<T>(PathType path) where T : new()
         {
             return FileDialog.ShowOpenDialog(path.GetFolder(),path.GetExtension(), selectedFile => Serializer.FromJson<T>(File.ReadAllText(selectedFile)));
         }

@@ -66,6 +66,7 @@
     <Compile Include="Diagnostic\DebugRectangle.cs" />
     <Compile Include="Diagnostic\DebugTracker.cs" />
     <Compile Include="Core\EngineBase.cs" />
+    <Compile Include="Editor\EditorVisibleAttribute.cs" />
     <Compile Include="Font\Font.cs" />
     <Compile Include="Font\Enums.cs" />
     <Compile Include="Font\Text.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="General\LogicObject.cs" />
     <Compile Include="General\Geometry.cs" />
     <Compile Include="General\ObjectType.cs" />
+    <Compile Include="General\ReflectionHelper.cs" />
     <Compile Include="General\Sound.cs" />
     <Compile Include="General\TimedAction.cs" />
     <Compile Include="General\Util.cs" />
@@ -96,10 +98,12 @@
     <Compile Include="Player\Input.cs" />
     <Compile Include="Player\Mouse.cs" />
     <Compile Include="Player\Player.cs" />
+    <Compile Include="Resource\DevelopmentResource.cs" />
     <Compile Include="Resource\GamePath.cs" />
     <Compile Include="Resource\GameResource.cs" />
     <Compile Include="Serialization\Saving.cs" />
     <Compile Include="SharpDX\Engine.cs" />
+    <Compile Include="Resource\Stats.cs" />
     <Compile Include="World\Layer.cs" />
     <Compile Include="World\Map.cs" />
     <Compile Include="World\Misc.cs" />

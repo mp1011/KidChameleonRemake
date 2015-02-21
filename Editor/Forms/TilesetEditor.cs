@@ -49,32 +49,13 @@ namespace Editor.Forms
         #endregion
 
         private IEditorTileset mTileset;
-        
-        public int TilesPerRow
-        {
-            get
-            {
-                var preferredSize = 64;
-                int tiles = pnlTileset.Width / preferredSize;
-
-                if (tiles < 8)
-                    tiles = 8;
-                if (tiles > 16)
-                    tiles = 16;
-
-                return tiles;
-            }
-        }
-
-        public int BaseTilesPerRow { get { return 8; } }
-
-
+              
         private TilesetEditor()
         {
             mTileset = TilesetEditor.CreateTileset();
             InitializeComponent();
 
-            pnlBase.SetTiles(TileSet.CreateBase(), BaseTilesPerRow);
+            pnlBase.SetFromTileset(TileSet.CreateBase());
             pnlBase.RefreshImage();
 
             pnlTileset.ImagePanel.MouseAction += new ImagePanel.MouseActionEventHandler(pnlTileset_ImageClicked);
@@ -129,28 +110,28 @@ namespace Editor.Forms
                 id = mTileset.Tiles.Max(p => p.ID);
 
             mTileset.AddTiles(newTiles.Select(t => mTileset.CreateTile(t, ++id)));
-         
-            pnlTileset.SetTiles(mTileset.CreateTileset(Color.Transparent, "tiles",null), TilesPerRow);
+
+            pnlTileset.SetFromTileset(mTileset.CreateTileset(Color.Transparent, "tiles", null));
 
             pnlTileset.RefreshImage();
         }
 
         public void LoadTileset()
         {
-            var ts = FileDialog.ShowLoad<TileSet>(PathType.Tilesets);
+            var ts = FileDialog.ShowLoad<TileSet>(PathType.Tilesets).Data;
             if (ts == null)
                 return;
 
             mTileset = TilesetEditor.CreateTileset();
             mTileset.Fill(ts);
-            pnlTileset.SetTiles(ts, TilesPerRow);     
+            pnlTileset.SetFromTileset(ts);     
         }
 
         public void LoadTileset(TileSet ts)
         {
             mTileset = TilesetEditor.CreateTileset();
             mTileset.Fill(ts);
-            pnlTileset.SetTiles(ts, TilesPerRow);
+            pnlTileset.SetFromTileset(ts);
         }
 
         public void Save()
@@ -193,11 +174,8 @@ namespace Editor.Forms
 
         private void TilesetEditor_Resize(object sender, EventArgs e)
         {
-            pnlTileset.SetTiles(pnlTileset.Tileset, this.TilesPerRow);
+            pnlTileset.SetFromTileset(pnlTileset.Tileset);
         }
-
-      
-
 
         #region Actions
 

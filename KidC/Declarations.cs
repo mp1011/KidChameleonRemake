@@ -5,12 +5,14 @@ using System.Text;
 
 namespace Engine
 {
+    [EditorVisible]
     public static class KCObjectType
     {
+        
         public static ObjectType Player { get { return new ObjectType(ObjectType.CustomIDStart + 1, "Player"); } }
         public static ObjectType Collectable { get { return new ObjectType(ObjectType.CustomIDStart + 2, "Collectable"); } }
 
-
+        [EditorVisible]
         public static ObjectType JamesKid { get { return new ObjectType(ObjectType.CustomIDStart + 1000, "JamesKid"); } }
         public static ObjectType IronKnight { get { return new ObjectType(ObjectType.CustomIDStart + 1001, "IronKnight"); } }
         public static ObjectType RedStealth { get { return new ObjectType(ObjectType.CustomIDStart + 1002, "RedStealth"); } }
@@ -23,7 +25,9 @@ namespace Engine
         public static ObjectType Puff { get { return new ObjectType(ObjectType.CustomIDStart + 3002, "Puff"); } }
 
         public static ObjectType Enemy { get { return new ObjectType(ObjectType.CustomIDStart + 4000, "Enemy"); } }
-        public static ObjectType Dragon { get { return new ObjectType(ObjectType.CustomIDStart + 4001, "Enemy"); } }
+
+        [EditorVisible]
+        public static ObjectType Dragon { get { return new ObjectType(ObjectType.CustomIDStart + 4001, "Dragon"); } }
     }
 
     public enum PrizeType

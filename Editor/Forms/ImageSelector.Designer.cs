@@ -73,7 +73,7 @@
             this.pnlLoadedImage.CenterOnOrigin = false;
             this.pnlLoadedImage.DisplayOrigin = null;
             this.pnlLoadedImage.DisplayPortionOnly = true;
-            this.pnlLoadedImage.DrawRectangle = false;
+            this.pnlLoadedImage.DrawRectangle = DrawRectangleType.None;
             this.pnlLoadedImage.EnableSelector = true;
             this.pnlLoadedImage.Image = null;
             this.pnlLoadedImage.Location = new System.Drawing.Point(12, 12);

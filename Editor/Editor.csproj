@@ -168,6 +168,10 @@
       <Project>{6F7FA7C2-63C9-48BC-8EF8-69749A3467F4}</Project>
       <Name>Engine</Name>
     </ProjectReference>
+    <ProjectReference Include="..\KidC\KidC.csproj">
+      <Project>{1b507325-40c2-4a21-8fce-6046655240e0}</Project>
+      <Name>KidC</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Content Include="FlagsEnumEditor\readme.txt" />

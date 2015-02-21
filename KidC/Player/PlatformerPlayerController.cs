@@ -8,40 +8,46 @@ using Engine.Input;
 namespace KidC
 {
 
-    public abstract class PlatformerPlayerController : SpriteBehavior, IDamager
+    public class PlayerMotionStats : Stats
+    {
+        public float WalkSpeed { get; set; }
+        public float WalkAccel { get; set; }
+
+        public float RunSpeed { get; set; }
+        public float RunAccel { get; set; }
+
+        public float StopAccel { get; set; }
+        public float AirDecel { get; set; }
+        public float TurnAccel { get; set; }
+
+        public float CrawlSpeed { get; set; }
+        public float CrawlAccel { get; set; }
+        public float CrawlDecel { get; set; }
+
+        public float UpHillSpeedMod { get; set; }
+        public float DownHillSpeedMod { get; set; }
+
+        public float JumpSpeed { get; set; }
+        public float RunJumpSpeedMod { get; set; }
+
+        public ulong LongJumpDuration { get; set; }
+        public ulong ShortJumpDuration { get; set; }
+
+    }
+
+
+    public class PlatformerPlayerController : SpriteBehavior, IDamager
     {
         private TimedAction<GravityController> mJump;
         private float mJumpSpeed;
         private GravityController mGravityController;
-        
-        public Player Player { get; private set;}
-
-        protected float WalkSpeed { get; set; }
-        protected float WalkAccel { get; set; }
-
-        protected float RunSpeed { get; set; }
-        protected float RunAccel { get; set; }
-
-        protected float StopAccel { get; set; }
-        protected float AirDecel { get; set; }
-        protected float TurnAccel { get; set; }
-        
-        protected float CrawlSpeed { get; set; }
-        protected float CrawlAccel { get; set; }
-        protected float CrawlDecel { get; set; }
-
-        protected float UpHillSpeedMod { get; set; }
-        protected float DownHillSpeedMod { get; set; }
-
-        protected float JumpSpeed { get;set;}
-        protected float RunJumpSpeedMod { get; set; }
-
-        protected ulong LongJumpDuration { get; set; }
-        protected ulong ShortJumpDuration { get; set; }
-
         private ulong mJumpBeginFrame;
         private bool mIsOnGround = false;
 
+        private GameResource<PlayerMotionStats> mStatsResource;
+        private PlayerMotionStats MotionStats { get { return mStatsResource.GetObject(this.Context); } }
+               
+        public Player Player { get; private set;}
         public bool NoAnimationChanges { get; set; }
 
         public GravityController GravityController
@@ -57,19 +63,21 @@ namespace KidC
         {
             this.Player = player;
             this.Context.SetCameraCenter(this.Sprite);
+
+            mStatsResource = new DevelopmentResource<PlayerMotionStats>(new GamePath(PathType.Stats, this.Sprite.ObjectType.ToString() + "_stats")); 
         }
 
         protected override void OnEntrance()
         {
             Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
-            Sprite.MotionManager.MainMotion.Decel = StopAccel;
+            Sprite.MotionManager.MainMotion.Decel = this.MotionStats.StopAccel;
 
             mGravityController = Sprite.GetBehavior<GravityController>();
             mJump = new TimedAction<GravityController>(mGravityController,a=> a.CurrentYSpeed = -1 * mJumpSpeed);
         }
 
         protected override void Update()
-        {           
+        {
             if (Player.Input.KeyDown(GameKey.Editor1))
                 this.Context.FPS = 10;
             else
@@ -109,8 +117,8 @@ namespace KidC
 
             if (dir == Direction.DownRight || dir == Direction.Down || dir == Direction.DownLeft)
             {
-                Sprite.MotionManager.MainMotion.Decel = CrawlDecel;
-                Sprite.MotionManager.MainMotion.Accel = CrawlAccel;
+                Sprite.MotionManager.MainMotion.Decel = this.MotionStats.CrawlDecel;
+                Sprite.MotionManager.MainMotion.Accel = this.MotionStats.CrawlAccel;
                 this.CurrentAnimationKey = KCAnimation.Crawl;
             }
             else
@@ -123,13 +131,13 @@ namespace KidC
             }
             else if (dir == Direction.DownRight)
             {
-                Sprite.MotionManager.MainMotion.TargetSpeed = CrawlSpeed;
+                Sprite.MotionManager.MainMotion.TargetSpeed = this.MotionStats.CrawlSpeed;
                 Sprite.MotionManager.MainMotion.Direction = Direction.Right;
                 Sprite.Direction = Direction.Right;
             }
             else if (dir == Direction.DownLeft)
             {
-                Sprite.MotionManager.MainMotion.TargetSpeed = CrawlSpeed;
+                Sprite.MotionManager.MainMotion.TargetSpeed = this.MotionStats.CrawlSpeed;
                 Sprite.MotionManager.MainMotion.Direction = Direction.Left;
                 Sprite.Direction = Direction.Left;
             }
@@ -150,7 +158,7 @@ namespace KidC
             }
 
             if (Player.Input.KeyReleased(KCButton.Jump))
-                mJump.Duration = ShortJumpDuration;
+                mJump.Duration = this.MotionStats.ShortJumpDuration;
         }
 
         public bool CheckWallJump()
@@ -168,8 +176,8 @@ namespace KidC
             SoundManager.PlaySound(Sounds.Jump);
             mJumpBeginFrame = Context.CurrentFrameNumber;
 
-            mJumpSpeed = JumpSpeed + this.Sprite.MotionManager.MainMotion.CurrentSpeed * RunJumpSpeedMod;
-            mJump.Start(LongJumpDuration);
+            mJumpSpeed = this.MotionStats.JumpSpeed + this.Sprite.MotionManager.MainMotion.CurrentSpeed * this.MotionStats.RunJumpSpeedMod;
+            mJump.Start(this.MotionStats.LongJumpDuration);
         }
 
         private bool PlayerCanJump()
@@ -182,9 +190,9 @@ namespace KidC
             var player = this.Context.FirstPlayer;
 
             if(mIsOnGround)
-                Sprite.MotionManager.MainMotion.Decel = StopAccel;
+                Sprite.MotionManager.MainMotion.Decel = this.MotionStats.StopAccel;
             else
-                Sprite.MotionManager.MainMotion.Decel = AirDecel;
+                Sprite.MotionManager.MainMotion.Decel = this.MotionStats.AirDecel;
 
             Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
             var dir = player.Input.InputDirection(Orientation.Horizontal);
@@ -216,7 +224,7 @@ namespace KidC
                 else
                     this.Sprite.CurrentAnimationKey = KCAnimation.Walk;
 
-                this.Sprite.CurrentAnimation.SpeedModifier = this.Sprite.MotionManager.Vector.Magnitude / WalkSpeed;
+                this.Sprite.CurrentAnimation.SpeedModifier = this.Sprite.MotionManager.Vector.Magnitude / this.MotionStats.WalkSpeed;
             }
 
         }
@@ -318,7 +326,7 @@ namespace KidC
             {
                 Sprite.CurrentAnimationKey = KCAnimation.ClimbDown;
                 Sprite.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);
-                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + UpHillSpeedMod;
+                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + this.MotionStats.UpHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);//.RotateTowards(Direction.Down, 45);
            
                 //test Sprite.MotionManager.MainMotion.TargetSpeed =0;
@@ -327,14 +335,14 @@ namespace KidC
             {
                 Sprite.CurrentAnimationKey = KCAnimation.ClimbUp;
                 Sprite.Direction = mCurrentSlopeDirection;
-                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + UpHillSpeedMod;
+                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + this.MotionStats.UpHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection;//.RotateTowards(Direction.Up, 45);
             }
             else //moving down the slope
             {
                 Sprite.CurrentAnimationKey = KCAnimation.ClimbDown;
                 Sprite.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);
-                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + DownHillSpeedMod;
+                Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + this.MotionStats.DownHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);//.RotateTowards(Direction.Down, 45);
             }
 
@@ -349,9 +357,9 @@ namespace KidC
             get
             {
                 if (Player.Input.KeyDown(KCButton.Run))
-                    return RunSpeed;
+                    return this.MotionStats.RunSpeed;
                 else
-                    return WalkSpeed;
+                    return this.MotionStats.WalkSpeed;
             }
         }
 
@@ -360,9 +368,9 @@ namespace KidC
             get
             {
                 if (Player.Input.KeyDown(KCButton.Run))
-                    return RunAccel;
+                    return this.MotionStats.RunAccel;
                 else
-                    return WalkAccel;
+                    return this.MotionStats.WalkAccel;
             }
         }
 

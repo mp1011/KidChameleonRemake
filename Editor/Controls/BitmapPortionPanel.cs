@@ -18,7 +18,7 @@ namespace Editor
 
 
         public bool DisplayPortionOnly { get { return ImagePanel.DisplayPortionOnly; } set { ImagePanel.DisplayPortionOnly = value; RefreshImage(); } }
-        public bool DrawRectangle { get { return ImagePanel.DrawRectangle; } set { ImagePanel.DrawRectangle = value; } }
+        public DrawRectangleType DrawRectangle { get { return ImagePanel.DrawRectangle; } set { ImagePanel.DrawRectangle = value; } }
 
         public bool EnableSelector { get; set; }
 
