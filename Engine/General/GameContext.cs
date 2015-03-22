@@ -13,6 +13,7 @@ namespace Engine
         {
             this.Engine = engine;
             this.Game = game;
+            this.RenderInfo = RenderOptions.Normal;
 
             mCameraCenter = new WorldPoint(this, 200, 200);
             this.mLoopManager = new LoopManager();
@@ -20,6 +21,8 @@ namespace Engine
             this.Listeners = new Listeners(this);
         }
 
+
+        public RenderOptions RenderInfo { get; private set; }
 
         private LoopManager mLoopManager;
 
@@ -33,6 +36,11 @@ namespace Engine
         public void SetWorld(World w)
         {
             CurrentWorld = w;
+        }
+
+        public void SetWorld(WorldInfo w)
+        {
+            CurrentWorld = w.CreateWorld(this);
         }
 
         public Input.MouseInput Mouse { get; set; }
@@ -74,14 +82,17 @@ namespace Engine
             }
         }
 
-       
-
+        public void CenterCamera()
+        {
+            mCameraCenter = new WorldPoint(this, this.Engine.GameSize.Width / 2, this.Engine.GameSize.Height / 2);
+        }
+        
         public void SetCameraCenter(IWithPosition obj)
         {
             if (obj == null)
             {
                 if (mCameraCenter == null)
-                    mCameraCenter = new WorldPoint(this, 200, 200);
+                    mCameraCenter = new WorldPoint(this, this.Engine.GameSize.Width / 2, this.Engine.GameSize.Height / 2);
                 else
                     mCameraCenter = new WorldPoint(this, mCameraCenter.Location.X, mCameraCenter.Location.Y);
             }

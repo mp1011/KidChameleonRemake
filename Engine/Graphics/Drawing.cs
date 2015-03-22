@@ -40,6 +40,7 @@ namespace Engine
         {
             this.Visible = true;
             this.VisibleInEditor = true;
+            this.FadeColor = RGColor.White;
         }
 
         public float Transparency = 1f;
@@ -62,6 +63,8 @@ namespace Engine
             }
         }
 
+        public RGColor FadeColor { get; set; }
+
         public void SetFlashOn(ulong currentFrame)
         {
             this.Flashing = true;
@@ -80,6 +83,24 @@ namespace Engine
         public bool CheckVisible(GameContext ctx)
         {
             return this.Visible;// TBD || (ctx.Listeners.EditorListener.EditorOn && this.VisibleInEditor);
+        }
+
+
+        public RenderOptions CombineWith(RenderOptions other)
+        {
+            var ret = new RenderOptions() { 
+                Flashing = other.Flashing || this.Flashing,
+                FlipX = other.FlipX || this.FlipX,
+                FlipY = other.FlipY || this.FlipY,
+                Visible = other.Visible};
+
+
+            if (this.FadeColor.Equals(RGColor.White))
+                ret.FadeColor = other.FadeColor;
+            else
+                ret.FadeColor = this.FadeColor;
+
+            return ret;
         }
     }
 

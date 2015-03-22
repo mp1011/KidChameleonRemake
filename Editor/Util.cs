@@ -90,6 +90,10 @@ namespace Editor
             return FileDialog.ShowOpenDialog(path.GetFolder(),path.GetExtension(), selectedFile => Serializer.FromJson<T>(File.ReadAllText(selectedFile)));
         }
 
+        public static FileResult<T> ShowLoad<T>(PathType path, Type targetType) where T : new()
+        {
+            return FileDialog.ShowOpenDialog<T>(path.GetFolder(), path.GetExtension(), selectedFile => (T)Serializer.FromJson(File.ReadAllText(selectedFile), targetType));
+        }
     }
 
     static class Extensions
@@ -111,6 +115,11 @@ namespace Editor
         public static Rectangle ToSystemRec(this RGRectangleI rec)
         {
             return new Rectangle(rec.X, rec.Y, rec.Width, rec.Height);
+        }
+
+        public static Color ToSystemColor(this RGColor c)
+        {
+            return Color.FromArgb(c.Red, c.Green, c.Blue);
         }
 
         public static Point ToSystemPoint(this RGPointI pt)

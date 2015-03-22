@@ -5,7 +5,42 @@ using System.Text;
 
 namespace Engine
 {
-    public class GameFont
+    public interface IGameFont
+    {
+        TextureResource FontTexture { get; }
+        RGRectangleI GetLetterTextureLocation(char character);      
+    }
+
+    public static class IGameFontUtil
+    {
+        public static RGSizeI LetterSize(this IGameFont font, char c)
+        {
+            return font.GetLetterTextureLocation(c).Size;
+        }
+
+        public static int LetterWidth(this IGameFont font, char c)
+        {
+            return font.GetLetterTextureLocation(c).Width;
+        }
+
+        public static int LetterHeight(this IGameFont font, char c)
+        {
+            return font.GetLetterTextureLocation(c).Height;
+        }
+
+        public static RGSizeI SpaceSize(this IGameFont font)
+        {
+            return font.LetterSize(' ');
+        }
+
+        //temp
+        public static RGSizeI CellSize(this IGameFont font)
+        {
+            return font.LetterSize(' ');
+        }
+    }
+
+    public class FixedSpaceFont : IGameFont
     {
         private RGPointI upperLeft;
         private RGSizeI cellSize;
@@ -14,7 +49,7 @@ namespace Engine
         public RGSizeI CellSize { get { return cellSize; } }
         public TextureResource FontTexture { get; private set; }
 
-        public GameFont(TextureResource fontTexture, RGSizeI p_cellSize, RGPointI p_upperLeft)
+        public FixedSpaceFont(TextureResource fontTexture, RGSizeI p_cellSize, RGPointI p_upperLeft)
         {
             cellSize = p_cellSize;
             upperLeft = p_upperLeft;
@@ -69,13 +104,53 @@ namespace Engine
         }
     }
 
+
+    public class VariableSpaceFont : IGameFont
+    {
+        private Dictionary<char, RGRectangleI> mLetterLocations;
+
+        public VariableSpaceFont(TextureResource fontTexture)
+        {           
+            mLetterLocations = new Dictionary<char, RGRectangleI>();
+            this.FontTexture = fontTexture;
+        }
+
+        public void AddRow(int top, int bottom, string letters, params int[] splits)
+        {
+            int index = 0;
+
+            foreach (char c in letters)
+            {
+                AddLetter(c, RGRectangleI.FromTLBR(top, splits[index], bottom, splits[index + 1]));
+                index += 1;
+            }          
+
+        }
+
+        public void AddLetter(char c, RGRectangleI location)
+        {
+            mLetterLocations.Add(c, location);
+        }
+
+        public TextureResource FontTexture
+        {
+            get; private set;
+        }
+
+        public RGRectangleI GetLetterTextureLocation(char character)
+        {
+            if (mLetterLocations.ContainsKey(character))
+                return mLetterLocations[character];
+            else
+                return RGRectangleI.Empty;
+        }
+    }
+
     public class Letter
     {
-        private ulong activeFrame;
-
-        public char character;
-        public RGPointI location;
-        public RGColor color;
+        public char Character;
+        public RGRectangleI Location;
+        public RGColor Color;
     }
 
 }

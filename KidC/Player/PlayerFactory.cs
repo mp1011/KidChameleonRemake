@@ -10,21 +10,19 @@ namespace KidC
     static partial class KCObjectFactory
     {
 
+        
+
         private static Sprite CreatePlayer(GameContext ctx, Layer layer, ObjectType playerType, int maxHealth, bool secondaryHitboxIsDamaging) 
         {
             var sprite = new Sprite(ctx, layer, playerType);
             sprite.Location = new RGPointI(120, 125);
 
-            IGameInputDevice input = ctx.Engine.CreateInputDevice(sprite.Context);
-
-            input.ButtonMappings.Add(KCButton.Run, GameKey.Button1);
-            input.ButtonMappings.Add(KCButton.Jump, GameKey.Button2);
-            input.ButtonMappings.Add(KCButton.Special, GameKey.Button3);
 
             sprite.AddBehavior(new GravityController(sprite));
             sprite.AddCollisionChecks(ObjectType.Block, ObjectType.Border, KCObjectType.Collectable, KCObjectType.Enemy);
 
-            var player = new Player(sprite.Context, input);
+            var player = KidCGame.CreatePlayer(ctx);
+          
             var transformationController = sprite.AddBehavior(new TransformationController(sprite, maxHealth));
 
             sprite.AddBehavior(new BehaviorExclusionController(sprite, transformationController));

@@ -33,6 +33,15 @@ namespace Engine
 
         public IEnumerable<TileDef> GetTiles() { return mTiles.AsEnumerable(); }
 
+        public void AddTiles(IEnumerable<TileDef> t)
+        {
+            var curTiles = mTiles.ToList();
+            foreach (var tile in t)
+                curTiles.Add(tile);
+
+            mTiles = curTiles.ToArray();
+        }
+
         public void AddTile(TileDef tile)
         {
             var t = mTiles.ToList();

@@ -10,7 +10,7 @@ namespace Engine
         public abstract bool XisY(ObjectType x, ObjectType y);
     }
 
-    public struct ObjectType : IEquatable<ObjectType>
+    public struct ObjectType : IEquatable<ObjectType>, ISerializable
     {
         private string mName;
 
@@ -59,6 +59,34 @@ namespace Engine
         {
             return mName;
         }
+
+        #region Saving
+
+        private class ObjectTypeSaveModel
+        {
+            public int Value { get; set; }
+            public string Name { get; set; }
+        }
+
+        public object GetSaveModel()
+        {
+            return new ObjectTypeSaveModel { Name = this.ToString(), Value = this.Value};
+        }
+
+        public Type GetSaveModelType()
+        {
+            return typeof(ObjectTypeSaveModel);
+        }
+
+        public void Load(object saveModel)
+        {
+            var model = saveModel as ObjectTypeSaveModel;
+            this.Value = model.Value;
+            this.mName = model.Name;
+        }
+
+        #endregion
+
     }
 
 }

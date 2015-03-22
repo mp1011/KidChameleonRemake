@@ -400,7 +400,7 @@ namespace Engine
 
         public static string StringJoin(this IEnumerable<string> list, string separator)
         {
-            return String.Join(separator, list.ToArray());
+            return String.Join(separator, list.NeverNull().ToArray());
         }
 
         public static T NotNull<T>(this T obj) where T:new()
@@ -410,6 +410,22 @@ namespace Engine
             else
                 return obj;
         }
+
+        public static int MaxOrDefault<T>(this IEnumerable<T> list, Func<T, int> fnGetValue, int defaultValue)
+        {
+            if (list.IsNullOrEmpty())
+                return defaultValue;
+            return list.Select(p => fnGetValue(p)).Max();
+        }
+
+        public static IEnumerable<T> NeverNull<T>(this IEnumerable<T> list) 
+        {
+            if (list == null)
+                return new T[]{ };
+            else
+                return list;
+        }
+
 
         public static string AppendCSV(this string str, string newItems)
         {

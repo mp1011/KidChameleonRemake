@@ -62,7 +62,6 @@ namespace Engine.Core
             WindowSize = new RGSizeI(1024, 768);
             GameSize = new RGSizeI(320, 240);        
             this.Context = game.GameContextCreate(this,game);
-
             this.Context.SetWorld(game.StartingWorld.GetObject(this.Context));
             this.StartGame();      
         }
@@ -78,6 +77,7 @@ namespace Engine.Core
         public void DrawFrame()
         {
             var painter = this.CreatePainter();
+            painter.RenderInfo = this.Context.RenderInfo;
             painter.Paint(this.Context.ScreenLocation, this.Context.CurrentWorld);
         }
 

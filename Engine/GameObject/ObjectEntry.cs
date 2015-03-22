@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -12,7 +13,14 @@ namespace Engine
         NearScreen 
     }
 
-    public class ObjectEntry 
+    class ObjectEntryTypeAttribute : Attribute
+    {
+        public ObjectEntryType EntryType { get; set; }
+
+        public ObjectEntryTypeAttribute(ObjectEntryType t) { this.EntryType = t; }
+    }
+
+    public class ObjectEntry : IWithPosition 
     {
         [Browsable(true)]
         public ObjectType SpriteType { get; set; }
@@ -20,50 +28,107 @@ namespace Engine
         [Browsable(true)]
         public ObjectEntryType EntryType { get; set; }
 
+
+        private RGPointI mLocation;
+
         [Browsable(false)]
-        public RGPointI Location { get; set; }       
+        public RGPointI Location
+        {
+            get { return mLocation; }
+            set
+            {
+                mLocation = value;
+                if (PlacedObject != null)
+                    PlacedObject.Location = value;
+            }
+        }
+
+        [Browsable(false)]
+        [JsonIgnore]
+        public Sprite PlacedObject { get; set; }
+
+        public Sprite CreateObject(Layer layer)
+        {
+            if (this.PlacedObject == null && !this.SpriteType.IsEmpty)
+            {
+                this.PlacedObject = this.SpriteType.CreateInstance<Sprite>(layer, layer.Context);
+                this.PlacedObject.Location = this.Location;
+            }
+
+            return this.PlacedObject;
+
+        }
+
+        [Browsable(false)]
+        [JsonIgnore]
+        public GameContext Context
+        {
+            get { return PlacedObject.Context; }
+        }
+
+        [Browsable(false)]
+        [JsonIgnore]
+        public RGRectangleI Area
+        {
+            get { return PlacedObject.Area; }
+        }
+
+        [Browsable(false)]
+        [JsonIgnore]
+        public Direction Direction
+        {
+            get { return PlacedObject.Direction; }
+        }
+
+        public override string ToString()
+        {
+            return this.EntryType.ToString()+ " " + this.SpriteType.ToString() + " " + this.Location.ToString();
+        }
+
+        public void AddToLayer(Layer layer)
+        {
+            ActiveObjectEntry.Create(this, layer);
+        }
     }
 
-    class ObjectEntryEx
+    abstract class ActiveObjectEntry : LogicObject 
     {
-        // [Browsable(false )]
-        //public Layer Layer { get;  set; }
+        private ObjectEntry mObject;
+        private Layer mLayer;     
+        private bool mCreated = false;
 
-        //private bool mCreated = false;
+        public ActiveObjectEntry(ObjectEntry entry, Layer layer)
+            : base(LogicPriority.World, layer,RelationFlags.DestroyWhenParentDestroyed)
+        {
+            mLayer = layer;
+            mObject = entry;
+        }
 
-        //public ObjectEntryEx(GameContext ctx)
-        //    : base(LogicPriority.World, ctx)
-        //{
+        protected override void Update()
+        {
+            if (mObject.PlacedObject == null && ShouldCreateObject())           
+                mObject.CreateObject(mLayer);
+        }
 
-        //}
+        protected abstract bool ShouldCreateObject();
 
-        //public ObjectEntryEx(GameContext ctx, ObjectType type, RGPointI loc, ObjectEntryType entry, Layer layer)
-        //    : base(LogicPriority.World, ctx)
-        //{
-        //    this.SpriteType = type;
-        //    this.Location = loc;
-        //    this.EntryType = entry;
-        //    this.Layer = layer;
 
-        //    mCreated = true;
-        //}
-
-        //protected override void Update()
-        //{
-        //    //TBD
-        //    if (!mCreated)
-        //    {
-        //        //todo
-        //        if (this.Location.X < 0)
-        //            this.Kill(ExitCode.Cancelled);
-        //        else
-        //        {
-        //            mCreated = true;
-        //           // var sprite = SpriteCreator.Create(this.SpriteType, this.Context, this.Layer, this.Location);
-        //          //  Context.Listeners.EditorListener.Register(this, sprite);
-        //        }
-        //    }
-        //}
-
+        public static ActiveObjectEntry Create(ObjectEntry e, Layer layer)
+        {
+            return ReflectionHelper.CreateObjectByAttribute<ActiveObjectEntry, ObjectEntryTypeAttribute>(e, t => t.EntryType == e.EntryType,e,layer);
+        }
     }
+
+    [ObjectEntryType(ObjectEntryType.LevelStart)]
+    class LevelStartObjectEntry : ActiveObjectEntry
+    {
+        public LevelStartObjectEntry(ObjectEntry entry, Layer layer) : base(entry, layer) { }
+
+        protected override bool ShouldCreateObject()
+        {
+            return true;
+        }
+    }
+
+
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace Engine
 {
@@ -13,6 +14,11 @@ namespace Engine
         void Load(object saveModel);
     }
 
+    public interface ISerializableBaseClass : ISerializable 
+    {
+        Type GetTargetType();
+    }
+
     public static class Serializer
     {
         private static JsonSerializerSettings mSettings;
@@ -21,6 +27,16 @@ namespace Engine
             mSettings = new JsonSerializerSettings();
             mSettings.Converters.Add(new ISerializableConverter());
             mSettings.Converters.Add(new TileInstanceConverter());
+        }
+
+        public static JsonSerializer CreateSerializer()
+        {
+            var s = new JsonSerializer();
+
+            foreach (var c in mSettings.Converters)
+                s.Converters.Add(c);
+
+            return s;
         }
 
         public static string ToJSON<T>(T item)
@@ -47,6 +63,20 @@ namespace Engine
             return JsonConvert.DeserializeObject<T>(json, mSettings);           
         }
 
+        public static object FromJson(string json, Type type)
+        {
+            var item = Activator.CreateInstance(type);
+
+            var serializable = item as ISerializable;
+            if (serializable != null)
+            {
+                var saveModel = JsonConvert.DeserializeObject(json, serializable.GetSaveModelType(), mSettings);
+                serializable.Load(saveModel);
+                return serializable;
+            }
+
+            return JsonConvert.DeserializeObject(json, type, mSettings);           
+        }
 
 
     }
@@ -60,7 +90,8 @@ namespace Engine
         }
 
         public override object ReadJson(JsonReader reader, Type objectType, object existingValue, JsonSerializer serializer)
-        { 
+        {
+
             ISerializable item;
 
             try
@@ -77,8 +108,19 @@ namespace Engine
                 throw new Exception("Deserialization failed for type: " + objectType.Name, ex);
             }
 
-            var plainSerializer = new JsonSerializer();
-            var saveModel = plainSerializer.Deserialize(reader, item.GetSaveModelType());
+            var s = Serializer.CreateSerializer();
+            var saveModel = s.Deserialize(reader, item.GetSaveModelType());
+
+            var itemBase = item as ISerializableBaseClass;
+            if (itemBase != null)
+            {
+                try
+                {
+                    item = Activator.CreateInstance(itemBase.GetTargetType()) as ISerializable;
+                }
+                catch (NotImplementedException ex) { }
+            }
+
             item.Load(saveModel);
 
             return item;

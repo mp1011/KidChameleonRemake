@@ -87,22 +87,12 @@ namespace Engine
             var foregroundLayers = mLayers.Where(p => p.Depth == LayerDepth.Foreground).ToArray();
             if(foregroundLayers.Length > 0)
                 Area = RGRectangle.FromTLBR(foregroundLayers.Min(p => p.Location.Top), foregroundLayers.Min(p => p.Location.Left), foregroundLayers.Max(p => p.Location.Bottom), foregroundLayers.Max(p => p.Location.Right));
+            else
+                Area = RGRectangle.FromTLBR(mLayers.Min(p => p.Location.Top), mLayers.Min(p => p.Location.Left), mLayers.Max(p => p.Location.Bottom), mLayers.Max(p => p.Location.Right));
 
             return layer;
         }
 
-        public Layer AddLayerBelowLast(Layer newLayer, Layer previousLayer)
-        {
-            float top = 0;
-
-            if (previousLayer != null)
-                top = previousLayer.Location.Bottom;
-
-            AddLayer(newLayer);
-            newLayer.Position = new RGPointI(newLayer.Position.X, top);
-
-            return newLayer;
-        }
 
         public int GetNextFreeLayerID()
         {

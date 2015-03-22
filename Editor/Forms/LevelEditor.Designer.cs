@@ -37,6 +37,7 @@
             this.pnlMapContainer = new System.Windows.Forms.Panel();
             this.pnlMap = new Editor.TilePanelUserControl();
             this.pnlTop = new System.Windows.Forms.Panel();
+            this.cboGridSnap = new System.Windows.Forms.ComboBox();
             this.btnRandomize = new System.Windows.Forms.Button();
             this.chkSelect = new System.Windows.Forms.CheckBox();
             this.chkDraw = new System.Windows.Forms.CheckBox();
@@ -53,9 +54,10 @@
             this.propSpecialTile = new System.Windows.Forms.PropertyGrid();
             this.lstGroups = new System.Windows.Forms.CheckedListBox();
             this.pgeObjects = new System.Windows.Forms.TabPage();
-            this.cboObjectType = new System.Windows.Forms.ComboBox();
-            this.pbObjectPreview = new System.Windows.Forms.PictureBox();
             this.pgObject = new System.Windows.Forms.PropertyGrid();
+            this.pbObjectPreview = new System.Windows.Forms.PictureBox();
+            this.cboObjectType = new System.Windows.Forms.ComboBox();
+            this.lstObjects = new System.Windows.Forms.ListBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pnlLeftRight)).BeginInit();
             this.pnlLeftRight.Panel1.SuspendLayout();
@@ -128,6 +130,7 @@
             // 
             // pnlTop
             // 
+            this.pnlTop.Controls.Add(this.cboGridSnap);
             this.pnlTop.Controls.Add(this.btnRandomize);
             this.pnlTop.Controls.Add(this.chkSelect);
             this.pnlTop.Controls.Add(this.chkDraw);
@@ -135,6 +138,12 @@
             this.pnlTop.Controls.Add(this.tbZoom);
             resources.ApplyResources(this.pnlTop, "pnlTop");
             this.pnlTop.Name = "pnlTop";
+            // 
+            // cboGridSnap
+            // 
+            this.cboGridSnap.FormattingEnabled = true;
+            resources.ApplyResources(this.cboGridSnap, "cboGridSnap");
+            this.cboGridSnap.Name = "cboGridSnap";
             // 
             // btnRandomize
             // 
@@ -250,6 +259,7 @@
             // 
             // pgeObjects
             // 
+            this.pgeObjects.Controls.Add(this.lstObjects);
             this.pgeObjects.Controls.Add(this.pgObject);
             this.pgeObjects.Controls.Add(this.pbObjectPreview);
             this.pgeObjects.Controls.Add(this.cboObjectType);
@@ -257,11 +267,10 @@
             this.pgeObjects.Name = "pgeObjects";
             this.pgeObjects.UseVisualStyleBackColor = true;
             // 
-            // cboObjectType
+            // pgObject
             // 
-            this.cboObjectType.FormattingEnabled = true;
-            resources.ApplyResources(this.cboObjectType, "cboObjectType");
-            this.cboObjectType.Name = "cboObjectType";
+            resources.ApplyResources(this.pgObject, "pgObject");
+            this.pgObject.Name = "pgObject";
             // 
             // pbObjectPreview
             // 
@@ -269,10 +278,17 @@
             this.pbObjectPreview.Name = "pbObjectPreview";
             this.pbObjectPreview.TabStop = false;
             // 
-            // pgObject
+            // cboObjectType
             // 
-            resources.ApplyResources(this.pgObject, "pgObject");
-            this.pgObject.Name = "pgObject";
+            this.cboObjectType.FormattingEnabled = true;
+            resources.ApplyResources(this.cboObjectType, "cboObjectType");
+            this.cboObjectType.Name = "cboObjectType";
+            // 
+            // lstObjects
+            // 
+            this.lstObjects.FormattingEnabled = true;
+            resources.ApplyResources(this.lstObjects, "lstObjects");
+            this.lstObjects.Name = "lstObjects";
             // 
             // LevelEditor
             // 
@@ -336,5 +352,7 @@
         private System.Windows.Forms.PropertyGrid pgObject;
         private System.Windows.Forms.PictureBox pbObjectPreview;
         private System.Windows.Forms.ComboBox cboObjectType;
+        private System.Windows.Forms.ComboBox cboGridSnap;
+        private System.Windows.Forms.ListBox lstObjects;
     }
 }

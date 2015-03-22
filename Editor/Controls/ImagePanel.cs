@@ -31,7 +31,13 @@ namespace Editor
             control.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseDown);
             control.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseMove);
             control.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseUp);
+            control.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseDoubleClick);       
             control.Resize += new System.EventHandler(this.ImagePanel_Resize);
+        }
+
+        void control_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            throw new NotImplementedException();
         }
 
         private RGPointI mPan = RGPointI.Empty;
@@ -307,6 +313,15 @@ namespace Editor
                 else
                     MouseAction(this, new ImageEventArgs(this.CreateEditorPoint(e.X, e.Y), e.Button, MouseActionType.Click));
             }
+        }
+
+        private void ImagePanel_MouseDoubleClick(object sender, MouseEventArgs e)
+        {
+            if (MouseAction != null)
+            {
+                MouseAction(this, new ImageEventArgs(this.CreateEditorPoint(e.X, e.Y), e.Button, MouseActionType.DoubleClick));
+            }
+
         }
 
         private void ImagePanel_Paint(object sender, PaintEventArgs e)

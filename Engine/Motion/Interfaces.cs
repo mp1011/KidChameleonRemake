@@ -19,6 +19,11 @@ namespace Engine
         void Move(RGPointI offset);
     }
 
+    public interface IMoveableWithPosition : IWithPosition, IMoveable
+    {
+
+    }
+
     public static class IMoveableExtensions
     {
         public static MotionVector GetVelocity(this IMoveable m)

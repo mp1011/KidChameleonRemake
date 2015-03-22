@@ -1,8 +1,15 @@
-﻿instead of saving maps - must save levels
-game specific
-	for kidc
-		map 
-		list of object entries
-		theme (controls other layers)
-		custom properties like par time
+﻿pause menu
+	layer fading
+	resume play
+	restart round
 
+damage -> death
+timeout -> death
+game over
+clock pickup
+metal block
+rubber blocks
+1-up
+flag
+VR-view
+level end

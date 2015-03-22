@@ -67,6 +67,7 @@
     <Compile Include="Diagnostic\DebugTracker.cs" />
     <Compile Include="Core\EngineBase.cs" />
     <Compile Include="Editor\EditorVisibleAttribute.cs" />
+    <Compile Include="Font\ActiveFont.cs" />
     <Compile Include="Font\Font.cs" />
     <Compile Include="Font\Enums.cs" />
     <Compile Include="Font\Text.cs" />
@@ -74,6 +75,7 @@
     <Compile Include="GameObject\GameObject.cs" />
     <Compile Include="GameObject\ObjectEntry.cs" />
     <Compile Include="GameObject\Sprite.cs" />
+    <Compile Include="General\ButtonListener.cs" />
     <Compile Include="General\GameContext.cs" />
     <Compile Include="General\intx.cs" />
     <Compile Include="General\Listener.cs" />
@@ -107,10 +109,12 @@
     <Compile Include="World\Layer.cs" />
     <Compile Include="World\Map.cs" />
     <Compile Include="World\Misc.cs" />
+    <Compile Include="World\SceneTransition.cs" />
     <Compile Include="World\Tile.cs" />
     <Compile Include="World\TileSet.cs" />
     <Compile Include="World\TileUsage.cs" />
     <Compile Include="World\World.cs" />
+    <Compile Include="World\WorldInfo.cs" />
     <Compile Include="XNA\Engine.cs" />
     <Compile Include="XNA\Graphics.cs" />
     <Compile Include="XNA\Input.cs" />

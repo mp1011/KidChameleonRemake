@@ -148,6 +148,17 @@ namespace Engine
         }
 
 
+
+        public void PositionBelow(Layer previousLayer)
+        {
+            float top = 0;
+
+            if (previousLayer != null)
+                top = previousLayer.Location.Bottom;
+
+            this.Position = new RGPointI(this.Position.X, top);
+        }
+
     }
 
     public class FixedLayer : Layer
@@ -179,9 +190,15 @@ namespace Engine
 
         public static ImageLayer CreateRepeatingHorizontal(GameContext ctx, SimpleGraphic graphic, float xSpeed)
         {
+            return CreateRepeatingHorizontal(ctx, graphic, xSpeed, RGPointI.Empty);
+        }
+
+        public static ImageLayer CreateRepeatingHorizontal(GameContext ctx, SimpleGraphic graphic, float xSpeed, RGPointI position)
+        {
             var layer = new ImageLayer(ctx, graphic);
             layer.ParallaxSpeed = new RGPoint(xSpeed, 1f);
             layer.mRepeatH = true;
+            layer.Position = position;
             return layer;
         }
 

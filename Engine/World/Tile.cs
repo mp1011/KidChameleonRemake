@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Engine.Collision;
 using Newtonsoft.Json;
+using System.ComponentModel;
 
 namespace Engine
 {
@@ -20,8 +21,11 @@ namespace Engine
     }
 
 
-    public class TileDef : ISerializable
+    public class TileDef : ISerializableBaseClass
     {
+
+        #region Defaults
+
         private static TileDef _blankTile;
         public static TileDef Blank
         {
@@ -44,7 +48,7 @@ namespace Engine
             {
                 if (_blankSolidTile == null)
                 {
-                    _blankSolidTile = new TileDef(TileFlags.Invisible | TileFlags.Solid,-1, 0, RGPoint.Empty, new DirectionFlags());
+                    _blankSolidTile = new TileDef(TileFlags.Invisible | TileFlags.Solid, -1, 0, RGPoint.Empty, new DirectionFlags());
                     _blankSolidTile.Usage.SingleGroup = "empty";
                 }
 
@@ -63,27 +67,85 @@ namespace Engine
                 return _oobTile;
             }
         }
+      
+        #endregion
 
 
-        public bool IsPassable { get { return ((this.Flags & TileFlags.Solid) == 0) && ((this.Flags & TileFlags.Sloped) == 0); } }
-        public bool IsBlank { get { return (this.Flags & TileFlags.Invisible) > 0; } }
-        public bool IsSolid { get { return (this.Flags & TileFlags.Solid) > 0; } }
-        public bool IsOutOfBounds { get { return (this.Flags & TileFlags.OutOfBounds) > 0; } }
-        public bool IsSloped { get { return (this.Flags & TileFlags.Sloped) > 0; } }
+        #region Editor Only Properties
 
-        public RGRectangleI[] SourcePositions { get; private set; }
-        public int FrameDuration { get; private set; }
+        [DisplayName("Sides")]
+        public EditorDirectionFlags _SidesForEditor
+        {
+            get
+            {
+                return Sides.ToEditorFlags();
+            }
+            set
+            {
+                this.Sides = new DirectionFlags(value);
+            }
+        }
 
-        public TileUsage Usage { get; private set; }
+        [DisplayName("Flags")]
+        public TileFlags _FlagsForEditor { get { return this.Flags; } set { this.Flags = value; } }
 
-        public DirectionFlags Sides { get; private set; }
+        public string Groups
+        {
+            get { return this.Usage.Groups.StringJoin(","); }
+            set
+            {
+                this.Usage.Groups = value.Split(',').Select(p => p.Trim()).ToArray();
+            }
+        }
+
+        #endregion
+
+        #region Properties
 
         private ulong lastFrameTime = 0;
         private int frameIndex = 0;
+
+        [Browsable(false)]
+        public int TileID { get; private set; }
+
+        [Browsable(false)]
+        public TileFlags Flags { get; private set; }
+
+        [Browsable(false)]
+        public bool IsPassable { get { return ((this.Flags & TileFlags.Solid) == 0) && ((this.Flags & TileFlags.Sloped) == 0); } }
+
+        [Browsable(false)]
+        public bool IsBlank { get { return (this.Flags & TileFlags.Invisible) > 0; } }
+
+        [Browsable(false)]
+        public bool IsSolid { get { return (this.Flags & TileFlags.Solid) > 0; } }
+
+        [Browsable(false)]
+        public bool IsOutOfBounds { get { return (this.Flags & TileFlags.OutOfBounds) > 0; } }
+
+        [Browsable(false)]
+        public bool IsSloped { get { return (this.Flags & TileFlags.Sloped) > 0; } }
+
+        [Browsable(false)]
+        public RGRectangleI[] SourcePositions { get; private set; }
+
+        [Browsable(false)]
+        public int FrameDuration { get; private set; }
+
+        [Browsable(false)]
+        public TileUsage Usage { get; private set; }
+
+        [Browsable(false)]
+        public DirectionFlags Sides { get; private set; }
+
+        #endregion
+
         public RGRectangleI SourcePosition
         {
             get
             {
+                if (SourcePositions.Length == 0)
+                    return RGRectangleI.Empty;
                 return SourcePositions[frameIndex];
             }
         }
@@ -101,9 +163,8 @@ namespace Engine
             }
         }
 
-        public TileFlags Flags { get; private set; }
-        public int TileID { get; private set; }
-
+   
+       
         public TileDef() 
         {
             this.Usage = new TileUsage();
@@ -143,6 +204,7 @@ namespace Engine
             public string[] SideGroups;
             public string[] Groups;
             public int RandomUsageWeight;
+            public object ExtraData;
         }
 
         public object GetSaveModel()
@@ -156,8 +218,19 @@ namespace Engine
                 Sides = this.Sides,
                 Groups = this.Usage.Groups,
                 SideGroups = this.Usage.SideGroups,
-                RandomUsageWeight = this.Usage.RandomUsageWeight
+                RandomUsageWeight = this.Usage.RandomUsageWeight,
+                ExtraData = GetSaveModelExtra()
             };
+        }
+
+        protected virtual object GetSaveModelExtra()
+        {
+            return null;
+        }
+
+        protected virtual void LoadExtra(object data)
+        {
+
         }
 
         public Type GetSaveModelType()
@@ -177,10 +250,21 @@ namespace Engine
             this.Usage.SideGroups = model.SideGroups;
             this.Usage.Groups = model.Groups;
             this.Usage.RandomUsageWeight = model.RandomUsageWeight;
-
             if (this.Usage.Groups.Length == 1 && this.Usage.Groups[0].Contains(","))
                 this.Usage.Groups = this.Usage.Groups[0].Split(',');
+
+            this.LoadExtra(model.ExtraData);
         }
+
+
+        Type ISerializableBaseClass.GetTargetType()
+        {
+            var dummy = Engine.Core.GameBase.Current.TileInstanceCreate();
+            return dummy.TileDef.GetType();
+        }
+
+    
+     
 
         #endregion
 
@@ -216,12 +300,26 @@ namespace Engine
         {
             return this.TileID + " " + this.Flags.ToString() + " " + this.Usage.SideGroups.StringJoin(",");
         }
-    
+
+        public void SetValues(int? id, TileFlags? flags, DirectionFlags sides, RGRectangleI? source)
+        {
+            if (id.HasValue)
+                this.TileID = id.Value;
+
+            if (flags.HasValue)
+                this.Flags = flags.Value;
+
+            if (sides != null)
+                this.Sides = sides;
+
+            if (source.HasValue)
+                this.SourcePositions = new RGRectangleI[] { source.Value };
+        }
     }
 
     public abstract class TileInstance
     {
-        public TileDef TileDef { get; set; }
+        public abstract TileDef TileDef { get; set; }
         public RGPointI TileLocation { get; set; }
 
         [JsonIgnore]

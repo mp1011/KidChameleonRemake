@@ -21,8 +21,10 @@ namespace Engine.Core
       
         public abstract ObjectTypeRelations Relations { get; }
         public abstract Func<TileInstance> TileInstanceCreate { get; }
+        public abstract Func<WorldInfo> WorldInfoCreate { get; }
+
         public abstract Func<EngineBase, GameBase, GameContext> GameContextCreate { get; }
-        public abstract GameResource<World> StartingWorld { get; }
+        public abstract GameResource<WorldInfo> StartingWorld { get; }
     
 #endregion
 

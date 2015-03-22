@@ -51,37 +51,44 @@ namespace Editor.Forms
             tbZoom.Minimum = (int)(ImagePanel.ZoomMin * 100);
             tbZoom.Value = 200;
 
-            this.MapInfo.TilesetName = "woods";
-            this.MapInfo.ScreensWidth = 3;
-            this.MapInfo.ScreensHeight = 1;
-
             pnlTileset.SelectionMode = SelectionMode.Single;
 
             pnlMap.ImagePanel.MouseAction += new ImagePanel.MouseActionEventHandler(Map_MouseAction);
-            pnlMap.SelectionGrid.SelectionChanged += new EventHandler(SelectionGrid_SelectionChanged);
-
+            pnlMap.SelectionGrid.SelectionChanged += new EventHandler(SelectionGrid_SelectionChanged);        
             cboObjectType.DataSource = this.PlaceableObjectTypes;
-        
+
+            AddGridSnaps();
+
             try
             {
+                this.WorldInfo = Program.EditorGame.WorldInfoCreate();
                 var lastMap = System.IO.File.ReadAllText("lastmap");
-                if(lastMap.NotNullOrEmpty())
-                    LoadMap(GameResource<Map>.Load(new GamePath(PathType.Maps,lastMap), Program.EditorContext));
+                if (lastMap.NotNullOrEmpty())
+                {
+                    var path = new GamePath(PathType.Maps, lastMap);
+                    var json = System.IO.File.ReadAllText(path.FullPath);
+                    this.WorldInfo = (WorldInfo)Engine.Serializer.FromJson(json, this.WorldInfo.GetType());                  
+                }
+                else
+                    this.WorldInfo = Program.EditorGame.WorldInfoCreate();
             }
-            catch
+            catch(Exception ex)
             {
-
+                this.WorldInfo = Program.EditorGame.WorldInfoCreate();
             }
+
+            this.LoadMap(this.WorldInfo);
         }
   
-        private MapInfo MapInfo
+        private WorldInfo WorldInfo
         {
             get
             {
-                if (mapProperties.SelectedObject == null)
-                    mapProperties.SelectedObject = new MapInfo();
-
-                return mapProperties.SelectedObject as MapInfo;
+                return mapProperties.SelectedObject as WorldInfo;
+            }
+            set
+            {
+                mapProperties.SelectedObject = value;
             }
         }
 
@@ -95,7 +102,7 @@ namespace Editor.Forms
 
         private void btnApplyMapInfo_Click(object sender, EventArgs e)
         {
-            var map = this.MapInfo.CreateMap(pnlMap.Map);
+            var map = this.WorldInfo.UpdateMap(Program.EditorContext);
             pnlTileset.SetFromTileset(map.Tileset);
             pnlMap.SetFromMap(map);
             mCursor =null;
@@ -105,26 +112,35 @@ namespace Editor.Forms
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            FileDialog.ShowSaveDialog<Map>(PathType.Maps, pnlMap.Map);
+            FileDialog.ShowSaveDialog<WorldInfo>(PathType.Maps, this.WorldInfo);
         }
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
-            var loadedFile= FileDialog.ShowLoad<Map>(PathType.Maps);
+            var loadedFile= FileDialog.ShowLoad<WorldInfo>(PathType.Maps, this.WorldInfo.GetType());
             System.IO.File.WriteAllText("lastmap", loadedFile.Name);
             LoadMap(loadedFile.Data);          
         }
 
-        private void LoadMap(Map map)
+        private void LoadMap(WorldInfo world)
         {
-            if (map != null)
-            {
-                pnlTileset.SetFromTileset(map.Tileset);
-                pnlMap.SetFromMap(map);
-                mCursor = null;
-                UpdateControls();
-            }
+            if (world == null)
+                return;
 
+            this.WorldInfo = world;
+            this.WorldInfo.UpdateMap(Program.EditorContext);
+            pnlTileset.SetFromTileset(world.Map.Tileset);
+            pnlMap.SetFromMap(world.Map);
+
+            lstObjects.DataSource = WorldInfo.Objects;
+            
+            var overlay = new ObjectCollectionOverlay(this);
+            pnlMap.ImagePanel.MouseAction += overlay.HandleMouse;
+            pnlMap.AddOverlayItem(overlay);
+
+            mCursor = null;
+            AddGridSnaps();
+            UpdateControls();
         }
 
         #endregion
@@ -193,7 +209,51 @@ namespace Editor.Forms
             pnlMap.RefreshImage();
         }
 
-     
+
+        #region GridSnap
+
+        private void AddGridSnaps()
+        {
+            var originalValue = cboGridSnap.SelectedItem as GridSnapType;
+
+            cboGridSnap.Items.Clear();
+
+            RGSizeI baseSize = new RGSizeI(32, 32);
+
+            if(this.pnlTileset.Tileset != null)
+                baseSize = this.pnlTileset.Tileset.TileSize;
+
+            cboGridSnap.Items.Add(new GridSnapType { Size = baseSize, Text = "1 Cell" });
+            cboGridSnap.Items.Add(new GridSnapType { Size = baseSize.Scale(.5f), Text = "1/2 Cell" });
+            cboGridSnap.Items.Add(new GridSnapType { Size = baseSize.Scale(.25f), Text = "1/4 Cell" });
+            cboGridSnap.Items.Add(new GridSnapType { Size = RGSizeI.Empty, Text = "None" });
+
+            cboGridSnap.SelectedItem = originalValue;
+
+            if (cboGridSnap.SelectedItem == null || cboGridSnap.SelectedIndex < 0)
+                cboGridSnap.SelectedIndex = 0;              
+        }
+
+        private class GridSnapType
+        {
+            public RGSizeI Size { get; set; }
+            public string Text { get; set; }
+
+            public override string ToString()
+            {
+                return Text;
+            }
+        }
+
+        public RGSizeI GridSnap
+        {
+            get
+            {
+                return (cboGridSnap.SelectedItem as GridSnapType).Size;
+            }
+        }
+
+        #endregion
 
         #region Actions
 
@@ -270,18 +330,36 @@ namespace Editor.Forms
             switch (CurrentAction)
             {
                 case EditorAction.Draw: DrawTile(gridPoint, e); break;
-                case EditorAction.Select: SelectTile(gridPoint, e); break;
                 case EditorAction.PlaceObject: HandleObjectMouseClick(gridPoint, e); break;
             }
           
             if (e.Buttons != System.Windows.Forms.MouseButtons.None || !originalCursorPos.Equals(mCursor.Area.TopLeft.ImagePoint))
                 pnlMap.RefreshImage();
+
+
         }
 
 
         private void DrawTile(EditorGridPoint gridPoint, ImageEventArgs e)
         {             
             var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
+
+            if (selectedTile != null && e.Action == MouseActionType.RectangleSelection)
+            {
+                var rectangleEventArgs = e as DrawRectangleEventArgs;
+                if (rectangleEventArgs != null)
+                {
+                    var topLeft = (rectangleEventArgs.Point as EditorGridPoint).GridPoint;
+                    var bottomRight = (rectangleEventArgs.Point2 as EditorGridPoint).GridPoint;
+
+                    for (int x = topLeft.X; x <= bottomRight.X; x++)
+                        for (int y = topLeft.Y; y <= bottomRight.Y; y++)
+                            pnlMap.Map.SetTile(x, y, selectedTile.TileDef.TileID);
+
+                    return;
+                }
+            }
+
 
             if (selectedTile != null && e.Buttons == System.Windows.Forms.MouseButtons.Left)
             {
@@ -304,22 +382,6 @@ namespace Editor.Forms
             }
         }
 
-        private void SelectTile(EditorGridPoint gridPoint, ImageEventArgs e)
-        {
-
-            if (e.Buttons == System.Windows.Forms.MouseButtons.Left)
-            {
-                pnlMap.SelectionGrid.SetSelection(gridPoint,true);
-            }
-            else if (e.Buttons == System.Windows.Forms.MouseButtons.Right)
-            {
-                pnlMap.SelectionGrid.SetSelection(gridPoint, false);
-            }
-
-
-        }
-
-
         private void btnRandomize_Click(object sender, EventArgs e)
         {
             var h = new TileUsageHelper();
@@ -333,7 +395,6 @@ namespace Editor.Forms
 
 
         #endregion
-
 
         #region Groups
 
@@ -501,29 +562,43 @@ namespace Editor.Forms
             var sprite = t.CreateInstance<Sprite>(layer, Program.EditorContext);
             sprite.Location = sprite.CurrentAnimation.CurrentDirectedAnimationFrame.Origin;
 
-            var painter = new BitmapPainter();
+            var img = new Bitmap(sprite.CurrentAnimation.DestinationRec.Width, sprite.CurrentAnimation.DestinationRec.Height);
+            var g = Graphics.FromImage(img);
+            var painter = new GraphicsPainter(g);
             sprite.CurrentAnimation.Draw(painter, RGRectangleI.FromXYWH(0, 0, 1000, 1000));
-
-            return painter.Image;
+            g.Dispose();
+            return img;
         }
 
-        class BitmapPainter : Engine.Graphics.Painter
+        class GraphicsPainter : Engine.Graphics.Painter
         {
-            public Bitmap Image { get; private set; }
+            public Graphics Graphics { get; set; }
+            public TilePanel Panel { get; set; }
+            
+            public GraphicsPainter() : base(Program.EditorContext) { }
 
-            public BitmapPainter() : base(Program.EditorContext) { }
+            public GraphicsPainter(Graphics graphics) : base(Program.EditorContext) { Graphics = graphics; }
+
+            public RGRectangleI TranslateRectangle(RGRectangleI rec)
+            {
+                if (Panel == null)
+                    return rec;
+
+                return new EditorRectangle()
+                {
+                    TopLeft = EditorGridPoint.FromImagePoint(rec.Left, rec.Top, Panel),
+                    BottomRight = EditorGridPoint.FromImagePoint(rec.Right, rec.Bottom, Panel)
+                }.ClientRectangle;
+            }
 
             protected override void PaintToScreen(TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options)
             {
                 var textureImage = texture.GetImage();
-
-                this.Image = new Bitmap(dest.Width, dest.Height);
-                var g = Graphics.FromImage(this.Image);
-                g.DrawImage(textureImage, dest.ToSystemRec(), source.ToSystemRec(), GraphicsUnit.Pixel);
-                g.Dispose();
-
+                Graphics.DrawImage(textureImage, this.TranslateRectangle(dest).ToSystemRec(), source.ToSystemRec(), GraphicsUnit.Pixel);               
             }
         }
+
+
 
         private ObjectType SelectedObjectType
         {
@@ -533,21 +608,13 @@ namespace Editor.Forms
         private void cboObject_SelectedIndexChanged(object sender, EventArgs e)
         {
             pbObjectPreview.Image = GetObjectTypeImage(SelectedObjectType);
-            UpdateObjectEntry(SelectedObjectType);
-        }
-
-        private ObjectEntry UpdateObjectEntry(ObjectType t)
-        {
-            var o = new ObjectEntry() { SpriteType = t };
-            this.CurrentObjectEntry = o;
-            return o;
         }
 
         private ObjectEntry CurrentObjectEntry
         {
             get
             {
-                return (pgObject.SelectedObject as ObjectEntry) ?? UpdateObjectEntry(this.SelectedObjectType);
+                return (pgObject.SelectedObject as ObjectEntry);
             }
             set
             {
@@ -563,31 +630,151 @@ namespace Editor.Forms
                 RemoveObject(objectUnderCursor);
             else if (args.Buttons == System.Windows.Forms.MouseButtons.Left)
             {
-                if (objectUnderCursor == null)
-                    PlaceObject(pt.ImagePoint);
+                if (objectUnderCursor == null && args.Action == MouseActionType.DoubleClick)                                    
+                    PlaceObject(pt.ImagePoint);                
                 else
-                {
-                    //update selected
-                }
+                    this.CurrentObjectEntry = objectUnderCursor;
             }
 
         }
 
         private ObjectEntry GetObjectFromPoint(RGPointI point)
         {
-            throw new NotImplementedException();
-
+            return this.WorldInfo.Objects.FirstOrDefault(p => p.PlacedObject.Area.Contains(point));
         }
 
         private void RemoveObject(ObjectEntry obj)
         {
-            throw new NotImplementedException();
+            this.WorldInfo.Objects.Remove(obj);
+            this.CurrentObjectEntry = null;
         }
 
         private void PlaceObject(RGPointI point)
         {
-            throw new NotImplementedException();
+            this.CurrentObjectEntry = new ObjectEntry() { SpriteType = SelectedObjectType, Location=point }; ;
+            this.WorldInfo.Objects.Add(this.CurrentObjectEntry);
+            this.CurrentObjectEntry.CreateObject(new FixedLayer(Program.EditorContext));
+            pnlMap.RefreshImage();
         }
+
+        private class ObjectCollectionOverlay : IDrawable
+        {
+            private LevelEditor mForm;
+            private ObjectOverlay[] mObjects;
+            private GraphicsPainter mPainter;
+
+            private IEnumerable<ObjectOverlay> Objects
+            {
+                get
+                {
+                    if (mObjects == null || mObjects.Count() != mForm.WorldInfo.Objects.Count)
+                        mObjects = mForm.WorldInfo.Objects.Select(p => new ObjectOverlay(p, mForm, mPainter)).ToArray();
+                    return mObjects;
+                }
+            }
+
+            public ObjectCollectionOverlay(LevelEditor form) 
+            { 
+                mForm = form;
+                mPainter = new GraphicsPainter() { Panel = form.pnlMap.ImagePanel };
+            }
+
+            public void DrawToClient(Graphics g)
+            {
+                mPainter.Graphics = g;
+
+                foreach (var o in Objects)
+                    o.DrawToClient(g);
+            }
+
+            public IEnumerable<EditorPoint> GetPoints()
+            {
+                return Objects.SelectMany(p => p.GetPoints());
+            }
+
+            public void HandleMouse(object sender, ImageEventArgs mouseArgs)
+            {
+                var nothingSelected=true;
+                var wasSelected = false;
+
+                foreach (var o in Objects)
+                {
+                    wasSelected = o.Selected;
+                    o.Highlighted = o.ClientRectangle.Contains(mouseArgs.Point.ClientPoint);
+                    o.Selected = (o.ObjectEntry == mForm.CurrentObjectEntry);
+
+                    if(wasSelected || o.Selected || o.IsDragging)
+                        o.HandleMouse(mouseArgs);
+                }
+                
+            }
+        }
+
+        private class ObjectOverlay : IDrawable 
+        {
+            public bool Highlighted { get; set; }
+            public bool Selected { get; set; }
+
+            public ObjectEntry ObjectEntry { get; set; }
+
+            private EditorPoint mPoint;
+            private GraphicsPainter mPainter;
+            private Brush mHighlightBrush;
+            private Pen mSelectedPen;
+            private DragHandler mDragHandler;
+
+            public bool IsDragging { get { return mDragHandler.IsDragging; } }
+
+            public RGRectangleI ClientRectangle
+            {
+                get
+                {
+                    return mPainter.TranslateRectangle(ObjectEntry.PlacedObject.CurrentAnimation.DestinationRec).Inflate(8);              
+                }
+            }
+
+            public ObjectOverlay(ObjectEntry obj, LevelEditor form, GraphicsPainter painter)
+            {
+                ObjectEntry = obj;
+                mPoint = EditorGridPoint.FromImagePoint(ObjectEntry.Location.X, ObjectEntry.Location.Y, form.pnlMap.ImagePanel);
+                mPainter = painter;
+
+                mDragHandler = new DragHandler(obj, () => form.GridSnap);
+
+                mHighlightBrush = new SolidBrush(Color.Orange);
+                mSelectedPen = new Pen(Color.LightGreen, 2f);
+            }
+
+            public void HandleMouse(ImageEventArgs args)
+            {
+                mDragHandler.HandleMouse(args);
+            }
+
+            public void DrawToClient(Graphics g)
+            {
+                try
+                {
+                  
+                    if (Highlighted)
+                        g.FillRectangle(mHighlightBrush, ClientRectangle.ToSystemRec());
+
+                    mPainter.Paint(RGRectangleI.FromXYWH(0, 0, 9000, 9000), ObjectEntry.PlacedObject);
+
+                    if (Selected)
+                        g.DrawRectangle(mSelectedPen, ClientRectangle.ToSystemRec());
+                }
+                catch(Exception ex)
+                {
+                    Console.WriteLine(ex.Message);
+                }
+            }
+
+            public IEnumerable<EditorPoint> GetPoints()
+            {
+                yield return mPoint;
+            }
+        }
+
 
         #endregion
 

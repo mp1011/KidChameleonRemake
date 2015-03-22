@@ -44,7 +44,11 @@
     <Compile Include="Enemy\Enemy.cs" />
     <Compile Include="Font.cs" />
     <Compile Include="Game\Context.cs" />
+    <Compile Include="Game\Game.cs" />
     <Compile Include="Game\PlayerStats.cs" />
+    <Compile Include="Game\SplashScreen.cs" />
+    <Compile Include="Game\Theme.cs" />
+    <Compile Include="Game\WorldInfo.cs" />
     <Compile Include="HUD\Clock.cs" />
     <Compile Include="HUD\Counter.cs" />
     <Compile Include="HUD\HealthGuage.cs" />
@@ -64,12 +68,11 @@
     <Compile Include="Player\PlatformerPlayerController.cs" />
     <Compile Include="Player\RedStealth.cs" />
     <Compile Include="Player\SimpleDirectionController.cs" />
-    <Compile Include="Program.cs" />
     <Compile Include="Sounds.cs" />
     <Compile Include="TestObjects.cs" />
     <Compile Include="Tile\BreakableTile.cs" />
     <Compile Include="Tile\PrizeBlock.cs" />
-    <Compile Include="Tile\Tile.cs" />
+    <Compile Include="Tile\KidCTile.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">
@@ -79,6 +82,9 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Progress.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <Reference Include="System" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

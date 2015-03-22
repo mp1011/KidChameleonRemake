@@ -72,7 +72,7 @@ namespace Engine
 
         public bool ContainsGroups(IEnumerable<string> groups)
         {
-            return groups.Any(p => this.Groups.Contains(p));
+            return groups.Any(p => this.Groups.NeverNull().Contains(p));
         }
 
         public override string ToString()

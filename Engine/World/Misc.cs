@@ -27,7 +27,7 @@ namespace Engine
 
         public RGRectangleI Area
         {
-            get { return RGRectangleI.Create(Location, RGSizeI.Empty); }
+            get { return RGRectangleI.Create(Location, RGSizeI.Empty); }            
         }
 
         public Direction Direction

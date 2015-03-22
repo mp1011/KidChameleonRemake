@@ -171,11 +171,14 @@
   <data name="pnlLeftRight.Location" type="System.Drawing.Point, System.Drawing">
     <value>0, 24</value>
   </data>
+  <data name="pnlMap.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Fill</value>
+  </data>
   <data name="pnlMap.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+    <value>0, 68</value>
   </data>
   <data name="pnlMap.Size" type="System.Drawing.Size, System.Drawing">
-    <value>607, 565</value>
+    <value>483, 521</value>
   </data>
   <data name="pnlMap.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -190,6 +193,27 @@
     <value>pnlMapContainer</value>
   </data>
   <data name="&gt;&gt;pnlMap.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="cboGridSnap.Location" type="System.Drawing.Point, System.Drawing">
+    <value>367, 10</value>
+  </data>
+  <data name="cboGridSnap.Size" type="System.Drawing.Size, System.Drawing">
+    <value>101, 21</value>
+  </data>
+  <data name="cboGridSnap.TabIndex" type="System.Int32, mscorlib">
+    <value>5</value>
+  </data>
+  <data name="&gt;&gt;cboGridSnap.Name" xml:space="preserve">
+    <value>cboGridSnap</value>
+  </data>
+  <data name="&gt;&gt;cboGridSnap.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ComboBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;cboGridSnap.Parent" xml:space="preserve">
+    <value>pnlTop</value>
+  </data>
+  <data name="&gt;&gt;cboGridSnap.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="btnRandomize.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
@@ -217,7 +241,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;btnRandomize.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="chkSelect.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
     <value>Button</value>
@@ -250,7 +274,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;chkSelect.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="chkDraw.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
     <value>Button</value>
@@ -283,7 +307,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;chkDraw.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="chkShowGrid.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -313,7 +337,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;chkShowGrid.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="tbZoom.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -340,7 +364,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;tbZoom.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="pnlTop.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Top</value>
@@ -621,6 +645,27 @@
   <data name="&gt;&gt;pgeTiles.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="lstObjects.Location" type="System.Drawing.Point, System.Drawing">
+    <value>313, 206</value>
+  </data>
+  <data name="lstObjects.Size" type="System.Drawing.Size, System.Drawing">
+    <value>187, 329</value>
+  </data>
+  <data name="lstObjects.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;lstObjects.Name" xml:space="preserve">
+    <value>lstObjects</value>
+  </data>
+  <data name="&gt;&gt;lstObjects.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ListBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;lstObjects.Parent" xml:space="preserve">
+    <value>pgeObjects</value>
+  </data>
+  <data name="&gt;&gt;lstObjects.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="pgObject.Location" type="System.Drawing.Point, System.Drawing">
     <value>15, 66</value>
   </data>
@@ -640,7 +685,7 @@
     <value>pgeObjects</value>
   </data>
   <data name="&gt;&gt;pgObject.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="pbObjectPreview.Location" type="System.Drawing.Point, System.Drawing">
     <value>306, 19</value>
@@ -661,7 +706,7 @@
     <value>pgeObjects</value>
   </data>
   <data name="&gt;&gt;pbObjectPreview.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="cboObjectType.Location" type="System.Drawing.Point, System.Drawing">
     <value>15, 19</value>
@@ -682,7 +727,7 @@
     <value>pgeObjects</value>
   </data>
   <data name="&gt;&gt;cboObjectType.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="pgeObjects.Location" type="System.Drawing.Point, System.Drawing">
     <value>4, 22</value>

@@ -14,6 +14,7 @@ namespace Editor
         MouseDown,
         Move,
         Click,
+        DoubleClick,
         RectangleSelection
     }
 

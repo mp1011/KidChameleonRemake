@@ -9,6 +9,8 @@ namespace Engine.Graphics
     {
         private GameContext mContext;
 
+        public RenderOptions RenderInfo { get; set; }
+
         protected Painter(GameContext ctx)
         {
             mContext = ctx;
@@ -22,6 +24,8 @@ namespace Engine.Graphics
 
         public void Paint(RGRectangleI canvas, TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options)
         {
+            options = this.RenderInfo.CombineWith(options);
+
             if (!options.CheckVisible(mContext))
                 return;
 

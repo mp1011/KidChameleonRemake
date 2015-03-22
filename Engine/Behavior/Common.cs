@@ -104,6 +104,40 @@ namespace Engine
         }
     }
 
+    public class SeekPointControllerX<T> : LogicObject  where T:LogicObject, IMoveableWithPosition 
+    {
+        private T mObject;
+        private IWithPosition mTarget;
+        public int Speed { get; set; }
+        public bool ReachedTarget { get; private set; }
+
+        public SeekPointControllerX(T obj, IWithPosition target)
+            : base(LogicPriority.Behavior, obj, RelationFlags.DestroyWhenParentDestroyed)
+        {
+            mObject = obj;
+            mTarget = target;
+            this.Speed = 5;
+        }
+
+        protected override void Update()
+        {
+            var dir = this.mObject.Location.GetDirectionTo(mTarget.Location);
+            if (this.mObject.Location.GetDistanceTo(mTarget.Location) <= this.Speed)
+            {
+                this.mObject.Location = mTarget.Location;
+                this.ReachedTarget = true;
+                this.Kill(Engine.ExitCode.Finished);
+                mObject.MotionManager.StopAllMotion();
+            }
+            else
+            {
+                this.mObject.MotionManager.MainMotion.Set(dir, 5f);
+                this.ReachedTarget = false;
+            }
+        }
+    }
+
+
     public class SeekPointController : SpriteBehavior
     {
         private IWithPosition mTarget;

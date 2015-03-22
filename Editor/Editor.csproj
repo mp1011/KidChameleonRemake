@@ -11,7 +11,8 @@
     <RootNamespace>Editor</RootNamespace>
     <AssemblyName>Editor</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
-    <TargetFrameworkProfile>Client</TargetFrameworkProfile>
+    <TargetFrameworkProfile>
+    </TargetFrameworkProfile>
     <FileAlignment>512</FileAlignment>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
@@ -36,6 +37,7 @@
   <ItemGroup>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing.Design" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -49,7 +51,9 @@
     <Compile Include="BackupManager.cs" />
     <Compile Include="Controls\ImagePanel.cs" />
     <Compile Include="Controls\ImagePanelEvents.cs" />
-    <Compile Include="Controls\ImagePanelOverlay.cs" />
+    <Compile Include="Controls\RGColorEditor.cs" />
+    <Compile Include="UI\DragHandler.cs" />
+    <Compile Include="UI\ImagePanelOverlay.cs" />
     <Compile Include="Controls\TilePanel.cs">
       <SubType>UserControl</SubType>
     </Compile>
@@ -121,9 +125,7 @@
       <DependentUpon>BitmapPortionPanel.cs</DependentUpon>
     </Compile>
     <Compile Include="Image\ImagePoint.cs" />
-    <Compile Include="KC\KCEditorTile.cs" />
-    <Compile Include="Level\EditorMap.cs" />
-    <Compile Include="Level\Tile.cs" />
+    <Compile Include="Level\EditorTile.cs" />
     <Compile Include="Level\TileUsageHelper.cs" />
     <Compile Include="Util.cs" />
     <Compile Include="Image\BitmapPortion.cs" />
@@ -178,6 +180,9 @@
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Properties\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="app.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

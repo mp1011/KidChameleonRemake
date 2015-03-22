@@ -33,8 +33,15 @@ namespace Engine
 
     public class GameResource<T> : GameResource where T : new()
     {
+        private Type mOverrideType;
         private T content;
         private bool mLoaded = false;
+
+
+        public GameResource(GamePath path, Type deserializeType) : this(path) 
+        {
+            mOverrideType = deserializeType;
+        }
 
         public GameResource(GamePath path) : base(path) { }
 
@@ -59,7 +66,10 @@ namespace Engine
         protected virtual T CreateNewObject(GameContext context)
         {
             var json = System.IO.File.ReadAllText(this.Path.FullPath);
-            return Serializer.FromJson<T>(json);
+            if (mOverrideType != null)
+                return (T)Serializer.FromJson(json, mOverrideType);
+            else 
+                return Serializer.FromJson<T>(json);
         }
 
         public static T Load(GamePath path, GameContext ctx)

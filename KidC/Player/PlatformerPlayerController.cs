@@ -19,6 +19,8 @@ namespace KidC
         public float StopAccel { get; set; }
         public float AirDecel { get; set; }
         public float TurnAccel { get; set; }
+        public float AirTurnAccel { get; set; }
+
 
         public float CrawlSpeed { get; set; }
         public float CrawlAccel { get; set; }
@@ -218,6 +220,12 @@ namespace KidC
                 if (mo < 0)
                 {
                     this.Sprite.CurrentAnimationKey = KCAnimation.Turn;
+
+                    if (mIsOnGround)
+                        Sprite.MotionManager.MainMotion.Accel = this.MotionStats.TurnAccel;
+                    else
+                        Sprite.MotionManager.MainMotion.Accel = this.MotionStats.AirTurnAccel;
+
                     if (this.Sprite.CurrentAnimationKey != KCAnimation.Turn)
                         this.Sprite.CurrentAnimationKey = KCAnimation.Walk;
                 }

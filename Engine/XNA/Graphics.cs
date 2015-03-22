@@ -51,7 +51,7 @@ namespace Engine.XNA
             if (options.FlipY)
                 mEffects = mEffects | SpriteEffects.FlipVertically;
 
-            mSpriteBatch.Draw(texture,dest.ToXNARec(), source.ToXNARec(), Color.White, 0, Vector2.Zero, mEffects, 0);
+            mSpriteBatch.Draw(texture,dest.ToXNARec(), source.ToXNARec(), options.FadeColor.ToXNAColor(), 0, Vector2.Zero, mEffects, 0);
         }
        
     }

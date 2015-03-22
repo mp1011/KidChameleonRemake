@@ -14,8 +14,6 @@ namespace Editor.Forms
 {
     partial class TilesetEditor : Form
     {
-        public static Func<IEditorTileset> CreateTileset;
-
         #region Instance
 
         private static TilesetEditor mInstance;
@@ -48,11 +46,11 @@ namespace Editor.Forms
 
         #endregion
 
-        private IEditorTileset mTileset;
+        private TileSet mTileset;
               
         private TilesetEditor()
         {
-            mTileset = TilesetEditor.CreateTileset();
+            mTileset = new TileSet();
             InitializeComponent();
 
             pnlBase.SetFromTileset(TileSet.CreateBase());
@@ -60,9 +58,9 @@ namespace Editor.Forms
 
             pnlTileset.ImagePanel.MouseAction += new ImagePanel.MouseActionEventHandler(pnlTileset_ImageClicked);
 
-            chkProperties.Items.Add(new PropertyBinding<EditorTile> { Name = "Flags", Copy = (src, dest) => dest.Flags = src.Flags });
-            chkProperties.Items.Add(new PropertyBinding<EditorTile> { Name = "Sides", Copy = (src, dest) => dest.Sides = src.Sides });
-            chkProperties.Items.Add(new PropertyBinding<EditorTile>
+            chkProperties.Items.Add(new PropertyBinding<TileDef> { Name = "Flags", Copy = (src, dest) => dest.SetValues(null,src.Flags,null,null)});
+            chkProperties.Items.Add(new PropertyBinding<TileDef> { Name = "Sides", Copy = (src, dest) => dest.SetValues(null, null, src.Sides, null) });
+            chkProperties.Items.Add(new PropertyBinding<TileDef>
             {
                 Name = "Group",
                 Copy = (src, dest) =>
@@ -70,7 +68,7 @@ namespace Editor.Forms
                         dest.Groups = src.Groups;     
                     }
             });
-            chkProperties.Items.Add(new PropertyBinding<EditorTile> { Name = "Random Usage", Copy = (src, dest) => dest.RandomUsageWeight = src.RandomUsageWeight });
+            chkProperties.Items.Add(new PropertyBinding<TileDef> { Name = "Random Usage", Copy = (src, dest) => dest.Usage.RandomUsageWeight = src.Usage.RandomUsageWeight });
 
             pnlBase.SelectionMode = SelectionMode.Single;
             pnlTileset.SelectionMode = SelectionMode.Multi;
@@ -105,32 +103,27 @@ namespace Editor.Forms
 
         public void AddNewTiles(IEnumerable<BitmapPortion> newTiles)
         {
-            int id = 0;
-            if(mTileset.Tiles.Count() > 0)
-                id = mTileset.Tiles.Max(p => p.ID);
+            int id = mTileset.GetTiles().MaxOrDefault(t => t.TileID,0);
 
-            mTileset.AddTiles(newTiles.Select(t => mTileset.CreateTile(t, ++id)));
-
-            pnlTileset.SetFromTileset(mTileset.CreateTileset(Color.Transparent, "tiles", null));
-
+            var editorTiles = EditorTile.Create(newTiles, id);
+            mTileset.AddTiles(editorTiles.Select(p => p.TileDef));
+            pnlTileset.SetFromTileset(EditorTile.CreateTileset(editorTiles));
             pnlTileset.RefreshImage();
         }
-
+        
         public void LoadTileset()
         {
             var ts = FileDialog.ShowLoad<TileSet>(PathType.Tilesets).Data;
             if (ts == null)
                 return;
 
-            mTileset = TilesetEditor.CreateTileset();
-            mTileset.Fill(ts);
+            mTileset = ts;
             pnlTileset.SetFromTileset(ts);     
         }
 
         public void LoadTileset(TileSet ts)
         {
-            mTileset = TilesetEditor.CreateTileset();
-            mTileset.Fill(ts);
+            mTileset = ts;
             pnlTileset.SetFromTileset(ts);
         }
 
@@ -138,16 +131,15 @@ namespace Editor.Forms
         {
             FileDialog.ShowSaveDialog<TileSet>(PathType.Tilesets, selectedFile =>
             {
-                var name = Path.GetFileNameWithoutExtension(selectedFile);
-                var ts = mTileset.CreateTileset(Color.Transparent, name,null);
-
-                var bitmap = ts.Texture.GetImage();
-                bitmap.Save(ts.Texture.Path.FullPath);
-                BackupManager.CreateBackup(ts.Texture.Path.FullPath);
-                return ts;
+                var bitmap = mTileset.Texture.GetImage();
+                bitmap.Save(mTileset.Texture.Path.FullPath);
+                BackupManager.CreateBackup(mTileset.Texture.Path.FullPath);
+                return mTileset;
             });
 
         }
+
+     
 
         private void OnTileSelected()
         {
@@ -156,7 +148,11 @@ namespace Editor.Forms
             var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
             if (selectedTile == null)
                 return;
-            tileProperties.SelectedObject = mTileset.GetTile(selectedTile);
+
+            var def = selectedTile.TileDef;
+
+
+            tileProperties.SelectedObject = selectedTile.TileDef;
             tileProperties.Refresh();
 
             pnlTilePreview.Refresh();
@@ -200,7 +196,7 @@ namespace Editor.Forms
 
         private void btnCopyFromSelected_Click(object sender, EventArgs e)
         {
-            var selectedTile = tileProperties.SelectedObject as EditorTile;
+            var selectedTile = tileProperties.SelectedObject as TileDef;
             if (selectedTile == null)
                 return;
 
@@ -208,17 +204,17 @@ namespace Editor.Forms
         }
 
 
-        private void CopyProperties(EditorTile source)
+        private void CopyProperties(TileDef source)
         {
             foreach (var tile in pnlTileset.SelectedTiles())
             {
-                var editorTile = mTileset.Tiles.FirstOrDefault(p => p.ID == tile.TileDef.TileID);
+                var editorTile = mTileset.GetTiles().FirstOrDefault(p => p.TileID == tile.TileDef.TileID);
                 if (editorTile == null)
                     continue;
 
                 foreach (var item in chkProperties.CheckedItems)
                 {
-                    var prop = item as PropertyBinding<EditorTile>;
+                    var prop = item as PropertyBinding<TileDef>;
                     prop.Copy(source, editorTile);
                 }
             }
@@ -262,13 +258,14 @@ namespace Editor.Forms
                     return;
                 }
 
-                var tile = mTileset.Tiles.FirstOrDefault(p => p.ID == pnlTileset.SelectedTiles().FirstOrDefault().TileDef.TileID);
+                var tile = pnlTileset.SelectedTiles().FirstOrDefault().TileDef;
                 if (tile == null)
                     return;
 
                 e.Graphics.SetBlockyScaling();
 
-                e.Graphics.DrawImage(tile.Image.Image, new Rectangle(0, 0, pnlTilePreview.Width, pnlTilePreview.Height), tile.Image.Region.ToSystemRec(), GraphicsUnit.Pixel);
+                throw new NotImplementedException();
+               // e.Graphics.DrawImage(tile.Image.Image, new Rectangle(0, 0, pnlTilePreview.Width, pnlTilePreview.Height), tile.Image.Region.ToSystemRec(), GraphicsUnit.Pixel);
             }
             catch (Exception ex)
             {

@@ -206,7 +206,7 @@ namespace Editor
 
             bool isSingleCellClick = mMouseEvents.All(p => p.Point.Equals(mMouseEvents.First().Point));
 
-            if (SelectionMode == Editor.SelectionMode.Single || (isFirstClick && Control.ModifierKeys != Keys.Shift))
+            if (args.Buttons == MouseButtons.Left && (SelectionMode == Editor.SelectionMode.Single || (isFirstClick && Control.ModifierKeys != Keys.Shift)))
                 this.ClearSelection();
 
             if (args.Action == MouseActionType.Click)            
@@ -240,6 +240,9 @@ namespace Editor
 
         public void ClearSelection()
         {
+            if (mSelected == null)
+                return;
+
             for (int y = 0; y < mSelected.GetLength(1); y++)
                 for (int x = 0; x < mSelected.GetLength(0); x++)
                     mSelected[x, y] = false;

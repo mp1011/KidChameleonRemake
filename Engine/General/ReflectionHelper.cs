@@ -29,7 +29,31 @@ namespace Engine
         {
             return type.GetProperties().Where(p => p.GetCustomAttributes(typeof(TAttr), false).Any());
         }
-       
+
+        /// <summary>
+        /// Creates an instance of the class decorated by the given attribute
+        /// </summary>
+        /// <typeparam name="TReturn"></typeparam>
+        /// <typeparam name="TAttr"></typeparam>
+        /// <param name="condition"></param>
+        /// <returns></returns>
+        public static TReturn CreateObjectByAttribute<TReturn, TAttr>(object parent, Func<TAttr, bool> condition, params object[] args) where TAttr : Attribute
+        {
+            var assembly = GetAssembly(parent);
+            foreach (var type in GetTypesByAttribute<TAttr>(assembly))
+            {
+                foreach (var attr in type.GetCustomAttributes(false).OfType<TAttr>())
+                {
+                    if (condition(attr))
+                    {
+                        var obj = Activator.CreateInstance(type,args);
+                        return (TReturn)obj;
+                    }
+                }
+            }
+
+            throw new Exception("Unable to create an object");
+        }
     }
 
 

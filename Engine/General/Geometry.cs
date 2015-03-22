@@ -1,5 +1,7 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using System.Linq;
 using System.Text;
 
@@ -255,6 +257,7 @@ namespace Engine
         public static Direction FromAngle(double angle) { return new Direction(angle); }
         public static Direction FromRad(double angle) { return new Direction(angle * (180.0 / Math.PI)); }
 
+        [JsonIgnore]
         public double Radians { get { return degrees * (Math.PI / 180.0); } }
 
         public double Degrees { get { return degrees; } }
@@ -406,6 +409,10 @@ namespace Engine
             return Math.Min(distCW, distCCW);
         }
 
+        public static Direction Random()
+        {
+            return Direction.FromAngle(Util.RandomNumber(0, 360));
+        }
     }
 
     public struct RGPoint : ISerializable 
@@ -594,11 +601,13 @@ namespace Engine
         public int X;
         public int Y;
 
+        [JsonIgnore]
         public bool IsInfinity
         {
             get { return (float.IsPositiveInfinity(this.X) || float.IsPositiveInfinity(this.Y) || float.IsNegativeInfinity(this.X) || float.IsNegativeInfinity(this.Y)); }
         }
 
+        [JsonIgnore]
         public bool IsEmpty
         {
             get { return this.X == 0 && this.Y == 0; }
@@ -629,6 +638,7 @@ namespace Engine
             this.Y = (int)pY;
         }
 
+        [JsonIgnore]
         public Direction Direction
         {
             get
@@ -637,6 +647,7 @@ namespace Engine
             }
         }
 
+        [JsonIgnore]
         public float Magnitude
         {
             get
@@ -714,6 +725,16 @@ namespace Engine
             return RGRectangle.FromXYWH(this.X * gridCellSize.Width, this.Y * gridCellSize.Height, gridCellSize.Width, gridCellSize.Height);
         }
 
+        public RGPointI SnapTo(RGSizeI gridCellSize)
+        {
+            if (gridCellSize.IsZero)
+                return this;
+
+            return new RGPointI((int)(this.X / gridCellSize.Width) * gridCellSize.Width,
+                (int)(this.Y / gridCellSize.Height) * gridCellSize.Height);
+
+        }
+
         public RGPoint ToPointF() { return new RGPoint(this.X, this.Y); }
 
         public override string ToString()
@@ -728,6 +749,11 @@ namespace Engine
 
             var other = (RGPointI)obj;
             return this.X == other.X && this.Y == other.Y;
+        }
+
+        public override int GetHashCode()
+        {
+            return this.X * 23 + this.Y * 37;
         }
 
         public RGPointI Difference(RGPointI other)
@@ -866,6 +892,16 @@ namespace Engine
         public override int GetHashCode()
         {
             return Width * Height;
+        }
+
+        public RGSizeI Scale(float dx, float dy)
+        {
+            return new RGSizeI(this.Width * dx, this.Height * dy);
+        }
+
+        public RGSizeI Scale(float scale)
+        {
+            return Scale(scale, scale);
         }
 
         public bool IsZero { get { return this.Width == 0 || this.Height == 0; } }
@@ -1257,6 +1293,11 @@ namespace Engine
             return RGRectangleI.FromXYWH(this.X, this.Y, this.Width * x, this.Height * y);
         }
 
+        public RGRectangleI Inflate(int amount)
+        {
+            return RGRectangleI.FromTLBR(this.Top - amount, this.Left - amount, this.Bottom + amount, this.Right + amount);
+        }
+
         /// <summary>
         /// Scales this rectangle as large as it can get without going outside of the container, without changing its aspect ratio.
         /// </summary>
@@ -1303,6 +1344,48 @@ namespace Engine
 
     }
 
+
+    public class RGColorTypeConverter : TypeConverter
+    {
+        public override bool CanConvertFrom(ITypeDescriptorContext context, Type sourceType)
+        {
+            return sourceType == typeof(string);
+        }
+
+        public override bool CanConvertTo(ITypeDescriptorContext context, Type destinationType)
+        {
+            return destinationType == typeof(string);
+        }
+
+        public override object ConvertFrom(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value)
+        {
+            var bytes = (value as string).Split(',').Select(p=>Convert.ToByte(p)).ToArray();
+            return RGColor.FromRGB(bytes[0],bytes[1],bytes[2]);
+        }
+
+        public override object ConvertTo(ITypeDescriptorContext context, System.Globalization.CultureInfo culture, object value, Type destinationType)
+        {
+            var color = (RGColor)value;
+            return color.ToString();
+        }
+
+        public override bool IsValid(ITypeDescriptorContext context, object value)
+        {
+            try
+            {
+                var bytes = (value as string).Split(',').Select(p => Convert.ToByte(p)).ToArray();
+                return bytes.Length == 3;
+            }
+            catch
+            {
+                return false;
+            }
+       
+        }
+    }
+
+
+    [TypeConverter(typeof(RGColorTypeConverter))]
     public struct RGColor
     {
         public static RGColor White { get { return RGColor.FromRGB(255, 255, 255); } }
@@ -1320,6 +1403,36 @@ namespace Engine
             c.Blue = b;
             return c;
         }
+
+        public override string ToString()
+        {
+            return String.Concat(Red, ",", Green, ",", Blue);
+        }
+
+        public static RGColor Fade(RGColor source, RGColor target, float percent)
+        {
+            var c = new RGColor();
+            c.Red = (byte)(source.Red + ((target.Red - source.Red) * percent));
+            c.Green = (byte)(source.Green + ((target.Green - source.Green) * percent));
+            c.Blue = (byte)(source.Blue + ((target.Blue - source.Blue) * percent));
+            return c;
+        }
+
+        public override bool Equals(object obj)
+        {
+            RGColor other = (RGColor)obj;
+            return this.Red == other.Red && this.Green == other.Green && this.Blue == other.Blue;
+        }
+    }
+
+    [Flags]
+    public enum EditorDirectionFlags
+    {
+        None=0,
+        Up = 1,
+        Down = 2,
+        Left = 4,
+        Right = 8
     }
 
     public class DirectionFlags
@@ -1351,6 +1464,14 @@ namespace Engine
             Right = offset.X > 0;
         }
 
+        public DirectionFlags(EditorDirectionFlags e)
+        {
+            Up = (e & EditorDirectionFlags.Up) != EditorDirectionFlags.None;
+            Down = (e & EditorDirectionFlags.Down) != EditorDirectionFlags.None;
+            Left = (e & EditorDirectionFlags.Left) != EditorDirectionFlags.None;
+            Right = (e & EditorDirectionFlags.Right) != EditorDirectionFlags.None;
+        }
+
         public override bool Equals(object obj)
         {
             var other = obj as DirectionFlags;
@@ -1371,6 +1492,22 @@ namespace Engine
                 (Down ? "Down " : "") +
                 (Left ? "Left " : "") +
                 (Right ? "Right " : "");
+        }
+
+        public EditorDirectionFlags ToEditorFlags()
+        {
+            var result = EditorDirectionFlags.None;
+            if (this.Up)
+                result = result | EditorDirectionFlags.Up;
+            if (this.Down)
+                result = result | EditorDirectionFlags.Down;
+            if (this.Left)
+                result = result | EditorDirectionFlags.Left;
+            if (this.Right)
+                result = result | EditorDirectionFlags.Right;
+
+            return result;
+
         }
 
         public DirectionFlags Invert()
