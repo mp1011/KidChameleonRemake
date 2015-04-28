@@ -82,14 +82,17 @@ namespace KidC
 
         public override CollidingTile CreateCollidingTile(TileLayer tileLayer)
         {
+           
             var flags = this.TileDef.Flags;
 
             switch (this.KCTileDef.SpecialType)
             {
                 case SpecialTile.Prize: return new PrizeBlock(this, tileLayer, this.GetPrizeType());
-                case SpecialTile.Rock:   return new BreakableTile(this, tileLayer);
-                default:  return new PlainTile(this, tileLayer);
+                case SpecialTile.Rock: return new BreakableTile(this, tileLayer);
+                case SpecialTile.Metal: return new MetalBlock(this, tileLayer);
+                default: return new PlainTile(this, tileLayer);
             }
+
         }
 
         public override bool IsSpecial

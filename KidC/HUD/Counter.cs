@@ -25,20 +25,20 @@ namespace KidC
         
         public int Amount { get; set; }
 
-        public Counter(Layer layer, SimpleAnimation animation) : base(LogicPriority.World, layer.Context)
+        public Counter(Layer layer, SimpleAnimation animation) : base(LogicPriority.World, layer)
         {
             mAnimation = animation;        
         }
 
         protected override void OnEntrance()
         {
-            mAmountText = new GameText(this.Context, FontManager.ClockFont, "9x", RGPointI.Empty, 16, Alignment.Far, Alignment.Center);
+            mAmountText = new GameText(this, FontManager.ClockFont, "9x", RGPointI.Empty, 16, Alignment.Far, Alignment.Center);
         }
 
         protected override void Update()
         {
             mAmountText.Text = this.Amount + "x";
-            mAmountText.Location = Location.Offset(-mAmountText.TextArea.Width-8,0);
+            mAmountText.Location = Location.Offset(-mAmountText.TextArea.Width-16,0);
             mAnimation.Location = Location;
         }
 

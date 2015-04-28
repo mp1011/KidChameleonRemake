@@ -5,7 +5,7 @@ namespace KidC
 
     class EnemyHitController : HitController
     {
-        public EnemyHitController(Sprite s) : base(s, 30) { }
+        public EnemyHitController(Sprite s, HealthController healthController) : base(s, 30, healthController) { }
         protected override bool AllowRetrigger { get { return true; } }
 
         protected override bool ShouldHandleCollision(Engine.Collision.CollisionEvent evt)
@@ -50,40 +50,34 @@ namespace KidC
     }
 
 
-    class DyingSpriteController : TriggeredController<bool>
+    class DyingSpriteController : SpriteBehavior, ITriggerable 
     {
-
         public DyingSpriteController(Sprite s) : base(s) { }
-        protected override bool AllowRetrigger { get { return false; } }
 
-        protected override Switch OnTriggered(bool state)
+        protected override void OnResume()
         {
             this.Sprite.CurrentAnimationKey = KCAnimation.Dying;
             this.Sprite.RemoveCollisionType(ObjectType.Thing);
-            return Switch.On;
         }
 
-        private bool mDying = false;
-
-        protected override Switch OnTriggerUpdate(bool state)
+        protected override void Update()
         {
-            if (mDying)
-                return Switch.On;
-
+            this.Sprite.SnapToGround(Sprite.DrawLayer as TileLayer);
             this.Sprite.MotionManager.MainMotion.Set(0f);
             if (this.Sprite.CurrentAnimation.Finished)
             {
                 if (this.Sprite.CurrentAnimationKey != KCAnimation.Dead)
                 {
-                    mDying = true;
                     this.Sprite.CurrentAnimationKey = KCAnimation.Dead;
-                    TimedAction<Sprite>.DelayedAction(h => h.Kill(Engine.ExitCode.Destroyed), this.Sprite, 120);
+                    new DelayWaiter(this,2.0f).ContinueWith(new KillObject(this.Sprite, ExitCode.Destroyed));                   
                 }
             }
-
-            return Switch.On;
         }
 
+        public bool Triggered
+        {
+            get { return this.Alive && !this.Paused; }
+        }
     }
 
 }

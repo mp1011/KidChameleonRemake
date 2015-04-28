@@ -55,6 +55,8 @@
     <Compile Include="Behavior\BehaviorPresets.cs" />
     <Compile Include="Behavior\Common.cs" />
     <Compile Include="Behavior\Interaction.cs" />
+    <Compile Include="Behavior\LevelEffects.cs" />
+    <Compile Include="Behavior\Movement.cs" />
     <Compile Include="Collision\Border.cs" />
     <Compile Include="Collision\CollisionManager.cs" />
     <Compile Include="Collision\CollisionResponse.cs" />
@@ -70,6 +72,8 @@
     <Compile Include="Font\ActiveFont.cs" />
     <Compile Include="Font\Font.cs" />
     <Compile Include="Font\Enums.cs" />
+    <Compile Include="Font\FontEditorRow.cs" />
+    <Compile Include="Font\FontResource.cs" />
     <Compile Include="Font\Text.cs" />
     <Compile Include="GameObject\Factory.cs" />
     <Compile Include="GameObject\GameObject.cs" />
@@ -93,6 +97,8 @@
     <Compile Include="Graphics\SimpleGraphic.cs" />
     <Compile Include="Graphics\SpriteSheet.cs" />
     <Compile Include="Graphics\TextureCache.cs" />
+    <Compile Include="Interface\InterfaceRectangle.cs" />
+    <Compile Include="Interface\TextMenu.cs" />
     <Compile Include="Motion\Interfaces.cs" />
     <Compile Include="Motion\ObjectMotion.cs" />
     <Compile Include="Motion\Physics.cs" />

@@ -30,6 +30,7 @@ namespace Engine.XNA
             if (sound == null)
                 return;
 
+            sound.LastPlayTime = DateTime.Now;
             sound.Effect.Play(volume, 0, 0);
         }
 
@@ -54,7 +55,7 @@ namespace Engine.XNA
         public bool IsSoundPlaying(SoundResource s)
         {
             var sound = mSoundLibrary.TryGet(s.Path.Name, null);
-            return sound != null && IsSoundPlaying(s);        
+            return sound != null && IsSoundPlaying(sound);        
         }
 
         private bool IsSoundPlaying(XNASound sound)

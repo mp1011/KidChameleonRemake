@@ -42,7 +42,6 @@ namespace KidC
     {
         private TimedAction<GravityController> mJump;
         private float mJumpSpeed;
-        private GravityController mGravityController;
         private ulong mJumpBeginFrame;
         private bool mIsOnGround = false;
 
@@ -54,18 +53,16 @@ namespace KidC
 
         public GravityController GravityController
         {
-            get
-            {
-                return mGravityController;
-            }
+            get;
+            private set;
         }
 
-        public PlatformerPlayerController(Sprite sprite, Player player)
+        public PlatformerPlayerController(Sprite sprite, Player player, GravityController gravityController)
             : base(sprite)
         {
             this.Player = player;
             this.Context.SetCameraCenter(this.Sprite);
-
+            this.GravityController = gravityController;
             mStatsResource = new DevelopmentResource<PlayerMotionStats>(new GamePath(PathType.Stats, this.Sprite.ObjectType.ToString() + "_stats")); 
         }
 
@@ -73,9 +70,7 @@ namespace KidC
         {
             Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
             Sprite.MotionManager.MainMotion.Decel = this.MotionStats.StopAccel;
-
-            mGravityController = Sprite.GetBehavior<GravityController>();
-            mJump = new TimedAction<GravityController>(mGravityController,a=> a.CurrentYSpeed = -1 * mJumpSpeed);
+            mJump = new TimedAction<GravityController>(GravityController,a=> a.CurrentYSpeed = -1 * mJumpSpeed);
         }
 
         protected override void Update()

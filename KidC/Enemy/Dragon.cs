@@ -9,36 +9,38 @@ namespace KidC
     class Dragon
     {
 
-        public static Sprite Create(GameContext context, Layer layer)
+        public static SpriteCreationInfo Create(GameContext context, Layer layer)
         {
 
             var dragon = new Sprite(context, layer, KCObjectType.Dragon);
 
             var spriteSheet = SpriteSheet.Load("dragon", context);
 
-            dragon.AddAnimation(KCAnimation.Walk, new Animation(spriteSheet, Direction.Left, 1, 2, 3, 4, 5, 6, 7)).SetFrameDuration(8);
+            dragon.AddAnimation(KCAnimation.Walk, new Animation(spriteSheet, Direction.Left, 1, 2, 3, 4, 5, 6)).SetFrameDuration(8);
             dragon.AddAnimation(KCAnimation.Hurt, new Animation(spriteSheet, Direction.Left, 0));
             dragon.AddAnimation(KCAnimation.Attack, new Animation(spriteSheet, Direction.Left, 8, 9)).SetFrameDuration(2);
             dragon.AddAnimation(KCAnimation.AttackAlt, new Animation(spriteSheet, Direction.Left, 10)).SetFrameDuration(2);
             dragon.AddAnimation(KCAnimation.Dying, new Animation(spriteSheet, Direction.Left, false, 12, 11)).SetFrameDuration(8);
             dragon.AddAnimation(KCAnimation.Dead, new Animation(spriteSheet, Direction.Left, 13, 13, 13, 14)).SetFrameDuration(8);
 
-            dragon.AddBehavior(new GravityController(dragon));
-            var walkController = dragon.AddBehavior(new WalkController(dragon, .5f, 2f) { WalksOffLedges = false });
-            var attackController = dragon.AddBehavior(new DragonAttackController(dragon));
-            var hitController = dragon.AddBehavior(new EnemyHitController(dragon));
-            var deathController = dragon.AddBehavior(new DyingSpriteController(dragon));
+            var healthCtl = new HealthController(dragon, 2);
+            new GravityController(dragon);
+            var walkController = new WalkController(dragon, .5f, 2f) { WalksOffLedges = false };
+            var attackController = new DragonAttackController(dragon);
+            var hitController = new EnemyHitController(dragon, healthCtl);
+            var deathController = new DyingSpriteController(dragon);
 
-            dragon.AddBehavior(new HealthController(dragon, 2));            
-            dragon.AddBehavior(new RandomActionController<Direction?>(dragon, walkController, 120,1f, Direction.Left, Direction.Right));                      
-            dragon.AddBehavior(new RandomActionController<bool>(dragon, attackController, 180, .6f));
-            dragon.AddBehavior(new BehaviorExclusionController(dragon, attackController, walkController));
-            dragon.AddBehavior(new BehaviorExclusionController(dragon, hitController, walkController, attackController));
-            dragon.AddBehavior(new BehaviorExclusionController(dragon, deathController, hitController, walkController, attackController));
+            healthCtl.ContinueWith(deathController);
+            
+            new RandomActionController<Direction?>(dragon, walkController, 120,1f, Direction.Left, Direction.Right);                      
+            new RandomActionController<bool>(dragon, attackController, 180, .6f);
+            new BehaviorExclusionController(dragon, attackController, walkController);
+            new BehaviorExclusionController(dragon, hitController, walkController, attackController);
+            new BehaviorExclusionController(dragon, deathController, hitController, walkController, attackController);
 
             dragon.AddCollisionChecks(ObjectType.Block, ObjectType.Border, KCObjectType.Player);
 
-            return dragon;
+            return new SpriteCreationInfo(dragon);
         }
 
         private class DragonAttackController : TriggeredController<bool>

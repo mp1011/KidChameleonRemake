@@ -7,8 +7,8 @@ namespace Engine
 {
     public abstract class SimpleObject : LogicObject, IDrawableRemovable, IWithPosition
     {
-        public SimpleObject(GameContext context, SimpleGraphic graphic)
-            : base(LogicPriority.Behavior, context)
+        public SimpleObject(ILogicObject parent, SimpleGraphic graphic)
+            : base(LogicPriority.Behavior, parent)
         {
             this.mGraphic = graphic;
         }

@@ -109,10 +109,70 @@ namespace Engine
         Normal = 3,        
     }
 
-    public abstract class LogicObject
+    public interface ILogicObject
+    {
+        bool Alive { get; }
+        bool Paused { get; set; }
+        ExitCode ExitCode { get; }
+        void Kill(ExitCode exitCode);
+        GameContext Context { get; }
+    }
+
+    public class GeneralLogicObject : ILogicObject
     {
 
-        private LogicObject Parent { get; set; }
+        private ILogicObject mParent;
+
+        public GeneralLogicObject(ILogicObject parent)
+        {
+            this.mParent = parent;
+        }
+
+        public bool Alive
+        {
+            get
+            {
+                return mParent.Alive && this.ExitCode == Engine.ExitCode.StillAlive;
+            }          
+        }
+
+        private bool mPaused;
+        public bool Paused
+        {
+            get { return mPaused || this.mParent.Paused; }
+            set { mPaused=value;}
+        }
+
+        public ExitCode ExitCode
+        {
+            get;
+            private set;
+        }
+
+        public void Kill(ExitCode exitCode)
+        {
+            this.ExitCode = exitCode;
+        }
+
+        public GameContext Context
+        {
+            get { return mParent.Context; }
+        }
+
+        public void Pause()
+        {
+            this.Paused = true;
+        }
+        public void Resume()
+        {
+            this.Paused = false;
+        }
+    }
+
+    public abstract class LogicObject : ILogicObject 
+    {
+
+        private ILogicObject Parent { get; set; }
 
         private bool mAlive = false;
         public bool Alive
@@ -127,9 +187,12 @@ namespace Engine
             private set
             {
                 mAlive = value;
+                if (value)
+                    mLastUnpauseTime = mContext.CurrentFrameNumber;
             }
         }
 
+        private ulong mLastUnpauseTime = 0;
         private bool mPaused = false;
         public bool Paused
         {
@@ -140,15 +203,19 @@ namespace Engine
 
                 return mPaused || (Parent != null && Parent.Paused);
             }
-            private set
+            set
             {
                 mPaused = value;
+                if (!value)
+                    mLastUnpauseTime = mContext.CurrentFrameNumber;
             }
         }
 
         public bool Started { get { return StartFrame != 0; } }
 
         public ulong StartFrame { get; private set; }
+
+        public ulong TimeActive { get { return Context.CurrentFrameNumber - mLastUnpauseTime; } }
 
         public ulong Age { get { return Context.CurrentFrameNumber - StartFrame; } }
 
@@ -163,18 +230,26 @@ namespace Engine
 
         private RelationFlags mRelationFlags;
 
-        protected LogicObject(LogicPriority priority, LogicObject parent, RelationFlags relationFlags)
+        protected LogicObject(LogicPriority priority, ILogicObject parent, RelationFlags relationFlags)
         {
             this.mRelationFlags = relationFlags;
             this.Parent = parent;
             UpdateContext(priority, parent.Context);
         }
 
-        protected LogicObject(LogicPriority priority, GameContext context)
+        protected LogicObject(LogicPriority priority, ILogicObject parent)
         {
             this.mRelationFlags = RelationFlags.Normal;
-            UpdateContext(priority, context);
+            this.Parent = parent;
+            UpdateContext(priority, parent.Context);
         }
+
+        //protected LogicObject(LogicPriority priority, GameContext context, bool bindToCurrentWorld)
+        //{
+        //    this.mRelationFlags = RelationFlags.Normal;
+        //    UpdateContext(priority, context);
+        //}
+
 
         protected void UpdateContext(LogicPriority priority, GameContext ctx)
         {
@@ -219,11 +294,22 @@ namespace Engine
         }
         private bool mRanUpdate = false;
 
+        private bool mWasPaused = false;
+
         public void UpdateX() //todo, naming
         {
             if (this.Paused)
+            {
+                mWasPaused = true;
                 return;
+            }
 
+            if (mWasPaused)
+            {
+                mWasPaused = false;
+                OnResume();
+            }
+            
             if (!mRanUpdate)
             {
                 mRanUpdate = true;
@@ -233,6 +319,8 @@ namespace Engine
 
             this.Update();
         }
+
+        protected virtual void OnResume() { }
 
         protected virtual void Update()
         {
@@ -250,6 +338,11 @@ namespace Engine
         public void Resume()
         {
             this.Paused = false;
+        }
+
+        public void ChangeParent(ILogicObject newParent)
+        {
+            this.Parent = newParent;
         }
     }
 

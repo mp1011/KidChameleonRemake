@@ -8,6 +8,17 @@ namespace Engine
 {
     public static class ICollidableExtensions
     {
+
+        public static void HandleCollision(this ICollidable obj, CollisionEvent collision, CollisionResponse response)
+        {
+            foreach (var handler in obj.CollisionResponders)
+            {
+                handler.HandleCollision(collision, response);
+                if (!response.ShouldContinueHandling)
+                    return;
+            }
+        }
+
         public static void AddCollisionChecks<T>(this T collidable, params ObjectType[] collisionTypes) where T : LogicObject, ICollidable
         {
             CollisionManager<T> m = null;
@@ -23,7 +34,8 @@ namespace Engine
             if (obj.Length > 0)
             {
                 m = new Collision.ObjectCollisionManager<T>(collidable, obj);
-                collidable.Context.Listeners.CollisionListener.Register(collidable);
+                if(collidable.Context.Listeners != null)
+                    collidable.Context.Listeners.CollisionListener.Register(collidable);
             }
 
             collidable.CollisionTypes = collisionTypes;
@@ -82,10 +94,13 @@ namespace Engine.Collision
         ObjectType ObjectType { get; }
         ObjectType[] CollisionTypes { get; set; }
         RGRectangleI SecondaryCollisionArea { get; }
-
-        void HandleCollision(CollisionEvent collision, CollisionResponse response);
+        ICollection<ICollisionResponder> CollisionResponders { get; }
     }
 
+    public interface ICollisionResponder
+    {
+        void HandleCollision(CollisionEvent collision, CollisionResponse response);
+    }
 
     public class CollisionEvent
     {

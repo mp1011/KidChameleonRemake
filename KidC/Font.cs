@@ -12,7 +12,8 @@ namespace KidC
         public static IGameFont ScoreFont { get; private set; }
         public static IGameFont ClockFont { get; private set; }
         public static IGameFont SplashScreenFont { get; private set; }
-
+        public static IGameFont PauseMenuFont { get; private set; }
+        private static FontResource<VariableSpaceFont> BigFont;
 
         public static void Init()
         {
@@ -34,11 +35,21 @@ namespace KidC
             splashScreenFont.AddRow(yPos[i], yPos[++i], "hijklmn", 0,17,26,42,60,76,94,112);
             splashScreenFont.AddRow(yPos[i], yPos[++i], "opqrst ", 0,17,31,51,68,84,103,122);
             splashScreenFont.AddRow(yPos[i], yPos[++i], "uvwxyz", 0,17,32,51,68,84,103); 
-
             SplashScreenFont = splashScreenFont;
-      
 
+            var pauseMenuFont = new FixedSpaceFont(new TextureResource("pausemenufont"), new RGSizeI(8, 8), RGPointI.Empty);
+            pauseMenuFont.AddCharacters("dg >uiv", new RGPointI(9,0));
+            pauseMenuFont.AddCharacters("serapmontyl", new RGPointI(0,1));
+            PauseMenuFont = pauseMenuFont;
+
+            BigFont = new FontResource<VariableSpaceFont>("bigfont2");
         }
+
+        public static IGameFont GetBigFont(GameContext ctx)
+        {
+            return BigFont.GetObject(ctx);
+        }
+
 
     }
 }

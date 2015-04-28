@@ -30,5 +30,10 @@ namespace Editor.Forms
         {
             TilesetEditor.GetOrOpen();
         }
+
+        private void btnFontEditor_Click(object sender, EventArgs e)
+        {
+            FontEditor.GetOrOpen();
+        }
     }
 }

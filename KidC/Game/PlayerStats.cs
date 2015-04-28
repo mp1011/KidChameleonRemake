@@ -8,13 +8,25 @@ namespace KidC
 {
     class PlayerStats 
     {
-        public const bool InfiniteHealth=true;
+        public const bool InfiniteHealth=false;
+
+        public PlayerStats()
+        {
+            this.Lives = 3;
+        }
 
         private int mGems;
         public int Gems
         {
             get { return mGems; }
             set { mGems = value.LimitNumber(99);}
+        }
+
+        private int mLives;
+        public int Lives
+        {
+            get { return mLives; }
+            set { mLives = value.LimitNumber(99); }
         }
 
         private int mMaxHealth;
@@ -31,7 +43,10 @@ namespace KidC
             set { mCurrentHealth = value.LimitNumber(this.MaxHealth); }
         }
 
-
+        public void RestoreHealth()
+        {
+            this.CurrentHealth = this.MaxHealth;
+        }
         
     }
 

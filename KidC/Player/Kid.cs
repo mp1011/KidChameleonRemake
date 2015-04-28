@@ -6,14 +6,6 @@ using Engine;
 
 namespace KidC
 {
-
-    class KidController : PlatformerPlayerController
-    {
-        public KidController(Sprite sprite, Player player) : base(sprite, player)
-        {                     
-        }
-    }
-
     class KidFlipController : TriggeredController<Direction>
     {
 

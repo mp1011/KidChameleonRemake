@@ -13,7 +13,44 @@ namespace Engine
         Direction Direction { get; }
     }
 
-    public interface IMoveable
+    public static class IWithPositionExtensions
+    {
+        public static void SnapToGround(this IWithPosition obj, Map map)
+        {
+            obj.SnapToSurface(map, Direction.Down);
+        }
+
+        public static void SnapToGround(this IWithPosition obj, TileLayer layer)
+        {
+            if (layer == null)
+                return;
+            obj.SnapToGround(layer.Map);
+        }
+
+        public static void SnapToSurface(this IWithPosition obj, Map map, Direction surfaceDir)
+        {
+            var startTile = map.GetTileAtLocation(obj.Area.Center);
+
+            var collideTile = startTile.GetTilesInLine(surfaceDir).FirstOrDefault(p => p.TileDef.IsSolid);
+
+            if (collideTile == null)
+                return;
+
+            var x = obj.Location.X;
+            var y = obj.Location.Y;
+
+            if (surfaceDir.Equals(Direction.Down))
+                y = collideTile.TileArea.Top;
+            else
+                throw new NotImplementedException();
+
+            obj.Location = new RGPointI(x,y);
+
+        }
+
+    }
+
+    public interface IMoveable 
     {
         ObjectMotion MotionManager { get; }
         void Move(RGPointI offset);

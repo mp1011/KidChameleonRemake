@@ -31,6 +31,7 @@
             this.btnLevelEditor = new System.Windows.Forms.Button();
             this.btnGraphicExtractor = new System.Windows.Forms.Button();
             this.btnTileEditor = new System.Windows.Forms.Button();
+            this.btnFontEditor = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnLevelEditor
@@ -63,11 +64,22 @@
             this.btnTileEditor.UseVisualStyleBackColor = true;
             this.btnTileEditor.Click += new System.EventHandler(this.btnTileEditor_Click);
             // 
+            // btnFontEditor
+            // 
+            this.btnFontEditor.Location = new System.Drawing.Point(25, 169);
+            this.btnFontEditor.Name = "btnFontEditor";
+            this.btnFontEditor.Size = new System.Drawing.Size(114, 37);
+            this.btnFontEditor.TabIndex = 3;
+            this.btnFontEditor.Text = "Font Editor";
+            this.btnFontEditor.UseVisualStyleBackColor = true;
+            this.btnFontEditor.Click += new System.EventHandler(this.btnFontEditor_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(340, 262);
+            this.Controls.Add(this.btnFontEditor);
             this.Controls.Add(this.btnTileEditor);
             this.Controls.Add(this.btnGraphicExtractor);
             this.Controls.Add(this.btnLevelEditor);
@@ -82,6 +94,7 @@
         private System.Windows.Forms.Button btnLevelEditor;
         private System.Windows.Forms.Button btnGraphicExtractor;
         private System.Windows.Forms.Button btnTileEditor;
+        private System.Windows.Forms.Button btnFontEditor;
 
     }
 }

@@ -37,9 +37,11 @@ namespace KidC
         public override GameResource<WorldInfo> StartingWorld
         {
             get
-            {
-                var w = new GameResource<WorldInfo>(new GamePath(PathType.Maps, "test"), typeof(KCWorldInfo));
-                return new InMemoryResource<WorldInfo>(new SplashScreenInfo(w));              
+            {              
+                if(TestWorldInfo.UseTestWorld)
+                   return new InMemoryResource<WorldInfo>(new TestWorldInfo());        
+                else 
+                    return new GameResource<WorldInfo>(new GamePath(PathType.Maps, "test"), typeof(KCWorldInfo));           
             }
         }
 
@@ -49,6 +51,7 @@ namespace KidC
             input.ButtonMappings.Add(KCButton.Run, GameKey.Button1);
             input.ButtonMappings.Add(KCButton.Jump, GameKey.Button2);
             input.ButtonMappings.Add(KCButton.Special, GameKey.Button3);
+            input.ButtonMappings.Add(KCButton.Pause, GameKey.Start);
             return new Player(ctx, input);
         }
     }

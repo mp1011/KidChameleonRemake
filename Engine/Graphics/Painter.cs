@@ -9,6 +9,8 @@ namespace Engine.Graphics
     {
         private GameContext mContext;
 
+        private Stack<StackedRenderInfo> mExtraRenderInfo = new Stack<StackedRenderInfo>();
+
         public RenderOptions RenderInfo { get; set; }
 
         protected Painter(GameContext ctx)
@@ -24,8 +26,6 @@ namespace Engine.Graphics
 
         public void Paint(RGRectangleI canvas, TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options)
         {
-            options = this.RenderInfo.CombineWith(options);
-
             if (!options.CheckVisible(mContext))
                 return;
 
@@ -36,11 +36,30 @@ namespace Engine.Graphics
                 texture = texture.GetFlashTexture();
 
             dest = dest.Offset(-canvas.X, -canvas.Y);
-            PaintToScreen(texture, source, dest, options);
+            PaintToScreen(texture, source, dest, options, GetCombinedRenderInfo());
         }
 
-        protected abstract void PaintToScreen(TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options);
+        protected abstract void PaintToScreen(TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options, StackedRenderInfo combinedRenderInfo);
 
+
+        public void PushRenderInfo(StackedRenderInfo info)
+        {
+            mExtraRenderInfo.Push(info);
+        }
+
+        public void PopRenderInfo()
+        {
+            mExtraRenderInfo.Pop();
+        }
+
+        private StackedRenderInfo GetCombinedRenderInfo()
+        {
+            var r = new StackedRenderInfo();
+            foreach (var ri in mExtraRenderInfo.Reverse())
+                r.Add(ri);
+
+            return r;
+        }
     }
 
 

@@ -457,6 +457,13 @@ namespace Engine
             else
                 return str;
         }
+
+        public static T AddItem<T>(this ICollection<T> list, T newItem)
+        {
+            list.Add(newItem);
+            return newItem;
+        }
+
     }
 
    

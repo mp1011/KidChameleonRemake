@@ -17,6 +17,8 @@ namespace Engine
 
     public abstract class Layer : LogicObject, IDrawable
     {
+        public StackedRenderInfo ExtraRenderInfo { get; set; }
+
         private List<IDrawableRemovable> mSprites = new List<IDrawableRemovable>();
 
         public RGPointI Position
@@ -66,12 +68,13 @@ namespace Engine
             AddObject(s);
         }
 
-        protected Layer(GameContext ctx, RGRectangleI location, LayerDepth depth)
-            : base(LogicPriority.World, ctx)
+        protected Layer(World world, RGRectangleI location, LayerDepth depth)
+            : base(LogicPriority.World, world)
         {
             this.Depth = depth;
             this.Location = location;
             this.ParallaxSpeed = new RGPoint(1f, 1f);
+            this.ExtraRenderInfo = new StackedRenderInfo();
         }
 
         protected override void Update()
@@ -163,20 +166,21 @@ namespace Engine
 
     public class FixedLayer : Layer
     {
-        public FixedLayer(GameContext ctx, LayerDepth depth)
-            : base(ctx, RGRectangleI.FromXYWH(0, 0, ctx.Engine.GameSize.Width, ctx.Engine.GameSize.Height), depth)
+        public FixedLayer(World world, LayerDepth depth)
+            : base(world, RGRectangleI.FromXYWH(0, 0, world.Context.Engine.GameSize.Width, world.Context.Engine.GameSize.Height), depth)
         {
             this.ParallaxSpeed = RGPoint.Empty;
         }
 
-        public FixedLayer(GameContext ctx) : base(ctx, RGRectangleI.Empty, LayerDepth.Background) { }
+        public FixedLayer(World world) : base(world, RGRectangleI.Empty, LayerDepth.Background) { }
     }
 
     public class ImageLayer : Layer
     {
         private SimpleGraphic mGraphic;
 
-        public ImageLayer(GameContext ctx, SimpleGraphic graphic) : base(ctx, RGRectangleI.FromXYWH(0,0, graphic.SourceRec.Width,graphic.SourceRec.Height), LayerDepth.Background) 
+        public ImageLayer(World world, SimpleGraphic graphic)
+            : base(world, RGRectangleI.FromXYWH(0, 0, graphic.SourceRec.Width, graphic.SourceRec.Height), LayerDepth.Background) 
         {
             mGraphic = graphic;
         }
@@ -188,14 +192,14 @@ namespace Engine
         }
 
 
-        public static ImageLayer CreateRepeatingHorizontal(GameContext ctx, SimpleGraphic graphic, float xSpeed)
+        public static ImageLayer CreateRepeatingHorizontal(World world, SimpleGraphic graphic, float xSpeed)
         {
-            return CreateRepeatingHorizontal(ctx, graphic, xSpeed, RGPointI.Empty);
+            return CreateRepeatingHorizontal(world, graphic, xSpeed, RGPointI.Empty);
         }
 
-        public static ImageLayer CreateRepeatingHorizontal(GameContext ctx, SimpleGraphic graphic, float xSpeed, RGPointI position)
+        public static ImageLayer CreateRepeatingHorizontal(World world, SimpleGraphic graphic, float xSpeed, RGPointI position)
         {
-            var layer = new ImageLayer(ctx, graphic);
+            var layer = new ImageLayer(world, graphic);
             layer.ParallaxSpeed = new RGPoint(xSpeed, 1f);
             layer.mRepeatH = true;
             layer.Position = position;
@@ -208,10 +212,10 @@ namespace Engine
     {
         public Map Map { get; private set; }
 
-        public TileLayer(GameContext ctx) : base(ctx, RGRectangleI.Empty, LayerDepth.Background) { }
+        public TileLayer(World world) : base(world, RGRectangleI.Empty, LayerDepth.Background) { }
 
-        public TileLayer(GameContext ctx, Map map, RGPointI location, LayerDepth depth)
-            : base(ctx, RGRectangleI.Create(location, map.Size), depth)
+        public TileLayer(World world, Map map, RGPointI location, LayerDepth depth)
+            : base(world, RGRectangleI.Create(location, map.Size), depth)
         {
             Map = map;
         }

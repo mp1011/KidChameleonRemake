@@ -39,6 +39,7 @@
             this.openTilesetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTilesetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlTools = new System.Windows.Forms.Panel();
+            this.chkCreateFlashTexture = new System.Windows.Forms.CheckBox();
             this.chkCenterOrigin = new System.Windows.Forms.CheckBox();
             this.btnCrop = new System.Windows.Forms.Button();
             this.btnMoveToSide = new System.Windows.Forms.Button();
@@ -63,7 +64,7 @@
             this.pnlTransparentColor = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlImage = new Editor.BitmapPortionPanelUserControl();
-            this.chkCreateFlashTexture = new System.Windows.Forms.CheckBox();
+            this.chkCropToNew = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.pnlTools.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtMoveRecAmount)).BeginInit();
@@ -170,6 +171,16 @@
             this.pnlTools.Name = "pnlTools";
             this.pnlTools.Size = new System.Drawing.Size(819, 125);
             this.pnlTools.TabIndex = 3;
+            // 
+            // chkCreateFlashTexture
+            // 
+            this.chkCreateFlashTexture.AutoSize = true;
+            this.chkCreateFlashTexture.Location = new System.Drawing.Point(154, 102);
+            this.chkCreateFlashTexture.Name = "chkCreateFlashTexture";
+            this.chkCreateFlashTexture.Size = new System.Drawing.Size(124, 17);
+            this.chkCreateFlashTexture.TabIndex = 16;
+            this.chkCreateFlashTexture.Text = "Create Flash Texture";
+            this.chkCreateFlashTexture.UseVisualStyleBackColor = true;
             // 
             // chkCenterOrigin
             // 
@@ -287,6 +298,7 @@
             // 
             // pnlClickAction
             // 
+            this.pnlClickAction.Controls.Add(this.chkCropToNew);
             this.pnlClickAction.Controls.Add(this.rdoHitbox2);
             this.pnlClickAction.Controls.Add(this.txtFloodFillRes);
             this.pnlClickAction.Controls.Add(this.rdoHitbox);
@@ -373,7 +385,7 @@
             // rdoCrop
             // 
             this.rdoCrop.AutoSize = true;
-            this.rdoCrop.Location = new System.Drawing.Point(165, 59);
+            this.rdoCrop.Location = new System.Drawing.Point(165, 55);
             this.rdoCrop.Name = "rdoCrop";
             this.rdoCrop.Size = new System.Drawing.Size(47, 17);
             this.rdoCrop.TabIndex = 7;
@@ -460,7 +472,7 @@
             this.pnlImage.DisplayOrigin = null;
             this.pnlImage.DisplayPortionOnly = false;
             this.pnlImage.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlImage.DrawRectangle = DrawRectangleType.None;
+            this.pnlImage.DrawRectangle = Editor.DrawRectangleType.None;
             this.pnlImage.EnableSelector = false;
             this.pnlImage.Image = null;
             this.pnlImage.Location = new System.Drawing.Point(0, 149);
@@ -469,15 +481,15 @@
             this.pnlImage.Size = new System.Drawing.Size(819, 367);
             this.pnlImage.TabIndex = 4;
             // 
-            // chkCreateFlashTexture
+            // chkCropToNew
             // 
-            this.chkCreateFlashTexture.AutoSize = true;
-            this.chkCreateFlashTexture.Location = new System.Drawing.Point(154, 102);
-            this.chkCreateFlashTexture.Name = "chkCreateFlashTexture";
-            this.chkCreateFlashTexture.Size = new System.Drawing.Size(124, 17);
-            this.chkCreateFlashTexture.TabIndex = 16;
-            this.chkCreateFlashTexture.Text = "Create Flash Texture";
-            this.chkCreateFlashTexture.UseVisualStyleBackColor = true;
+            this.chkCropToNew.AutoSize = true;
+            this.chkCropToNew.Location = new System.Drawing.Point(219, 55);
+            this.chkCropToNew.Name = "chkCropToNew";
+            this.chkCropToNew.Size = new System.Drawing.Size(96, 17);
+            this.chkCropToNew.TabIndex = 12;
+            this.chkCropToNew.Text = "To New Image";
+            this.chkCropToNew.UseVisualStyleBackColor = true;
             // 
             // GraphicsExtractor
             // 
@@ -544,5 +556,6 @@
         private System.Windows.Forms.CheckBox chkCenterOrigin;
         private System.Windows.Forms.RadioButton rdoHitbox2;
         private System.Windows.Forms.CheckBox chkCreateFlashTexture;
+        private System.Windows.Forms.CheckBox chkCropToNew;
     }
 }

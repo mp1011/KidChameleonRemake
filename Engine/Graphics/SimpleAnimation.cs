@@ -23,7 +23,13 @@ namespace Engine
             }
         }
 
-        public SimpleAnimation(SimpleGraphic graphic, int frameDuration, GameContext ctx, params int[] frames) : base(LogicPriority.World,ctx)
+        public SimpleAnimation(string textureName, int frameDuration, GameContext ctx, params int[] frames)
+            : this(new SimpleGraphic(SpriteSheet.Load(textureName, ctx), frames), frameDuration, ctx, frames)
+        {     
+        }
+
+        public SimpleAnimation(SimpleGraphic graphic, int frameDuration, GameContext ctx, params int[] frames)
+            : base(LogicPriority.World, ctx.CurrentWorld)
         {
             mFrameDuration = frameDuration;
             mFrames = frames;

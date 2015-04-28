@@ -34,10 +34,10 @@ namespace Engine
         }
 
         //temp
-        public static RGSizeI CellSize(this IGameFont font)
-        {
-            return font.LetterSize(' ');
-        }
+        //public static RGSizeI CellSize(this IGameFont font)
+        //{
+        //    return font.LetterSize(' ');
+        //}
     }
 
     public class FixedSpaceFont : IGameFont
@@ -105,9 +105,11 @@ namespace Engine
     }
 
 
-    public class VariableSpaceFont : IGameFont
+    public class VariableSpaceFont : IGameFont, ISerializable 
     {
         private Dictionary<char, RGRectangleI> mLetterLocations;
+
+        public VariableSpaceFont() { }
 
         public VariableSpaceFont(TextureResource fontTexture)
         {           
@@ -143,6 +145,29 @@ namespace Engine
                 return mLetterLocations[character];
             else
                 return RGRectangleI.Empty;
+        }
+
+        private class SaveModel
+        {
+            public Dictionary<char, RGRectangleI> LetterLocations { get; set; }
+            public TextureResource Texture { get; set; }
+ 
+        }
+        public object GetSaveModel()
+        {
+            return new SaveModel { LetterLocations = mLetterLocations, Texture = FontTexture };
+        }
+
+        public Type GetSaveModelType()
+        {
+            return typeof(SaveModel);
+        }
+
+        public void Load(object saveModel)
+        {
+            var model = saveModel as SaveModel;
+            mLetterLocations = model.LetterLocations;
+            FontTexture = model.Texture;
         }
     }
 

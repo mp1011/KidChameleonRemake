@@ -154,7 +154,7 @@ namespace Engine
         public Dictionary<int,GameKey> ButtonMappings { get;set;}
 
         public GenericInputDevice(GameContext ctx)
-            : base(LogicPriority.Input, ctx)
+            : base(LogicPriority.Input, Core.GlobalToken.Instance)
         {
             keyMap = new int[Enum.GetValues(typeof(GameKey)).Length];
             ButtonMappings = new Dictionary<int, GameKey>();

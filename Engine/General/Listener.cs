@@ -8,15 +8,12 @@ namespace Engine
 {
     public class Listeners
     {
-        private GameContext mContext;
-        private CollisionListener mCollisionListener;
-
-        public Listeners(GameContext ctx)
+        public Listeners(ILogicObject owner)
         {
-            mContext = ctx;
+            CollisionListener = new CollisionListener(owner);
         }
 
-        public CollisionListener CollisionListener { get { return mCollisionListener ?? (mCollisionListener = new CollisionListener(mContext)); } }
+        public CollisionListener CollisionListener { get; private set; }
     }
 
     public abstract class Listener<T> : LogicObject
@@ -25,8 +22,8 @@ namespace Engine
 
         public IEnumerable<T> GetObjects() { return this.Objects.ToArray(); }
 
-        public Listener(GameContext ctx)
-            : base(LogicPriority.World, ctx)
+        public Listener(ILogicObject owner)
+            : base(LogicPriority.World, owner)
         {
             this.Objects = new List<T>();
         }
@@ -44,6 +41,6 @@ namespace Engine
 
     public class CollisionListener : Listener<ICollidable>
     {
-        public CollisionListener(GameContext ctx) : base(ctx) { }
+        public CollisionListener(ILogicObject owner) : base(owner) { }
     }
 }

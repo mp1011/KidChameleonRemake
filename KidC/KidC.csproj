@@ -45,8 +45,12 @@
     <Compile Include="Font.cs" />
     <Compile Include="Game\Context.cs" />
     <Compile Include="Game\Game.cs" />
+    <Compile Include="Game\GlobalActions.cs" />
+    <Compile Include="Game\Pause.cs" />
     <Compile Include="Game\PlayerStats.cs" />
+    <Compile Include="Game\SceneTransition.cs" />
     <Compile Include="Game\SplashScreen.cs" />
+    <Compile Include="Game\TestWorld.cs" />
     <Compile Include="Game\Theme.cs" />
     <Compile Include="Game\WorldInfo.cs" />
     <Compile Include="HUD\Clock.cs" />
@@ -58,10 +62,11 @@
     <Compile Include="Objects\Decoration.cs" />
     <Compile Include="Objects\Factory.cs" />
     <Compile Include="Objects\GeneralBehavior.cs" />
+    <Compile Include="Player\DeathBehavior.cs" />
     <Compile Include="Player\PlayerFactory.cs" />
     <Compile Include="Objects\Prize.cs" />
     <Compile Include="Objects\Relations.cs" />
-    <Compile Include="Player\Collision.cs" />
+    <Compile Include="Player\Player Collision.cs" />
     <Compile Include="Player\Helmet.cs" />
     <Compile Include="Player\IronKnight.cs" />
     <Compile Include="Player\Kid.cs" />
@@ -71,6 +76,7 @@
     <Compile Include="Sounds.cs" />
     <Compile Include="TestObjects.cs" />
     <Compile Include="Tile\BreakableTile.cs" />
+    <Compile Include="Tile\MetalBlock.cs" />
     <Compile Include="Tile\PrizeBlock.cs" />
     <Compile Include="Tile\KidCTile.cs" />
   </ItemGroup>

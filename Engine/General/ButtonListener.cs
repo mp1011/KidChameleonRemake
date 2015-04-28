@@ -9,10 +9,16 @@ namespace Engine
     {
         private ITriggerable<TriggerArg> mTrigger;
 
-        public ButtonListener(GameContext ctx, ITriggerable<TriggerArg> trigger) : base(LogicPriority.World, ctx)
+        public ButtonListener(LogicObject owner, ITriggerable<TriggerArg> trigger)
+            : base(LogicPriority.World, owner, RelationFlags.DestroyWhenParentDestroyed)
         {
             mTrigger = trigger;
+        }
 
+        public ButtonListener(World w, ITriggerable<TriggerArg> trigger)
+            : base(LogicPriority.World, w)
+        {
+            mTrigger = trigger;
         }
 
         private Dictionary<int, TriggerArg> mButtonMappings = new Dictionary<int, TriggerArg>();
@@ -29,6 +35,9 @@ namespace Engine
 
         protected override void Update()
         {
+            if (Context.FirstPlayer == null)
+                return;
+
             if (mTrigger.Triggered)
                 return;
 

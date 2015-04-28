@@ -39,6 +39,12 @@ namespace Engine
             return s;
         }
 
+        public static T Copy<T>(T item) where T : new()
+        {
+            var json = ToJSON(item);
+            return FromJson<T>(json);
+        }
+
         public static string ToJSON<T>(T item)
         {
             var serializable = item as ISerializable;

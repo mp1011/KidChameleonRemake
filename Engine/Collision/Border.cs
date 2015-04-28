@@ -91,6 +91,12 @@ namespace Engine.Collision
         {
             throw new NotImplementedException();
         }
+
+        private List<ICollisionResponder> mDummyCollection = new List<ICollisionResponder>();
+        public ICollection<ICollisionResponder> CollisionResponders
+        {
+            get { return mDummyCollection; }
+        }
     }
 
     class BorderCollisionmanager<T> : CollisionManager<T> where T : LogicObject, ICollidable    

@@ -47,8 +47,11 @@ namespace Engine
         }
     }
 
-    public partial class World : IDrawable
+    public partial class World : IDrawable, ILogicObject 
     {
+
+        public StackedRenderInfo ExtraRenderInfo { get; set; }
+
         private List<Layer> mLayers = new List<Layer>();
         private List<ObjectEntry> mEntries = new List<ObjectEntry>();
 
@@ -60,15 +63,21 @@ namespace Engine
 
         public RGColor BackgroundColor { get; set; }
 
+        public WorldInfo WorldInfo { get; private set; }
+
         public World()
         {
+            this.Alive = true;
         }
 
-        public World(GameContext context)
+        public World(GameContext context, WorldInfo worldInfo)
         {
+            this.Alive = true;
+            this.WorldInfo = worldInfo;
             Context = context;
-            ScreenLayer = new FixedLayer(context, LayerDepth.Screen);
+            ScreenLayer = new FixedLayer(this, LayerDepth.Screen);
             AddLayer(ScreenLayer);
+            this.ExtraRenderInfo = new StackedRenderInfo();
         }
 
         public void SetObjectEntries(IEnumerable<ObjectEntry> entries)
@@ -104,6 +113,17 @@ namespace Engine
             return mLayers.Where(p => p.Depth == depth);
         }
 
+        public IEnumerable<Layer> GetLayers()
+        {
+            return mLayers;
+        }
+
+
+        public IEnumerable<Layer> GetLayersExceptScreen()
+        {
+            return mLayers.Where(p => !p.Equals(ScreenLayer));
+        }
+
 
         public Layer GetLayerByID(int id)
         {
@@ -112,8 +132,16 @@ namespace Engine
 
         public void Draw(Painter painter, RGRectangleI canvas)
         {
+            painter.PushRenderInfo(this.ExtraRenderInfo);
+
             foreach (var layer in mLayers)
+            {
+                painter.PushRenderInfo(layer.ExtraRenderInfo);
                 layer.Draw(painter, canvas);
+                painter.PopRenderInfo();
+            }
+
+            painter.PopRenderInfo();
         }
 
         public TileInstance GetTopmostTile(RGPointI worldLocation, Predicate<TileInstance> condition)
@@ -132,6 +160,31 @@ namespace Engine
             return null;
         }
 
+        #region ILogicObject
+        public bool Alive
+        {
+            get; private set; 
+        }
+
+        public bool Paused
+        {
+            get;
+            set;
+        }
+
+        public ExitCode ExitCode
+        {
+            get;
+            private set;
+        }
+
+        public void Kill(ExitCode exitCode)
+        {
+            this.ExitCode = exitCode;
+            this.Alive = false;
+        }
+
+        #endregion
     }
 
 }

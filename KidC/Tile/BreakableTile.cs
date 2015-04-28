@@ -30,7 +30,7 @@ namespace KidC
         public void Break() 
         {
             SoundManager.PlaySound(Sounds.RockBlockDestroyed);
-            BreakingTile tile = new BreakingTile(this.Context, TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer);
+            BreakingTile tile = new BreakingTile(TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer);
 
             this.TileLayer.AddObject(tile);            
         }
@@ -44,8 +44,8 @@ namespace KidC
         private TileLayer mLayer;
         private RGPointI mTileLocation;
 
-        public BreakingTile(GameContext ctx, RGSizeI tileSize, RGPointI tileLocation, TileLayer layer)
-            : base(ctx, BreakingTile.CreateGraphic(ctx))
+        public BreakingTile(RGSizeI tileSize, RGPointI tileLocation, TileLayer layer)
+            : base(layer, BreakingTile.CreateGraphic(layer.Context))
         {
             this.Location = new RGPointI((tileLocation.X * tileSize.Width) + (tileSize.Width /2), (tileLocation.Y * tileSize.Height) + (tileSize.Height /2));
             this.mLayer = layer;

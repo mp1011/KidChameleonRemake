@@ -6,7 +6,7 @@ using System.Text;
 
 namespace Engine
 {
-    public class WorldInfo
+    public class WorldInfo 
     {
         protected virtual string TilesetName { get { throw new NotImplementedException(); } }
 
@@ -16,6 +16,7 @@ namespace Engine
         [Browsable(false)]
         public Map Map { get; set; }
 
+        public string Name { get; set; }
         public int ScreensWidth { get; set; }
         public int ScreensHeight { get; set; }
 
@@ -52,9 +53,10 @@ namespace Engine
             if (this.Objects == null)
                 this.Objects = new List<ObjectEntry>();
 
+            var fakeLayer = new FixedLayer(new World(context, this), LayerDepth.Foreground);
+          
             foreach (var o in this.Objects)
             {
-                var fakeLayer = new FixedLayer(context, LayerDepth.Foreground);
                 o.CreateObject(fakeLayer);
                 if(o.PlacedObject != null)
                     o.PlacedObject.Location = o.Location;

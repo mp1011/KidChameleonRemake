@@ -558,8 +558,8 @@ namespace Editor.Forms
 
         private Bitmap GetObjectTypeImage(ObjectType t)
         {
-            var layer = new FixedLayer(Program.EditorContext);
-            var sprite = t.CreateInstance<Sprite>(layer, Program.EditorContext);
+            var layer = new FixedLayer(new World());
+            var sprite = t.CreateSpriteInstance(layer, Program.EditorContext).Sprite;
             sprite.Location = sprite.CurrentAnimation.CurrentDirectedAnimationFrame.Origin;
 
             var img = new Bitmap(sprite.CurrentAnimation.DestinationRec.Width, sprite.CurrentAnimation.DestinationRec.Height);
@@ -591,7 +591,7 @@ namespace Editor.Forms
                 }.ClientRectangle;
             }
 
-            protected override void PaintToScreen(TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options)
+            protected override void PaintToScreen(TextureResource texture, RGRectangleI source, RGRectangleI dest, RenderOptions options, StackedRenderInfo extraRenderInfo)
             {
                 var textureImage = texture.GetImage();
                 Graphics.DrawImage(textureImage, this.TranslateRectangle(dest).ToSystemRec(), source.ToSystemRec(), GraphicsUnit.Pixel);               
@@ -653,7 +653,7 @@ namespace Editor.Forms
         {
             this.CurrentObjectEntry = new ObjectEntry() { SpriteType = SelectedObjectType, Location=point }; ;
             this.WorldInfo.Objects.Add(this.CurrentObjectEntry);
-            this.CurrentObjectEntry.CreateObject(new FixedLayer(Program.EditorContext));
+            this.CurrentObjectEntry.CreateObject(new FixedLayer(new World()));
             pnlMap.RefreshImage();
         }
 

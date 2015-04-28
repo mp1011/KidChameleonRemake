@@ -155,8 +155,8 @@ namespace Engine
 
         public float SpeedModifier { get; set; }
 
-        public SpriteAnimation(IWithPosition sprite, Animation animation, RenderOptions options)
-            : base(LogicPriority.Behavior, sprite.Context)
+        public SpriteAnimation(Sprite sprite, Animation animation, RenderOptions options)
+            : base(LogicPriority.Behavior, sprite)
         {
             mSprite = sprite;
             mAnimation = animation;

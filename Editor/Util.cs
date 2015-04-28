@@ -74,15 +74,18 @@ namespace Editor
         {
             FileDialog.ShowSaveDialog<bool>(path.GetFolder(), path.GetExtension(), selectedPath =>
                 {
-                    var item = save(selectedPath);
-                    var json = Serializer.ToJSON(item);
-
-                    if (File.Exists(selectedPath))
-                        File.Delete(selectedPath);
-                    File.WriteAllText(selectedPath, json);
-                    BackupManager.CreateBackup(selectedPath);
+                    SaveObject<T>(save(selectedPath), selectedPath);
                     return true;
                 });
+        }
+
+        public static void SaveObject<T>(T item, string path)
+        {          
+            var json = Serializer.ToJSON(item);
+            if (File.Exists(path))
+                File.Delete(path);
+            File.WriteAllText(path, json);
+            BackupManager.CreateBackup(path);
         }
 
         public static FileResult<T> ShowLoad<T>(PathType path) where T : new()

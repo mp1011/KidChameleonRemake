@@ -14,16 +14,10 @@ namespace KidC
         private bool mSecondaryHitboxIsDamaging;
         protected override bool AllowRetrigger { get { return false; } }
 
-        public PlayerHitController(Sprite s, bool secondaryHitboxIsDamaging) : base(s, 60)
+        public PlayerHitController(Sprite s, bool secondaryHitboxIsDamaging, GravityController gravityController, HealthController healthController) : base(s, 60, healthController)
         {
             mSecondaryHitboxIsDamaging = secondaryHitboxIsDamaging;
-        }
-
-        protected override void OnEntrance()
-        {
-
-            mGravityController = this.Sprite.GetBehavior<GravityController>();
-            base.OnEntrance();
+            mGravityController = gravityController;
         }
 
         protected override bool ShouldHandleCollision(Engine.Collision.CollisionEvent evt)
@@ -98,23 +92,5 @@ namespace KidC
         {
             return Sounds.PlayerHit;
         }
-    }
-
-    class PlayerDieController : SpriteBehavior
-    {
-        public PlayerDieController(Sprite s) : base(s) { }
-
-        protected override void OnExit()
-        {
-            if (this.ExitCode == Engine.ExitCode.Destroyed)
-            {
-                SoundManager.PlaySound(Sounds.PlayerDie);
-                Presets.Debris.Create(this.Sprite, this.Sprite.GetAnimation(KCAnimation.Dead));
-
-                this.Context.SetCameraCenter(null);
-            }
-        }
-
-
     }
 }

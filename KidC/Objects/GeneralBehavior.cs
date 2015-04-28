@@ -49,6 +49,9 @@ namespace KidC
 
         protected override Switch OnTriggered(Direction? dir)
         {
+            if (this.Paused)
+                return Switch.Off;
+
             if (dir.HasValue)
                 this.Walk(dir.Value);
             else

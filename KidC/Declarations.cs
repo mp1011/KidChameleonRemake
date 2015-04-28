@@ -70,6 +70,7 @@ namespace Engine
         public static int Jump { get { return 1; } }
         public static int Run { get { return 2; } }
         public static int Special { get { return 3; } }
+        public static int Pause { get { return 4; } }
     }
    
 }

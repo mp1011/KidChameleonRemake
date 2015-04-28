@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Engine
 {
-    class WorldPoint : IWithPosition
+    public class WorldPoint : IWithPosition
     {
         public WorldPoint(GameContext ctx, float x, float y)
         {

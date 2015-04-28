@@ -37,8 +37,9 @@ namespace KidC
         private HelmetController mPickedUpHelmet;
         private RGPointI mLockPosition = RGPointI.Empty;
         protected override bool AllowRetrigger { get { return false; } }
-
-        public TransformationController(Sprite s, int maxHealth) : base(s) 
+    
+        public TransformationController(Sprite s, int maxHealth)
+            : base(s) 
         {
             this.mDefaultMaxHealth = maxHealth;
         }
@@ -117,11 +118,10 @@ namespace KidC
             this.Sprite.Kill(Engine.ExitCode.Removed);
             var newCharacter = ObjectFactory.CreateSprite(mPickedUpHelmet.PlayerType, this.Sprite.DrawLayer, this.Context);
 
-            var transformCtl = newCharacter.GetBehavior<TransformationController>();
-            transformCtl.mPlayIntroAnimation = true;
-            newCharacter.Location = this.Sprite.Location;
-            newCharacter.Direction = this.Sprite.Direction;
-            this.Sprite.DrawLayer.AddObject(newCharacter);
+            newCharacter.GetBehavior<TransformationController>().mPlayIntroAnimation = true;
+            newCharacter.Sprite.Location = this.Sprite.Location;
+            newCharacter.Sprite.Direction = this.Sprite.Direction;
+            this.Sprite.DrawLayer.AddObject(newCharacter.Sprite);
         }
 
      

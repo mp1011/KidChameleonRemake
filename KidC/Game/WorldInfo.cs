@@ -36,18 +36,26 @@ namespace KidC
 
         public override World CreateWorld(GameContext context)
         {
-            var world = new World(context);
+            var world = new World(context,this);
             world.BackgroundColor = this.BackgroundColor;
 
             var levelTheme = this.CreateTheme();
-            foreach (var layer in levelTheme.CreateLayers(context, this.Map))
+            foreach (var layer in levelTheme.CreateLayers(world, this.Map))
                 world.AddLayer(layer);
 
             var foreground = world.GetLayers(LayerDepth.Foreground).FirstOrDefault();
             foreach (var entry in this.Objects)
                 entry.AddToLayer(foreground);
 
+            if (this.SceneType == KCSceneType.Normal)
+            {
+                GlobalActionHandler.Create(world);
+                context.GetStats().RestoreHealth();
+            }
+
             return world;
         }
     }
+
+   
 }

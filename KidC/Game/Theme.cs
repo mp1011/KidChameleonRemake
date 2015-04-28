@@ -14,7 +14,7 @@ namespace KidC
     interface ILevelTheme
     {
         LevelTheme ThemeType { get; }
-        IEnumerable<Layer> CreateLayers(GameContext context, Map map);
+        IEnumerable<Layer> CreateLayers(World world, Map map);
     }
 
 
@@ -37,24 +37,24 @@ namespace KidC
             get { throw new NotImplementedException(); }
         }
 
-        public IEnumerable<Layer> CreateLayers(GameContext context, Map map)
+        public IEnumerable<Layer> CreateLayers(World world, Map map)
         {
-            var bg = SpriteSheet.Load("woods_bg", context);
+            var bg = SpriteSheet.Load("woods_bg", world.Context);
 
-            var firstLayer = ImageLayer.CreateRepeatingHorizontal(context, new SimpleGraphic(bg, 1), .2f, new RGPointI(0, 200));
+            var firstLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(bg, 1), .2f, new RGPointI(0, 200));
             yield return firstLayer;
 
-            var secondLayer = ImageLayer.CreateRepeatingHorizontal(context, new SimpleGraphic(bg, 0), .6f);
+            var secondLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(bg, 0), .6f);
             secondLayer.PositionBelow(firstLayer);
             yield return secondLayer;
 
-            var thirdLayer = ImageLayer.CreateRepeatingHorizontal(context, new SimpleGraphic(bg, 2), .6f);
+            var thirdLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(bg, 2), .6f);
             thirdLayer.PositionBelow(secondLayer);
             yield return thirdLayer;
 
-            yield return new TileLayer(context, map, RGPointI.Empty, LayerDepth.Foreground);
+            yield return new TileLayer(world, Serializer.Copy(map), RGPointI.Empty, LayerDepth.Foreground);
 
-            yield return  new HUD(context);
+            yield return new HUD(world);
         }
     }
 }

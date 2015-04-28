@@ -17,7 +17,8 @@ namespace KidC
 
         private GameText mDebugMessage;
 
-        public HUD(GameContext ctx) : base(ctx, LayerDepth.Screen)
+        public HUD(World world)
+            : base(world, LayerDepth.Screen)
         {
 
         }
@@ -42,13 +43,14 @@ namespace KidC
             this.GemsCounter.Location = new RGPointI(304, 36);
             this.HealthGuage.Location = new RGPointI(23,32);
 
-            mDebugMessage = new GameText(this.Context, FontManager.ScoreFont, "", new RGPointI(50,100), 100, Alignment.Near, Alignment.Near);
+            mDebugMessage = new GameText(this, FontManager.ScoreFont, "", new RGPointI(50,100), 100, Alignment.Near, Alignment.Near);
             this.AddObject(mDebugMessage);
         }
 
         protected override void UpdateEx()
         {
             this.GemsCounter.Amount = mStats.Gems;
+            this.LivesCounter.Amount = mStats.Lives;
             this.HealthGuage.CurrentHealth = mStats.CurrentHealth;
             this.HealthGuage.MaxHealth = mStats.MaxHealth;
 

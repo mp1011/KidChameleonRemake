@@ -21,14 +21,8 @@ namespace KidC
         protected override void Update()
         {
             if (this.HitPoints <= 0)
-            {
-                var ctl = this.Sprite.GetBehavior<DyingSpriteController>();
-                if (ctl == null)
-                    this.Sprite.Kill(Engine.ExitCode.Destroyed);
-                else
-                    ctl.Trigger(true);
-            }
-
+                this.Kill(Engine.ExitCode.Destroyed);
+         
         }
 
         public void Damage(int amount)
@@ -42,18 +36,10 @@ namespace KidC
         private int mDuration;
         private HealthController mHealthController;
 
-        public HitController(Sprite s, int hitDuration) : base(s)
+        public HitController(Sprite s, int hitDuration, HealthController healthController) : base(s)
         {
             mDuration = hitDuration;
-        }
-
-        protected override void OnEntrance()
-        {
-            mHealthController = this.Sprite.GetBehavior<HealthController>();
-            if (mHealthController == null)
-                throw new Exception("HitController requires a HealthController");
-
-            base.OnEntrance();
+            mHealthController = healthController;
         }
 
         protected override Switch OnTriggered(HitInfo hitInfo)

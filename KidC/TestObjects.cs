@@ -18,7 +18,7 @@ namespace KidC
             var s = new Sprite(ctx, l, ObjectType.Thing);
             var spriteSheet = GameResource<SpriteSheet>.Load(new GamePath(PathType.SpriteSheets, "kid"), ctx);
             s.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, 0));
-            s.AddBehavior(new TestController(s));
+            new TestController(s);
             return s;
         }
 

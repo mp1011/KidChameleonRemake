@@ -10,20 +10,17 @@ namespace Engine
     {
 
         #region No Motion
+
+        private static ObjectMotion mNoMotion;
         public static ObjectMotion NoMotion
         {
-            get;
-            private set;
+            get
+            {
+                return mNoMotion ?? (mNoMotion = new ObjectMotion(Core.GlobalToken.Instance));
+            }        
         }
 
-        private void SetNoMotion(GameContext ctx)
-        {
-            if (ObjectMotion.NoMotion != null)
-                return;
-
-            ObjectMotion.NoMotion = new ObjectMotion(ctx);
-        }
-
+   
         private class ImmobileDummy : IMoveable
         {
             public ObjectMotion MotionManager
@@ -54,19 +51,35 @@ namespace Engine
         public float Speed { get { return Vector.Magnitude; } set { Vector.Magnitude = value; } }
         public RGPoint MotionOffset { get { return Vector.MotionOffset; } }
 
-        public ObjectMotion(GameContext ctx, IMoveable obj) : base(LogicPriority.Motion, ctx) { 
-            mObject = obj;
 
-            this.mMainVector = new MotionVector();                
-            SetNoMotion(ctx);
-        }
-
-        private ObjectMotion(GameContext ctx)
-            : base(LogicPriority.Motion, ctx)
+        public static ObjectMotion Create<T>(T obj) where T : LogicObject, IMoveable
         {
-            mObject = new ImmobileDummy();
+            var motion = new ObjectMotion(obj, obj);
+            motion.mObject = obj;
+            return motion;
         }
 
+        public static ObjectMotion Create<T>(ILogicObject owner, T obj) where T : IMoveable
+        {
+            var motion = new ObjectMotion(owner, obj);
+            return motion;
+        }
+
+        private ObjectMotion(ILogicObject obj)
+            : base(LogicPriority.Motion, obj, RelationFlags.Normal)
+        {
+            this.mMainVector = new MotionVector();
+            this.mObject = new ImmobileDummy();
+        }
+
+        private ObjectMotion(ILogicObject owner, IMoveable obj)
+            : base(LogicPriority.Motion, owner)
+        { 
+            mObject = obj;
+            this.mMainVector = new MotionVector();
+        }
+
+     
         private DirectedMotion mMainMotion;
 
         public DirectedMotion MainMotion

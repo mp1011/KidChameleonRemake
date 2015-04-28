@@ -6,23 +6,19 @@ using Engine.Collision;
 
 namespace Engine
 {
-    public abstract class SpriteBehavior : LogicObject
+    public abstract class SpriteBehavior : LogicObject, ICollisionResponder 
     {
         public Sprite Sprite { get; private set; }
 
         public SpriteBehavior(Sprite sprite)
-            : base(LogicPriority.Behavior, sprite, RelationFlags.Normal)
-        {
-            this.Sprite = sprite;
-            this.Sprite.AddBehavior(this);
-        }
+            : this(sprite, RelationFlags.Normal) { }
 
 
         public SpriteBehavior(Sprite sprite, RelationFlags relationFlags)
             : base(LogicPriority.Behavior, sprite, relationFlags)
         {
             this.Sprite = sprite;
-            this.Sprite.AddBehavior(this);
+            this.Sprite.CollisionResponders.Add(this);
         }
 
         public void HandleCollision(CollisionEvent cEvent, CollisionResponse response)

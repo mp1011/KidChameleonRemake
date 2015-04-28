@@ -178,6 +178,14 @@ namespace Editor.Forms
             }
         }
 
+        public IEnumerable<BitmapPortion> SelectedImagesInOriginalOrder
+        {
+            get
+            {
+                return mLoadedImagePanels.Where(p => p.Selected || p.Image == CurrentImage).Select(p => p.Image);
+            }
+        }
+
         public void SelectPrevious()
         {
             var selection = this.SelectedImages.ToList();
@@ -631,11 +639,35 @@ namespace Editor.Forms
             RefreshLoadedImages();
         }
 
-        private void chkKeepSelection_CheckedChanged(object sender, EventArgs e)
-        {
 
+        private void btnClone_Click(object sender, EventArgs e)
+        {
+            CloneImage(this.SelectedImages.LastOrDefault());
+          
         }
 
+        public BitmapPortion CloneImage(BitmapPortion original)
+        {
+            if (original == null)
+                return null;
+
+            var newList = mLoadedImagePanels.Select(p => p.Image).ToList();
+            int insertIndex = newList.IndexOf(original);
+
+            var clone = original.Clone();
+            newList.Insert(insertIndex+1, clone);
+
+            this.ResetLoadedImages(newList.First());
+
+            foreach (var rec in newList.Skip(1))
+                AddImagePanel(rec);
+
+            RefreshLoadedImages();
+
+            this.CurrentImage = original;
+            return clone;
+        }
+  
 
         #region Extra Images
 
@@ -669,5 +701,6 @@ namespace Editor.Forms
         }
 
         #endregion 
+
     }
 }

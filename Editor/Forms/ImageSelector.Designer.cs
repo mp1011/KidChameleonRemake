@@ -52,6 +52,7 @@
             this.saveSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.toolStripMenuItem2 = new System.Windows.Forms.ToolStripSeparator();
             this.deleteSelectedToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.btnClone = new System.Windows.Forms.Button();
             this.pnlLoadedImages.SuspendLayout();
             this.pnlSideTop.SuspendLayout();
             this.menuStrip1.SuspendLayout();
@@ -62,9 +63,9 @@
             this.pnlLoadedImages.Controls.Add(this.pnlLoadedImage);
             this.pnlLoadedImages.Controls.Add(this.pnlLoadedImagesScroll);
             this.pnlLoadedImages.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlLoadedImages.Location = new System.Drawing.Point(0, 71);
+            this.pnlLoadedImages.Location = new System.Drawing.Point(0, 89);
             this.pnlLoadedImages.Name = "pnlLoadedImages";
-            this.pnlLoadedImages.Size = new System.Drawing.Size(700, 496);
+            this.pnlLoadedImages.Size = new System.Drawing.Size(700, 478);
             this.pnlLoadedImages.TabIndex = 7;
             // 
             // pnlLoadedImage
@@ -73,7 +74,7 @@
             this.pnlLoadedImage.CenterOnOrigin = false;
             this.pnlLoadedImage.DisplayOrigin = null;
             this.pnlLoadedImage.DisplayPortionOnly = true;
-            this.pnlLoadedImage.DrawRectangle = DrawRectangleType.None;
+            this.pnlLoadedImage.DrawRectangle = Editor.DrawRectangleType.None;
             this.pnlLoadedImage.EnableSelector = true;
             this.pnlLoadedImage.Image = null;
             this.pnlLoadedImage.Location = new System.Drawing.Point(12, 12);
@@ -87,12 +88,13 @@
             this.pnlLoadedImagesScroll.Dock = System.Windows.Forms.DockStyle.Right;
             this.pnlLoadedImagesScroll.Location = new System.Drawing.Point(678, 0);
             this.pnlLoadedImagesScroll.Name = "pnlLoadedImagesScroll";
-            this.pnlLoadedImagesScroll.Size = new System.Drawing.Size(22, 496);
+            this.pnlLoadedImagesScroll.Size = new System.Drawing.Size(22, 478);
             this.pnlLoadedImagesScroll.TabIndex = 1;
             this.pnlLoadedImagesScroll.Scroll += new System.Windows.Forms.ScrollEventHandler(this.pnlLoadedImagesScroll_Scroll);
             // 
             // pnlSideTop
             // 
+            this.pnlSideTop.Controls.Add(this.btnClone);
             this.pnlSideTop.Controls.Add(this.chkKeepSelection);
             this.pnlSideTop.Controls.Add(this.btnGroupSelected);
             this.pnlSideTop.Controls.Add(this.btnDeleteDuplicates);
@@ -106,7 +108,7 @@
             this.pnlSideTop.Dock = System.Windows.Forms.DockStyle.Top;
             this.pnlSideTop.Location = new System.Drawing.Point(0, 24);
             this.pnlSideTop.Name = "pnlSideTop";
-            this.pnlSideTop.Size = new System.Drawing.Size(700, 47);
+            this.pnlSideTop.Size = new System.Drawing.Size(700, 65);
             this.pnlSideTop.TabIndex = 6;
             // 
             // chkKeepSelection
@@ -118,7 +120,6 @@
             this.chkKeepSelection.TabIndex = 9;
             this.chkKeepSelection.Text = "Keep Selection";
             this.chkKeepSelection.UseVisualStyleBackColor = true;
-            this.chkKeepSelection.CheckedChanged += new System.EventHandler(this.chkKeepSelection_CheckedChanged);
             // 
             // btnGroupSelected
             // 
@@ -283,6 +284,16 @@
             this.deleteSelectedToolStripMenuItem.Text = "Delete Selected";
             this.deleteSelectedToolStripMenuItem.Click += new System.EventHandler(this.deleteSelectedToolStripMenuItem_Click);
             // 
+            // btnClone
+            // 
+            this.btnClone.Location = new System.Drawing.Point(393, 37);
+            this.btnClone.Name = "btnClone";
+            this.btnClone.Size = new System.Drawing.Size(76, 22);
+            this.btnClone.TabIndex = 10;
+            this.btnClone.Text = "Clone";
+            this.btnClone.UseVisualStyleBackColor = true;
+            this.btnClone.Click += new System.EventHandler(this.btnClone_Click);
+            // 
             // ImageSelector
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -330,5 +341,6 @@
         private System.Windows.Forms.Button btnDeleteDuplicates;
         private System.Windows.Forms.Button btnGroupSelected;
         private System.Windows.Forms.CheckBox chkKeepSelection;
+        private System.Windows.Forms.Button btnClone;
     }
 }

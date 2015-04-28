@@ -21,6 +21,9 @@ namespace Engine
         public Func<RGColor> ColorUpdater;
         public IGameFont Font { get; private set; }
 
+        private bool mTrimSpaces = true;
+        public bool TrimSpaces { get { return mTrimSpaces; } set { mTrimSpaces = value; } }
+
         private String message;
         public String Text
         {
@@ -39,7 +42,7 @@ namespace Engine
             }
             set
             {
-                SetText(value.ToUpper());
+                SetText(value);
             }
         }
 
@@ -130,8 +133,8 @@ namespace Engine
             }
         }
 
-        public GameText(GameContext context, IGameFont font, String message, RGPointI location, int maxWidth, Alignment p_halignment, Alignment p_valignment)
-            : base(LogicPriority.World, context)
+        public GameText(ILogicObject owner, IGameFont font, String message, RGPointI location, int maxWidth, Alignment p_halignment, Alignment p_valignment)
+            : base(LogicPriority.World, owner)
         {
 
             MaxTextWidth = maxWidth;
@@ -143,11 +146,11 @@ namespace Engine
             SetText(message);
         }
 
-        public GameText(GameContext context, IGameFont font, String message, RGPointI location, int maxWidth)
-            : this(context, font, message, location, maxWidth, Alignment.Near, Alignment.Near) { }
+        public GameText(ILogicObject owner, IGameFont font, String message, RGPointI location, int maxWidth)
+            : this(owner, font, message, location, maxWidth, Alignment.Near, Alignment.Near) { }
 
-        public GameText(GameContext context, IGameFont font, String message, RGPointI location)
-            : this(context, font, message, location, 0, Alignment.Near, Alignment.Near) { }
+        public GameText(ILogicObject owner, IGameFont font, String message, RGPointI location)
+            : this(owner, font, message, location, 0, Alignment.Near, Alignment.Near) { }
 
 
         public void Reposition(RGPointI location, int maxWidth)
@@ -207,7 +210,7 @@ namespace Engine
                 else if (c == ' ')
                 {
                     currentWord.Clear();
-                    if (cursor.X > Location.X)
+                    if (cursor.X > Location.X || !TrimSpaces)
                         cursor.X += Font.SpaceSize().Width;
                 }               
 
@@ -249,10 +252,12 @@ namespace Engine
 
             if (vAlignment == Alignment.Center)
             {
-                int height = this.Letters.Max(p => p.Location.Y + this.Font.CellSize().Height) - this.Letters.Min(p => p.Location.Y);
+                int height = this.Letters.Max(p => p.Location.Bottom) - this.Letters.Min(p => p.Location.Y);
                 foreach (var letter in this.Letters)
                 {
-                    letter.Location.Y -= (height / 2);
+                    var h = letter.Location.Height;
+                    letter.Location.Top -= (height / 2);
+                    letter.Location.Height = h;
                 }
             }
             else if (vAlignment == Alignment.Near)
@@ -278,17 +283,17 @@ namespace Engine
                     continue;
 
                 if (!foundNonSpace && Char.IsWhiteSpace(lineLetter.Character))
-                    spaceBefore += this.Font.CellSize().Width;
+                    spaceBefore += lineLetter.Location.Width;
                 else
                 {
                     foundNonSpace = true;
 
                     if (Char.IsWhiteSpace(lineLetter.Character))
-                        spaceAfter += this.Font.CellSize().Width;
+                        spaceAfter += lineLetter.Location.Width;
                     else
                     {
                         spaceBefore = 0;
-                        lineWidth += this.Font.CellSize().Width;
+                        lineWidth += lineLetter.Location.Width;
                     }
                 }
             }
@@ -305,8 +310,10 @@ namespace Engine
                     if (letter.Location.Y != lineY)
                         continue;
 
+                    var w = letter.Location.Width;
                     letter.Location.X = xPos;
-                    xPos += this.Font.CellSize().Width;
+                    letter.Location.Width = w;
+                    xPos += letter.Location.Width;
                 }
             }
             else if (hAlignment == Alignment.Far)
@@ -317,8 +324,10 @@ namespace Engine
                     if (letter.Location.Y != lineY)
                         continue;
 
+                    var w = letter.Location.Width;
                     letter.Location.X = xPos;
-                    xPos += this.Font.CellSize().Width;
+                    letter.Location.Width = w;
+                    xPos += letter.Location.Width;
                 }
             }
         }
@@ -326,24 +335,31 @@ namespace Engine
         private void MoveCursor(List<Letter> currentWord, char newLetter)
         {
             cursor.X += this.Font.LetterWidth(newLetter);
-            if (MaxTextWidth > 0 && cursor.X + this.Font.CellSize().Width > this.Location.X + MaxTextWidth)
+            if (MaxTextWidth > 0 && cursor.X + this.Font.LetterSize(' ').Width > this.Location.X + MaxTextWidth)
             {
                 int lineStart = Location.X;
                 if (currentWord.Count > 0)
                 {
                     int offset = currentWord.First().Location.X - Location.X;
-                    foreach (var letter in currentWord)
+                    if (offset > 0)
                     {
-                        letter.Location.Y += (int)(this.Font.CellSize().Height * 1.5f);
-                        letter.Location.X -= offset;
-                    }
+                        foreach (var letter in currentWord)
+                        {
+                            var size = letter.Location.Size;
+                            letter.Location.Y += (int)(letter.Location.Height * 1.5f);
+                            letter.Location.X -= offset;
+                            letter.Location.Width = size.Width;
+                            letter.Location.Height = size.Height;
+                        }
 
-                    lineStart = currentWord.Last().Location.X + this.Font.CellSize().Width;
+                        lineStart = currentWord.Last().Location.X + this.Font.LetterSize(' ').Width;
+
+                        AlignLine(cursor.Y);
+                        cursor.X = lineStart;
+                        cursor.Y += (int)(this.Font.LetterSize(' ').Height * 1.5f);
+                    }
                 }
 
-                AlignLine(cursor.Y);
-                cursor.X = lineStart;
-                cursor.Y += (int)(this.Font.CellSize().Height * 1.5f);
             }
         }
 

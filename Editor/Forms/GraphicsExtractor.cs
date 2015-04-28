@@ -293,7 +293,15 @@ namespace Editor.Forms
         private void CropImage(RGRectangleI imageRec)
         {
             foreach (var img in this.ImagesForAction)
-                img.Crop(imageRec);
+            {
+                if (!chkCropToNew.Checked)
+                    img.Crop(imageRec);
+                else
+                {
+                    var copy = CurrentImageSelector.CloneImage(img);
+                    copy.Crop(imageRec);
+                }
+            }
         }
 
         #endregion
@@ -382,7 +390,7 @@ namespace Editor.Forms
             if (CurrentImageSelector == null)
                 return;
 
-            var images = CurrentImageSelector.SelectedImages;
+            var images = CurrentImageSelector.SelectedImagesInOriginalOrder;
 
             if (MessageBox.Show("Save " + images.Count() + " cell(s)?","Save?", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.No)
                 return;
@@ -407,7 +415,7 @@ namespace Editor.Forms
                 });
 
         }
-
+      
         private void OpenTileset()
         {
             TilesetEditor.GetOrOpen().LoadTileset();
@@ -563,9 +571,6 @@ namespace Editor.Forms
 
         }
 
-
-
-
         private void Crop(BitmapPortion img)
         {
             RGRectangleI newCrop = RGRectangleI.FromTLBR(int.MaxValue, int.MaxValue, int.MinValue, int.MinValue);
@@ -654,8 +659,6 @@ namespace Editor.Forms
         {
             this.ResetOverlay();
         }
-
-
     }
 }
 

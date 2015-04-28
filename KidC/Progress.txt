@@ -1,15 +1,11 @@
-﻿pause menu
-	layer fading
-	resume play
-	restart round
-
-damage -> death
-timeout -> death
-game over
-clock pickup
-metal block
-rubber blocks
-1-up
-flag
-VR-view
-level end
+﻿Improved mapping
+	extreme slowness drawing
+	ctrl+mousewheel = zoom
+	ctrl+drag = pan
+	in draw mode - render current cell (shaded yellow) over cursor
+	g = toggle grid
+	alt+click = "touchup" mode - cycles between cells that fit the surrounding
+	browsable attribute on tile class
+	scroll to object from list
+	layout object page
+	add object crash

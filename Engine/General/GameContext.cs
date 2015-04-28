@@ -18,7 +18,7 @@ namespace Engine
             mCameraCenter = new WorldPoint(this, 200, 200);
             this.mLoopManager = new LoopManager();
             this.Timer = new Timer(this);
-            this.Listeners = new Listeners(this);
+           // this.Listeners = new Listeners(this);
         }
 
 
@@ -35,12 +35,15 @@ namespace Engine
 
         public void SetWorld(World w)
         {
+            if (CurrentWorld != null)
+                CurrentWorld.Kill(ExitCode.Removed);
             CurrentWorld = w;
+            this.Listeners = new Listeners(w);
         }
 
         public void SetWorld(WorldInfo w)
         {
-            CurrentWorld = w.CreateWorld(this);
+            SetWorld(w.CreateWorld(this));
         }
 
         public Input.MouseInput Mouse { get; set; }
@@ -107,7 +110,7 @@ namespace Engine
 
         public Player FirstPlayer
         {
-            get { return mPlayers[0]; }
+            get { return mPlayers.FirstOrDefault(); }
         }
 
         public double?[] DebugNumbers = new double?[3];
@@ -129,6 +132,18 @@ namespace Engine
             var elapsedFrames = this.CurrentFrameNumber - startFrame;
             return (int)(elapsedFrames / (ulong)FPS);
         }
+
+        public int ElapsedSeconds(ulong elapsedFrames)
+        {
+            return (int)(elapsedFrames / (ulong)FPS);
+        }
+
+        public float ElapsedSecondsSinceF(ulong startFrame)
+        {
+            var elapsedFrames = this.CurrentFrameNumber - startFrame;
+            return (float)elapsedFrames / (ulong)FPS;
+        }
+
 
         public int ElapsedFramesSince(ulong startFrame)
         {

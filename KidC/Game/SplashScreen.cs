@@ -10,36 +10,35 @@ namespace KidC
     {
 
         private GameResource<WorldInfo> mNextMap;
-        public string Title { get; set; }
-
+       
         public SplashScreenInfo(GameResource<WorldInfo> nextMap)
         {
             mNextMap = nextMap;
-            this.Title = "this is my level";
             this.Theme = LevelTheme.Woods;
         }
         
         public override World CreateWorld(GameContext ctx)
         {
-            var screen = new World(ctx);
+            var nextLevel = mNextMap.GetObject(ctx);
+        
+            var screen = new World(ctx,this);
             screen.BackgroundColor = RGColor.Black;
-            screen.AddLayer(new ImageLayer(ctx, new SimpleGraphic(new TextureResource("Splash_" + this.Theme.ToString()), RGRectangleI.FromXYWH(0, 0, 320, 224))));
+            screen.AddLayer(new ImageLayer(screen, new SimpleGraphic(new TextureResource("Splash_" + this.Theme.ToString()), RGRectangleI.FromXYWH(0, 0, 320, 224))));
 
-            GameText levelText = new GameText(ctx, FontManager.SplashScreenFont, this.Title, new RGPointI(50, 50));
+            GameText levelText = new GameText(screen, FontManager.SplashScreenFont, nextLevel.Name, new RGPointI(50, 50));
             levelText.MaxTextWidth = 180;
          
             screen.ScreenLayer.AddObject(levelText);
 
-            screen.ScreenLayer.AddObject(new ActiveFont(levelText));
+            MovingText.MoveInFromAllSides(levelText, screen.ScreenLayer);
             ctx.CenterCamera();
 
             KidCGame.CreatePlayer(ctx);
 
-            var nextLevel = mNextMap.GetObject(ctx);
-            var levelTransition = new FadeoutSceneTransition(ctx);
+             var levelTransition = new FadeoutSceneTransition(screen);
 
-            var buttonListener = new ButtonListener<WorldInfo>(ctx, levelTransition);
-            buttonListener.AddMappings(nextLevel, KCButton.Jump, KCButton.Run, KCButton.Special);
+            var buttonListener = new ButtonListener<WorldInfo>(screen, levelTransition);
+            buttonListener.AddMappings(nextLevel, KCButton.Pause, KCButton.Jump, KCButton.Run, KCButton.Special);
 
             return screen;
         }

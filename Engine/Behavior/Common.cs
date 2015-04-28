@@ -99,25 +99,26 @@ namespace Engine
             if (mType.Is(ObjectType.None))
                 return;
 
-            var obj = mType.CreateInstance<Sprite>(this.Sprite.DrawLayer, this.Context);
+            var obj = mType.CreateSprite(this.Sprite.DrawLayer, this.Context).Sprite;
             obj.Location = this.Sprite.Location.Offset(mOffset);
         }
     }
 
-    public class SeekPointControllerX<T> : LogicObject  where T:LogicObject, IMoveableWithPosition 
+    public class SeekPointController : LogicObject 
     {
-        private T mObject;
+        private IMoveableWithPosition mObject;
         private IWithPosition mTarget;
-        public int Speed { get; set; }
+        public float Speed { get; set; }
         public bool ReachedTarget { get; private set; }
 
-        public SeekPointControllerX(T obj, IWithPosition target)
-            : base(LogicPriority.Behavior, obj, RelationFlags.DestroyWhenParentDestroyed)
+        public SeekPointController(ILogicObject owner, IMoveableWithPosition obj, IWithPosition target, float speed)
+            : base(LogicPriority.Behavior, owner, RelationFlags.Normal)
         {
             mObject = obj;
             mTarget = target;
-            this.Speed = 5;
+            this.Speed = speed;
         }
+
 
         protected override void Update()
         {
@@ -131,43 +132,43 @@ namespace Engine
             }
             else
             {
-                this.mObject.MotionManager.MainMotion.Set(dir, 5f);
+                this.mObject.MotionManager.MainMotion.Set(dir, Speed);
                 this.ReachedTarget = false;
             }
         }
     }
 
 
-    public class SeekPointController : SpriteBehavior
-    {
-        private IWithPosition mTarget;
-        public int Speed { get; set; }
-        public bool ReachedTarget { get; private set; }
+    //public class SeekPointController : SpriteBehavior
+    //{
+    //    private IWithPosition mTarget;
+    //    public int Speed { get; set; }
+    //    public bool ReachedTarget { get; private set; }
 
-        public SeekPointController(Sprite sprite, IWithPosition target)
-            : base(sprite)
-        {
-            mTarget = target;
-            this.Speed = 5;
-        }
+    //    public SeekPointController(Sprite sprite, IWithPosition target)
+    //        : base(sprite)
+    //    {
+    //        mTarget = target;
+    //        this.Speed = 5;
+    //    }
 
-        protected override void Update()
-        {
-            var dir = this.Sprite.Location.GetDirectionTo(mTarget.Location);
-            if (this.Sprite.Location.GetDistanceTo(mTarget.Location) <= this.Speed)
-            {
-                this.Sprite.Location = mTarget.Location;
-                this.ReachedTarget = true;
-                this.Kill(Engine.ExitCode.Finished);
-            }
-            else
-            {
-                this.Sprite.MotionManager.MainMotion.Set(dir, 5f);
-                this.ReachedTarget = false;
-            }
-        }
+    //    protected override void Update()
+    //    {
+    //        var dir = this.Sprite.Location.GetDirectionTo(mTarget.Location);
+    //        if (this.Sprite.Location.GetDistanceTo(mTarget.Location) <= this.Speed)
+    //        {
+    //            this.Sprite.Location = mTarget.Location;
+    //            this.ReachedTarget = true;
+    //            this.Kill(Engine.ExitCode.Finished);
+    //        }
+    //        else
+    //        {
+    //            this.Sprite.MotionManager.MainMotion.Set(dir, 5f);
+    //            this.ReachedTarget = false;
+    //        }
+    //    }
 
-    }
+    //}
 
     public interface ITriggerable
     {
@@ -306,7 +307,7 @@ namespace Engine
 
         private ITriggerable mTrigger;
         private SpriteBehavior[] mBehaviorsToPause;
-
+    
         public BehaviorExclusionController(Sprite s, ITriggerable trigger, params SpriteBehavior[] behaviorsToPause)
             : base(s)
         {
@@ -318,23 +319,37 @@ namespace Engine
         protected override void Update()
         {
 
-            if (mBehaviorsToPause.Length == 0)
-                mBehaviorsToPause = this.Sprite.GetBehaviors<SpriteBehavior>().Where(p => p.ID != this.ID && p.ID != mTrigger.ID).ToArray();
-
             if (mTrigger.Triggered)
             {
                 mWasTriggered = true;
-                foreach (var ctl in mBehaviorsToPause)
-                    ctl.Pause();
+                foreach (var behavior in mBehaviorsToPause)
+                    behavior.Pause();
             }
 
             if (mWasTriggered && !mTrigger.Triggered)
             {
                 mWasTriggered = false;
-                foreach (var ctl in mBehaviorsToPause)
-                    ctl.Resume();
+                foreach (var behavior in mBehaviorsToPause)
+                    behavior.Resume();
             }
         }
     }
-   
+
+    public class KillObject : LogicObject
+    {
+        private ILogicObject mObject;
+        private ExitCode mExitCode;
+
+        public KillObject(ILogicObject obj, ExitCode exitCode) : base(LogicPriority.Behavior,obj)
+        {
+            mObject = obj;
+            mExitCode = exitCode;
+        }
+
+        protected override void Update()
+        {
+            mObject.Kill(mExitCode);
+        }
+    }
+  
 }

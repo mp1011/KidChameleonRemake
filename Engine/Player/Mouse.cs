@@ -59,7 +59,7 @@ namespace Engine.Input
         private Layer mLayer;
 
         public Cursor(GameContext ctx, Layer layer)
-            : base(LogicPriority.World, ctx)
+            : base(LogicPriority.World, layer)
         {
             layer.AddObject(this);
             mLayer = layer;

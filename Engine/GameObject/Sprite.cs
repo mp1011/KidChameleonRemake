@@ -6,7 +6,7 @@ using Engine.Collision;
 
 namespace Engine
 {
-    public class Sprite : LogicObject, IDrawableRemovable, IWithPosition, IMoveable, ICollidable
+    public class Sprite : LogicObject, IDrawableRemovable, IWithPosition, IMoveableWithPosition, ICollidable, ICollisionResponder 
     {
         private RenderOptions mRenderOptions = new RenderOptions();
 
@@ -78,8 +78,8 @@ namespace Engine
             return this.CurrentAnimationKey == key;
         }
 
-        private List<SpriteBehavior> mBehaviors = new List<SpriteBehavior>();
-
+        public GeneralLogicObject BehaviorState { get; private set; }
+      
         public SpriteAnimation CurrentAnimation { get { return mAnimations[mCurrentAnimationKey]; } }
 
         public ObjectType ObjectType { get; private set; }
@@ -118,13 +118,14 @@ namespace Engine
         }
 
         public Sprite(GameContext ctx, Layer drawLayer, ObjectType type)
-            : base(LogicPriority.Behavior, ctx)
+            : base(LogicPriority.Behavior, drawLayer, RelationFlags.DestroyWhenParentDestroyed | RelationFlags.PauseWhenParentPaused)
         {
             this.Location = RGPointI.Empty;
             this.LayerDepth = drawLayer.Depth;
             this.ObjectType = type;
 
             this.DrawLayer = drawLayer;
+            this.BehaviorState = new GeneralLogicObject(this);
         }
 
         //public Sprite(GameContext ctx, ObjectType type)
@@ -163,70 +164,13 @@ namespace Engine
         public SpriteAnimation GetAnimation(int key)
         {
             return mAnimations[key];
-        }
-
-        public T AddBehavior<T>(T b) where T:SpriteBehavior 
-        {
-            if (!mBehaviors.Contains(b))
-                mBehaviors.Add(b);
-
-            return b;
-        }
-
-        public void AddBehaviorChain(params SpriteBehavior[] behaviors)
-        {
-            foreach (var behavior in behaviors)
-                AddBehavior(behavior);
-
-            AddBehavior(new BehaviorChain(this, behaviors));
-
-        }
-
-        #region Behaviors
-
-        public void ClearBehaviors()
-        {
-            foreach (var behavior in mBehaviors)
-                behavior.Kill(ExitCode.Removed);
-        }
-
-        public void ClearBehaviorsExcept(params SpriteBehavior[] exclusions)
-        {
-            foreach (var behavior in mBehaviors)
-            {
-                if (!exclusions.Contains(behavior))
-                    behavior.Kill(ExitCode.Removed);
-            }
-        }
-
-        public T GetBehavior<T>()
-        {
-            return mBehaviors.OfType<T>().FirstOrDefault();
-        }
-
-        public IEnumerable<T> GetBehaviors<T>()
-        {
-            return mBehaviors.OfType<T>();
-        }
-
-
-        #endregion
-
-        protected override void OnEntrance()
-        {
-            //this.DrawLayer.AddObject(new DebugRectangle<Sprite>(this, s => s.SecondaryCollisionArea, DebugRectangle.RecColor.Blue));          
-            //this.DrawLayer.AddObject(new DebugRectangle<Sprite>(this, s => s.Area, DebugRectangle.RecColor.Orange));
-
-            //this.DrawLayer.AddObject(new DebugRectangle<Sprite>(this, s => RGRectangle.FromXYWH(s.X - 2, s.Y - 2, 4f, 4f), DebugRectangle.RecColor.Green));
-        }
+        }    
 
         protected override void Update()
         {
             OriginalSpeed = this.CurrentSpeed;
-            mBehaviors.RemoveAll(p => !p.Alive);
         }
     
-
         public void Draw(Engine.Graphics.Painter painter, RGRectangleI canvas)
         {
             painter.Paint(canvas, this.CurrentAnimation);
@@ -235,9 +179,24 @@ namespace Engine
         private ObjectMotion mMotionManager;
         public ObjectMotion MotionManager
         {
-            get { return mMotionManager ?? (mMotionManager = new ObjectMotion(this.Context, this)); }
+            get { return mMotionManager ?? (mMotionManager = ObjectMotion.Create(this)); }
         }
 
+
+        private List<ICollisionResponder> mCollisionResponders;
+        public ICollection<ICollisionResponder> CollisionResponders
+        {
+            get
+            {
+                if (mCollisionResponders == null)
+                {
+                    mCollisionResponders = new List<ICollisionResponder>();
+                    mCollisionResponders.Add(this);
+                }
+
+                return mCollisionResponders;
+            }
+        }
 
         public void HandleCollision(CollisionEvent collision, CollisionResponse response)
         {
@@ -248,12 +207,12 @@ namespace Engine
                 return;
             }
 
-            foreach (var behavior in mBehaviors)
-            {
-                behavior.HandleCollision(collision,response);
-                if (!response.ShouldContinueHandling)
-                    return;
-            }
+            //foreach (var behavior in mBehaviors)
+            //{
+            //    behavior.HandleCollision(collision,response);
+            //    if (!response.ShouldContinueHandling)
+            //        return;
+            //}
         }
 
         public void BeforeCollision(CollisionEvent collision)
@@ -269,6 +228,8 @@ namespace Engine
         {
             return this.ObjectType.ToString() + ":" + this.CurrentAnimation.Texture.Path;
         }
+
+
 
 
 

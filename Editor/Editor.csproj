@@ -52,6 +52,13 @@
     <Compile Include="Controls\ImagePanel.cs" />
     <Compile Include="Controls\ImagePanelEvents.cs" />
     <Compile Include="Controls\RGColorEditor.cs" />
+    <Compile Include="Forms\FontEditor.cs">
+      <SubType>Form</SubType>
+    </Compile>
+    <Compile Include="Forms\FontEditor.Designer.cs">
+      <DependentUpon>FontEditor.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Image\Palette.cs" />
     <Compile Include="UI\DragHandler.cs" />
     <Compile Include="UI\ImagePanelOverlay.cs" />
     <Compile Include="Controls\TilePanel.cs">
@@ -139,6 +146,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AnimationPreview.resx">
       <DependentUpon>AnimationPreview.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Forms\FontEditor.resx">
+      <DependentUpon>FontEditor.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\frmTest.resx">
       <DependentUpon>frmTest.cs</DependentUpon>

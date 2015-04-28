@@ -17,7 +17,7 @@ namespace KidC
             var sprite = new Sprite(ctx,layer,type);
             sprite.SetSingleAnimation(animation);
             sprite.CurrentAnimation.SetFrameDuration(animationSpeed);
-            sprite.AddBehavior(new DestroyWhenAnimationFinished(sprite));
+            new DestroyWhenAnimationFinished(sprite);
             return sprite;
         }
     }
@@ -34,8 +34,7 @@ namespace KidC
 
             var g = new GravityController(debris);
             g.CurrentYSpeed = ySpeed;
-            debris.AddBehavior(g);
-            debris.AddBehavior(new DestroyWhenOutOfFrame(debris));
+            new DestroyWhenOutOfFrame(debris);
 
             debris.MotionManager.MainMotion.Set(d, speed);
             layer.AddObject(debris);

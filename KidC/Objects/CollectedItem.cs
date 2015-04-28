@@ -18,12 +18,13 @@ namespace KidC
             else
                 return;
 
-             var sprite = item.ObjectType.CreateSprite(item.Context.CurrentMapHUD(), item.Context);
-            sprite.ClearBehaviors();
+            var sprite = item.ObjectType.CreateSprite(item.Context.CurrentMapHUD(), item.Context).Sprite;
+            sprite.BehaviorState.Pause();
+
             sprite.MotionManager.Reset();
             sprite.Location = item.DrawLayer.LayerPointToScreenPoint(item.Location);          
 
-            sprite.AddBehaviorChain(new SeekPointController(sprite, target), new CollectedItemBehavior(sprite));
+            new SeekPointController(sprite,sprite, target,5f).ContinueWith(new CollectedItemBehavior(sprite));
         }
     }
 

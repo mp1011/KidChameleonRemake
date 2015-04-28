@@ -35,7 +35,7 @@ namespace KidC
         public void Break()
         {
             SoundManager.PlaySound(Sounds.BlockHit);
-            BreakingPrizeTile tile = new BreakingPrizeTile(this.Context, TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer, mPrize);
+            BreakingPrizeTile tile = new BreakingPrizeTile(TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer, mPrize);
 
             this.TileLayer.AddObject(tile);               
         }
@@ -52,8 +52,8 @@ namespace KidC
         private int mMotion = 2;
         private int mRange = 2;
 
-        public BreakingPrizeTile(GameContext ctx, RGSizeI tileSize, RGPointI tileLocation, TileLayer layer, ObjectType prize)
-            : base(ctx, BreakingPrizeTile.CreateGraphic(ctx, layer))
+        public BreakingPrizeTile(RGSizeI tileSize, RGPointI tileLocation, TileLayer layer, ObjectType prize)
+            : base(layer, BreakingPrizeTile.CreateGraphic(layer))
         {
             this.Location = new RGPointI((tileLocation.X * tileSize.Width) + (tileSize.Width / 2), (tileLocation.Y * tileSize.Height) + (tileSize.Height / 2));
             this.mLayer = layer;
@@ -63,7 +63,7 @@ namespace KidC
             mInitialY = this.Location.Y;           
         }
 
-        private static SimpleGraphic CreateGraphic(GameContext ctx,TileLayer layer)
+        private static SimpleGraphic CreateGraphic(TileLayer layer)
         {
             var tileDef = layer.Map.Tileset.GetTiles().FirstOrDefault(p => p.TileID == (int)SpecialTile.Rock + 1000);
             return new SimpleGraphic(new TextureResource("SpriteSheets_Woods"), tileDef.SourcePosition);
@@ -93,10 +93,10 @@ namespace KidC
 
                 var t = mLayer.Map.GetTile(mTileLocation.X, mTileLocation.Y);
 
-                var puff = KCObjectType.Puff.CreateInstance<Sprite>(mLayer, this.Context);
+                var puff = KCObjectType.Puff.CreateSpriteInstance(mLayer, this.Context).Sprite;
                 puff.Location = this.Location.Offset(0, -24);
 
-                puff.AddBehavior(new CreateObjectWhenDestroyed(puff, mPrize, RGPoint.Empty));
+                new CreateObjectWhenDestroyed(puff, mPrize, RGPoint.Empty);
             }
         }
 

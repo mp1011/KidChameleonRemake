@@ -7,14 +7,14 @@ using System.Text;
 namespace Engine.Core
 {
 
-    public abstract class GameBase
+    public abstract class GameBase  
     {
         public static GameBase Current { get; private set; }
 
      
-        protected GameBase()
+        protected GameBase() 
         {
-            GameBase.Current = this;
+            GameBase.Current = this;            
         }
 
 #region Abstract Properties and Methods
@@ -30,4 +30,45 @@ namespace Engine.Core
 
 
     }
+
+
+    public class GlobalToken : ILogicObject
+    {
+        private GlobalToken() { }
+
+        private static GlobalToken mInstance;
+        public static GlobalToken Instance
+        {
+            get
+            {
+                return mInstance ?? (mInstance = new GlobalToken());
+            }
+        }
+
+        public bool Alive
+        {
+            get { return true; }
+        }
+
+        public bool Paused
+        {
+            get;
+            set;
+        }
+
+        public ExitCode ExitCode
+        {
+            get { return Engine.ExitCode.StillAlive; }
+        }
+
+        public void Kill(ExitCode exitCode)
+        {
+        }
+
+        public GameContext Context
+        {
+            get { return EngineBase.Current.Context; }
+        }
+    }
+     
 }

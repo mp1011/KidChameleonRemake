@@ -12,24 +12,41 @@ namespace KidC
     
         private ulong mClockStart;
         private int mStartSeconds = 120;
+        private ulong mFramesElapsed = 0;
 
         public RGPointI Location { get; set; }
 
         public Clock(Layer layer)
-            : base(LogicPriority.World, layer.Context)
+            : base(LogicPriority.World, layer)
         {
         }
 
+        public bool TimesUp
+        {
+            get
+            {
+                if (mClockStart == 0)
+                    return false;
+
+                var secondsElapsed = Context.ElapsedSecondsSince(mClockStart);
+                var secondsRemaining = Math.Max(0, mStartSeconds - secondsElapsed);
+                return secondsRemaining == 0;
+            }
+        }
+
+
         protected override void OnEntrance()
         {
-            mLabel = new GameText(this.Context, FontManager.ClockFont, "1:00", this.Location, 32, Alignment.Far, Alignment.Center);
+            mLabel = new GameText(this, FontManager.ClockFont, "1:00", this.Location, 32, Alignment.Far, Alignment.Center);
             mClockStart = Context.CurrentFrameNumber;
         }
         
         protected override void Update()
         {
             mLabel.Location = this.Location;
-            var secondsElapsed = Context.ElapsedSecondsSince(mClockStart);
+            mFramesElapsed++;
+
+            var secondsElapsed = Context.ElapsedSeconds(mFramesElapsed);
 
             var secondsRemaining = Math.Max(0, mStartSeconds - secondsElapsed);
             var minutes = secondsRemaining / 60;

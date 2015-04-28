@@ -23,7 +23,9 @@ namespace Engine.XNA
             this.SetKeyMapping(GameKey.Button3, (int)Keys.D);
 
             this.SetKeyMapping(GameKey.Editor1, (int)Keys.LeftControl);
-            this.SetKeyMapping(GameKey.Editor2, (int)Keys.E);        
+            this.SetKeyMapping(GameKey.Editor2, (int)Keys.E);
+
+            this.SetKeyMapping(GameKey.Start, (int)Keys.Enter);
         }
 
         protected override IEnumerable<int> GetPressedKeys()

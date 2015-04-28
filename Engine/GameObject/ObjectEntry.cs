@@ -28,6 +28,8 @@ namespace Engine
         [Browsable(true)]
         public ObjectEntryType EntryType { get; set; }
 
+        [Browsable(true)]
+        public bool StartOnGround { get; set; }
 
         private RGPointI mLocation;
 
@@ -51,8 +53,15 @@ namespace Engine
         {
             if (this.PlacedObject == null && !this.SpriteType.IsEmpty)
             {
-                this.PlacedObject = this.SpriteType.CreateInstance<Sprite>(layer, layer.Context);
+                this.PlacedObject = this.SpriteType.CreateSpriteInstance(layer, layer.Context).Sprite;
                 this.PlacedObject.Location = this.Location;
+
+                if(StartOnGround)
+                {
+                    var tileLayer = layer as TileLayer;
+                    if (tileLayer != null)
+                        this.PlacedObject.SnapToGround(tileLayer.Map);
+                }
             }
 
             return this.PlacedObject;
@@ -89,6 +98,11 @@ namespace Engine
         {
             ActiveObjectEntry.Create(this, layer);
         }
+
+        public void Reset()
+        {
+            this.PlacedObject = null;
+        }
     }
 
     abstract class ActiveObjectEntry : LogicObject 
@@ -100,6 +114,7 @@ namespace Engine
         public ActiveObjectEntry(ObjectEntry entry, Layer layer)
             : base(LogicPriority.World, layer,RelationFlags.DestroyWhenParentDestroyed)
         {
+            entry.Reset();
             mLayer = layer;
             mObject = entry;
         }

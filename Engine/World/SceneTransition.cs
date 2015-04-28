@@ -15,7 +15,7 @@ namespace Engine
         public int OutDuration { get { return 60; } }
         public int InDuration { get { return 60; } }
 
-        protected SceneTransition(GameContext ctx) : base(LogicPriority.World, ctx) { }
+        protected SceneTransition(World current) : base(LogicPriority.World, current) { }
 
         public int CurrentStateDuration
         {
@@ -48,6 +48,7 @@ namespace Engine
             {
                 if (mCurrentState == TransitionState.Out)
                 {
+                    Context.CurrentWorld.Kill(Engine.ExitCode.Finished);
                     mStartFrame = Context.CurrentFrameNumber;
                     mCurrentState = TransitionState.In;
                     Context.SetWorld(mNextWorld.CreateWorld(this.Context));
@@ -91,16 +92,33 @@ namespace Engine
     public class FadeoutSceneTransition : SceneTransition 
     {
 
-        public FadeoutSceneTransition(GameContext ctx) : base(ctx) { }
+        public FadeoutSceneTransition(World current) : base(current) { }
+
+        private WorldInfo mNewInfo;
+
+        public FadeoutSceneTransition(World current, WorldInfo newWorld)
+            : base(current)
+        {
+            mNewInfo = newWorld;
+        }
+
+
+        protected override void OnEntrance()
+        {
+            if (mNewInfo != null)
+                this.Trigger(mNewInfo);
+
+            base.OnEntrance();
+        }
 
         protected override void DoTransitionIn(float percentage)
         {
-            this.Context.RenderInfo.FadeColor = RGColor.Fade(RGColor.Black, RGColor.White, percentage);
+            this.Context.CurrentWorld.ExtraRenderInfo.FadeColor = RGColor.Black.Fade(RGColor.White, percentage);
         }
 
         protected override void DoTransitionOut(float percentage)
         {
-            this.Context.RenderInfo.FadeColor = RGColor.Fade(RGColor.White, RGColor.Black, percentage);
+            this.Context.CurrentWorld.ExtraRenderInfo.FadeColor = RGColor.White.Fade(RGColor.Black, percentage);
         }
 
 

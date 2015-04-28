@@ -41,7 +41,7 @@ namespace Engine.XNA
             mDevice = device;
         }
 
-        protected override void PaintToScreen(TextureResource textureResource, RGRectangleI source, RGRectangleI dest, RenderOptions options)
+        protected override void PaintToScreen(TextureResource textureResource, RGRectangleI source, RGRectangleI dest, RenderOptions options, StackedRenderInfo extraRenderInfo)
         {
             var texture = XNATextureCache.Instance.GetTexture(textureResource, mDevice);
 
@@ -51,7 +51,7 @@ namespace Engine.XNA
             if (options.FlipY)
                 mEffects = mEffects | SpriteEffects.FlipVertically;
 
-            mSpriteBatch.Draw(texture,dest.ToXNARec(), source.ToXNARec(), options.FadeColor.ToXNAColor(), 0, Vector2.Zero, mEffects, 0);
+            mSpriteBatch.Draw(texture, dest.ToXNARec(), source.ToXNARec(), extraRenderInfo.FadeColor.ToXNAColor(), 0, Vector2.Zero, mEffects, 0);
         }
        
     }

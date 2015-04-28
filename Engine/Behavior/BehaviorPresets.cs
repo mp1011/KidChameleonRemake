@@ -19,9 +19,9 @@ namespace Presets
             var debris = new Sprite(origin.Context, origin.DrawLayer, ObjectType.Thing);
             debris.SetSingleAnimation(graphic);
             debris.Location = origin.Location;
-            debris.AddBehavior(new DestroyWhenOutOfFrame(debris));
+            new DestroyWhenOutOfFrame(debris);
             
-            var gravity = debris.AddBehavior(new GravityController(debris));
+            var gravity = new GravityController(debris);
             gravity.CurrentYSpeed = -5f;
 
             origin.DrawLayer.AddObject(debris);

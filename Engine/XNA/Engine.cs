@@ -40,7 +40,7 @@ namespace Engine.XNA
         protected override int SetFPS(int desiredFPS)
         {
             mGame.TargetElapsedTime = new TimeSpan(0, 0, 0, 0, 1000 / desiredFPS);
-            return (int)(1000 / mGame.TargetElapsedTime.TotalSeconds);
+            return (int)(1000 / mGame.TargetElapsedTime.TotalMilliseconds);
         }
 
         protected override RGSizeI SetWindowSize(RGSizeI desiredWindowSize)

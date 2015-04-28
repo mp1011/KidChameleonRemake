@@ -509,6 +509,13 @@ namespace Editor
             Region = rec;
         }
 
+        public BitmapPortion CropToNew(RGRectangleI rec)
+        {
+            var copy = new BitmapPortion(this.Image);
+            copy.Crop(rec);
+            return copy;
+        }
+
         public static SpriteSheet CreateSpriteSheet(IEnumerable<BitmapPortion> images, int width, string name, Color transparentColor)
         {
             images = images.Distinct(new PixelEqualityComparer()).ToArray();
@@ -551,6 +558,31 @@ namespace Editor
             return sheet;
         }
 
+        public BitmapPortion Clone()
+        {
+            var clone = new BitmapPortion(this, this.mRegion);
+            return clone;
+        }
+
+        public ImagePalette GetPallete()
+        {
+            return new ImagePalette(mPixelData);
+        }
+
+        public byte[,] ToColorMap()
+        {
+            var palette = this.GetPallete();
+            var output = new byte[mRegion.Width, mRegion.Height];
+            for(int x= mRegion.Left; x < mRegion.Right;x++)
+            {
+                for (int y = mRegion.Top; y < mRegion.Bottom; y++)
+                {
+                    output[x-mRegion.Left, y-mRegion.Top] = palette.IndexOf(this.GetPixel(x, y));
+                }
+            }
+
+            return output;
+        }
 
         #region Testing
 

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace Engine.Collision
 {
-    public abstract class CollidingTile : ICollidable
+    public abstract class CollidingTile : ICollidable, ICollisionResponder 
     {
         public TileInstance Tile { get; private set; }
         public TileLayer TileLayer { get; private set; }
@@ -63,6 +63,10 @@ namespace Engine.Collision
             throw new NotImplementedException();
         }
 
+        public ICollection<ICollisionResponder> CollisionResponders
+        {
+            get { return new ICollisionResponder[] { this }; }
+        }
     }
 
     class TileCollisionManager<T> : CollisionManager<T> where T : LogicObject, ICollidable

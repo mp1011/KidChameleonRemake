@@ -335,7 +335,10 @@ namespace Engine
 
         public Direction RotateD(RotationType rotation, float degrees)
         {
-            return RotateR(rotation, (float)(degrees * (Math.PI / 180f)));
+            if (rotation == RotationType.Clockwise)
+                return Direction.FromAngle(this.Degrees - degrees);
+            else
+                return Direction.FromAngle(this.Degrees + degrees);
         }
 
         public Direction Reflect(Orientation plane)
@@ -349,9 +352,9 @@ namespace Engine
             else if (plane == Orientation.None)
                 return this.RotateD(RotationType.Clockwise, 180);
 
-            var distance = AngleDifferenceR(planeDir, RotationType.Counterclockwise);
+            var degreeDiff = AngleDifference(planeDir, RotationType.Counterclockwise);
 
-            Direction reflectedDir = this.RotateR(RotationType.Counterclockwise, distance * 2);
+            Direction reflectedDir = this.RotateD(RotationType.Counterclockwise, (float)(degreeDiff * 2));
 
             return reflectedDir;
         }
@@ -376,6 +379,16 @@ namespace Engine
                 return RotationType.Clockwise;
             else
                 return RotationType.Counterclockwise;
+        }
+
+        public double AngleDifference(Direction other, RotationType rotation)
+        {
+            if (rotation == RotationType.Clockwise)
+                return (this.Degrees - other.Degrees).FixDeg();
+            else if (rotation == RotationType.Counterclockwise)
+                return (other.Degrees - this.Degrees).FixDeg();
+            else
+                return this.AngleDifference(other);
         }
 
 
@@ -723,6 +736,11 @@ namespace Engine
         public RGRectangle ToGridCell(RGSize gridCellSize)
         {
             return RGRectangle.FromXYWH(this.X * gridCellSize.Width, this.Y * gridCellSize.Height, gridCellSize.Width, gridCellSize.Height);
+        }
+
+        public RGRectangleI ToGridCell(RGSizeI gridCellSize)
+        {
+            return RGRectangleI.FromXYWH(this.X * gridCellSize.Width, this.Y * gridCellSize.Height, gridCellSize.Width, gridCellSize.Height);
         }
 
         public RGPointI SnapTo(RGSizeI gridCellSize)
@@ -1118,7 +1136,7 @@ namespace Engine
         public RGLine BottomSide { get { return new RGLine(this.BottomLeft, this.BottomRight); } }
 
 
-        public RGPoint Center { get { return new RGPoint(X + (Width / 2), Y + (Height / 2)); } }
+        public RGPointI Center { get { return new RGPointI(X + (Width / 2), Y + (Height / 2)); } }
 
         public override string ToString()
         {
@@ -1262,6 +1280,11 @@ namespace Engine
 
             return RGRectangleI.FromXYWH(newArea.X + (x * xScale), newArea.Y + (y * yScale),
                this.Width * xScale, this.Height * yScale);
+        }
+
+        public RGRectangleI CenterWithin(RGSizeI size)
+        {
+            return CenterWithin(RGRectangleI.Create(RGPointI.Empty, size));
         }
 
         public RGRectangleI CenterWithin(RGRectangleI container)
@@ -1409,12 +1432,12 @@ namespace Engine
             return String.Concat(Red, ",", Green, ",", Blue);
         }
 
-        public static RGColor Fade(RGColor source, RGColor target, float percent)
+        public RGColor Fade(RGColor target, float percent)
         {
             var c = new RGColor();
-            c.Red = (byte)(source.Red + ((target.Red - source.Red) * percent));
-            c.Green = (byte)(source.Green + ((target.Green - source.Green) * percent));
-            c.Blue = (byte)(source.Blue + ((target.Blue - source.Blue) * percent));
+            c.Red = (byte)(this.Red + ((target.Red - this.Red) * percent));
+            c.Green = (byte)(this.Green + ((target.Green - this.Green) * percent));
+            c.Blue = (byte)(this.Blue + ((target.Blue - this.Blue) * percent));
             return c;
         }
 
