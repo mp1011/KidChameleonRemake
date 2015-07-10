@@ -27,14 +27,14 @@ namespace KidC
             Sprite.MotionManager.MainMotion.TargetSpeed = WalkSpeed;
             Sprite.Direction = d;
             Sprite.MotionManager.MainMotion.Accel = WalkAccel;
-            Sprite.CurrentAnimationKey = KCAnimation.Walk;
+            Sprite.SetAnimation(KCAnimation.Walk);
         }
 
         public void Stop()
         {
             Sprite.MotionManager.MainMotion.TargetSpeed = 0;
             Sprite.MotionManager.MainMotion.Accel = WalkAccel;
-            Sprite.CurrentAnimationKey = KCAnimation.Stand;
+            Sprite.SetAnimation(KCAnimation.Stand);
         }
 
         protected override void OnEntrance()

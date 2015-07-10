@@ -59,6 +59,7 @@
       <DependentUpon>FontEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Image\Palette.cs" />
+    <Compile Include="Level\TileEqualityComparer.cs" />
     <Compile Include="UI\DragHandler.cs" />
     <Compile Include="UI\ImagePanelOverlay.cs" />
     <Compile Include="Controls\TilePanel.cs">

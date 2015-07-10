@@ -12,7 +12,10 @@ namespace Engine
         private TileDef[] mTiles;
         public TextureResource Texture { get { return mTileTexture; } }
 
-        public TileSet() { }
+        public TileSet() 
+        {
+            mTiles = new TileDef[] { };
+        }
 
         public TileSet(TextureResource tileTexture, RGSizeI tileSize, IEnumerable<TileDef> tiles)
         {

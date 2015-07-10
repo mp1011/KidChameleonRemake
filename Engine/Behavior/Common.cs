@@ -6,6 +6,12 @@ using Engine.Collision;
 
 namespace Engine
 {
+    public enum GravityStrength
+    {
+        Normal =0,
+        Low = 1
+    }
+
     public class GravityController : SpriteBehavior
     {
         private XYMotion mGravity;
@@ -13,12 +19,26 @@ namespace Engine
         public float CurrentYSpeed { get { return mGravity.YSpeed.Current; } set { mGravity.YSpeed.Current = value; } }
 
         public GravityController(Sprite sprite)
+            : this(sprite, GravityStrength.Normal) { }
+    
+        public GravityController(Sprite sprite, GravityStrength strength)
             : base(sprite)
         {
             mGravity = new XYMotion("gravity");
-            mGravity.YSpeed.Target = 9f;
-            mGravity.YSpeed.Accel = .2f;
 
+            switch (strength)
+            {
+                case GravityStrength.Low:
+                    mGravity.YSpeed.Target = 2.5f;
+                    mGravity.YSpeed.Accel = .2f;
+                    break;
+
+                case GravityStrength.Normal:
+                    mGravity.YSpeed.Target = 9f;
+                    mGravity.YSpeed.Accel = .2f;
+                    break;
+            }
+       
             Sprite.MotionManager.AddComponent(mGravity);
         }
 
@@ -54,17 +74,30 @@ namespace Engine
         }           
     }
 
-    public class DestroyWhenOutOfFrame : SpriteBehavior
+    public class DestroyWhenOutOfFrame<T> : LogicObject where T:ILogicObject,IWithPosition 
     {
-        public DestroyWhenOutOfFrame(Sprite sprite)
-            : base(sprite)
+        private T mObject;
+        private bool mIsOnScreenLayer;
+
+        public DestroyWhenOutOfFrame(T obj, bool isOnScreenLayer)
+            : base(LogicPriority.Behavior, obj)
         {
+            mObject = obj;
+            mIsOnScreenLayer = isOnScreenLayer;
         }
 
         protected override void Update()
         {
-            if (!Sprite.Area.CollidesWith(Context.ScreenLocation))            
-                Sprite.Kill(ExitCode.Removed);            
+            if (mIsOnScreenLayer)
+            {
+                if (!mObject.Area.CollidesWith(Context.CurrentWorld.ScreenLayer.Location))
+                    mObject.Kill(ExitCode.Removed);
+            }
+            else
+            {
+                if (!mObject.Area.CollidesWith(Context.ScreenLocation))
+                    mObject.Kill(ExitCode.Removed);
+            }
         }
     }
 
@@ -85,9 +118,16 @@ namespace Engine
     public class CreateObjectWhenDestroyed : SpriteBehavior
     {
         private ObjectType mType;
-        private RGPoint mOffset;
-       
-        public CreateObjectWhenDestroyed(Sprite sprite, ObjectType objType, RGPoint offset)
+        private RGPointI mOffset;
+        private Action<SpriteCreationInfo> mOnCreate;
+
+        public CreateObjectWhenDestroyed(Sprite sprite, ObjectType objType, RGPointI offset, Action<SpriteCreationInfo> onCreate)
+            : this(sprite, objType, offset)
+        {
+            mOnCreate = onCreate;
+        }
+
+        public CreateObjectWhenDestroyed(Sprite sprite, ObjectType objType, RGPointI offset)
             : base(sprite)
         {
             mType = objType;
@@ -99,8 +139,10 @@ namespace Engine
             if (mType.Is(ObjectType.None))
                 return;
 
-            var obj = mType.CreateSprite(this.Sprite.DrawLayer, this.Context).Sprite;
-            obj.Location = this.Sprite.Location.Offset(mOffset);
+            var newSprite = mType.CreateSprite(this.Sprite.DrawLayer, this.Context);
+            newSprite.Sprite.Location = this.Sprite.Location.Offset(mOffset);
+            if (mOnCreate != null)
+                mOnCreate(newSprite);
         }
     }
 
@@ -351,5 +393,28 @@ namespace Engine
             mObject.Kill(mExitCode);
         }
     }
-  
+
+
+    public class PlaySoundWhileAlive : SpriteBehavior
+    {
+        private SoundResource mSound;
+
+        public PlaySoundWhileAlive(Sprite s, SoundResource sound)
+            : base(s)
+        {
+            mSound = sound;
+        }
+
+        protected override void OnEntrance()
+        {
+            SoundManager.PlaySound(mSound);
+        }
+
+        protected override void OnExit()
+        {
+            SoundManager.StopSound(mSound);
+        }
+    }
+
+
 }

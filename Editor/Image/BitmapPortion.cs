@@ -7,11 +7,11 @@ using Engine;
 
 namespace Editor
 {
-    class BitmapPortion:IHasHitboxes 
+    class BitmapPortion : IHasHitboxes
     {
         private string mPath;
         private Bitmap mImage;
-     
+
         public Bitmap Image
         {
             get
@@ -38,14 +38,15 @@ namespace Editor
         }
 
         private RGRectangleI mRegion;
-        public RGRectangleI Region { 
-            get 
+        public RGRectangleI Region
+        {
+            get
             {
-                return mRegion; 
+                return mRegion;
             }
             private set
             {
-                mRegion = value.CropWithin(RGRectangleI.FromXYWH(0, 0, this.Width, this.Height));                
+                mRegion = value.CropWithin(RGRectangleI.FromXYWH(0, 0, this.Width, this.Height));
                 RecalcBitmapData();
             }
         }
@@ -61,13 +62,14 @@ namespace Editor
         {
             mPath = path;
 
-            if(calculateImageDataNow)
+            if (calculateImageDataNow)
                 Region = RGRectangleI.FromXYWH(0, 0, Image.Width, Image.Height);
         }
 
-        public BitmapPortion(string path) : this(path,true)
+        public BitmapPortion(string path)
+            : this(path, true)
         {
-      
+
         }
 
         public BitmapPortion(Bitmap image)
@@ -96,7 +98,7 @@ namespace Editor
                 mPixelData.Clear();
                 return;
             }
-            
+
             //we must lock the whole image, even if a portion if specified the Stride is still the width of the entire image
 
 
@@ -117,9 +119,9 @@ namespace Editor
 
                     System.Runtime.InteropServices.Marshal.Copy(data.Scan0 + (scanline * stride), pixelData, 0, stride);
 
-                    for (int i = 0; i < data.Width*4; i += 4)
+                    for (int i = 0; i < data.Width * 4; i += 4)
                     {
-                        if(mRegion.Contains(new RGPointI(i/4,scanline)))
+                        if (mRegion.Contains(new RGPointI(i / 4, scanline)))
                             mPixelData.Add(Color.FromArgb(pixelData[i + 3], pixelData[i + 2], pixelData[i + 1], pixelData[i + 0]));
                     }
                 }
@@ -128,13 +130,13 @@ namespace Editor
             {
                 this.Image.UnlockBits(data);
             }
-       }
+        }
 
         public Color GetPixel(int imageX, int imageY)
         {
             return GetPixel(imageX, imageY, false);
         }
-      
+
         public Color GetPixel(int imageX, int imageY, bool ignoreOutsideRegion)
         {
             if (this.Region.Contains(new RGPointI(imageX, imageY)))
@@ -150,7 +152,7 @@ namespace Editor
             }
             else if (ignoreOutsideRegion)
                 return Color.Transparent;
-            else 
+            else
                 return this.Image.GetPixel(imageX, imageY);
         }
 
@@ -176,13 +178,13 @@ namespace Editor
                 else
                 {
                     var fileNumber = Int32.Parse(fileNumberStr);
-                    newFilename = mPath.Substring(0, mPath.LastIndexOf(System.IO.Path.DirectorySeparatorChar)+1) + (fileNumber + 1).ToString() + ext;
+                    newFilename = mPath.Substring(0, mPath.LastIndexOf(System.IO.Path.DirectorySeparatorChar) + 1) + (fileNumber + 1).ToString() + ext;
 
                 }
 
-               
+
                 if (System.IO.File.Exists(newFilename))
-                    return new BitmapPortion(newFilename,false);
+                    return new BitmapPortion(newFilename, false);
                 else
                     return null;
             }
@@ -202,7 +204,7 @@ namespace Editor
 
         public void MoveTo(string newFolder)
         {
-            var newFile =System.IO.Path.Combine(newFolder, System.IO.Path.GetFileName(mPath));
+            var newFile = System.IO.Path.Combine(newFolder, System.IO.Path.GetFileName(mPath));
             SavePortion(newFile);
 
             System.IO.File.Delete(mPath);
@@ -228,7 +230,7 @@ namespace Editor
 
         public void MakeTransparent(Color transparentColor)
         {
-            for(int y = 0; y < Image.Height;y++)
+            for (int y = 0; y < Image.Height; y++)
                 for (int x = 0; x < Image.Width; x++)
                 {
                     if (GetPixel(x, y).Equals(transparentColor))
@@ -257,8 +259,8 @@ namespace Editor
             if (this.mPixelData.Count != other.mPixelData.Count)
                 return false;
 
-            for(int i = 0; i  < mPixelData.Count; i++)
-                if(!mPixelData[i].PixelEquals(otherData[i]))
+            for (int i = 0; i < mPixelData.Count; i++)
+                if (!mPixelData[i].PixelEquals(otherData[i]))
                     return false;
 
             return true;
@@ -275,7 +277,7 @@ namespace Editor
                     if (px.A == 0)
                         sum += 777;
                     else
-                        sum += px.R + px.G + px.B;                    
+                        sum += px.R + px.G + px.B;
                 }
 
             return sum;
@@ -289,12 +291,12 @@ namespace Editor
             var a = this.GetHashCode();
             var b = other.GetHashCode();
 
-            int sum1=0, sum2=0;
+            int sum1 = 0, sum2 = 0;
 
             for (int y = 0; y < Region.Height; y++)
-                for (int x =0; x < Region.Width; x++)
+                for (int x = 0; x < Region.Width; x++)
                 {
-                    var px = this.GetPixel(Region.X + x,  Region.Y + y);
+                    var px = this.GetPixel(Region.X + x, Region.Y + y);
                     var otherPX = other.GetPixel(other.Region.X + x, other.Region.Y + y);
 
                     if (px.A == 0)
@@ -307,7 +309,7 @@ namespace Editor
                     else
                         sum2 += otherPX.R + otherPX.G + otherPX.B;
 
-                    if(sum1 != sum2)
+                    if (sum1 != sum2)
                         return new Point(Region.X + x, Region.X + y);
 
                     if (!px.PixelEquals(otherPX))
@@ -325,7 +327,7 @@ namespace Editor
         #region Origin
 
         private RGPointI mOrigin;
-     
+
         public RGPointI Origin
         {
             get
@@ -341,7 +343,7 @@ namespace Editor
         public RGRectangleI PrimaryHitbox { get { return this.Hitbox; } set { this.Hitbox = value; } }
         public RGRectangleI SecondaryHitbox { get; set; }
 
-        public RGRectangleI Hitbox { get; set; } 
+        public RGRectangleI Hitbox { get; set; }
 
         #endregion
 
@@ -359,14 +361,14 @@ namespace Editor
             while (oX >= gridSize) oX -= gridSize;
             while (oY >= gridSize) oY -= gridSize;
 
-            for(int y= oY; y <= Image.Height-gridSize;y+= gridSize)
-                for (int x = oX; x <= Image.Width-gridSize; x += gridSize)
-                    yield return Extract(RGRectangleI.FromXYWH(x,y,gridSize,gridSize));
+            for (int y = oY; y <= Image.Height - gridSize; y += gridSize)
+                for (int x = oX; x <= Image.Width - gridSize; x += gridSize)
+                    yield return Extract(RGRectangleI.FromXYWH(x, y, gridSize, gridSize));
         }
 
         #endregion
 
-        #region Flood Fill 
+        #region Flood Fill
 
         private bool[,] CreateFloodFillMask(int floodFillSize)
         {
@@ -377,10 +379,10 @@ namespace Editor
                 {
                     bool filled = false;
 
-                    for(int yy = y*floodFillSize; yy < (y+1)*floodFillSize && !filled; yy++)
-                        for(int xx = x * floodFillSize; xx < (x+1) * floodFillSize  && !filled; xx++)
+                    for (int yy = y * floodFillSize; yy < (y + 1) * floodFillSize && !filled; yy++)
+                        for (int xx = x * floodFillSize; xx < (x + 1) * floodFillSize && !filled; xx++)
                         {
-                            if(!this.GetPixel(Region.X + xx, Region.Y + yy).IsTransparent())                            
+                            if (!this.GetPixel(Region.X + xx, Region.Y + yy).IsTransparent())
                                 filled = true;
                         }
 
@@ -421,7 +423,7 @@ namespace Editor
             if (newArea.IsEmpty)
                 return false;
 
-            Region = newArea;        
+            Region = newArea;
             return true;
         }
 
@@ -434,7 +436,7 @@ namespace Editor
                 return RGRectangleI.Empty;
 
             var newArea = RGRectangleI.FromTLBR(maskPoints.Min(p => p.Y) * floodFillSize, maskPoints.Min(p => p.X) * floodFillSize,
-                (maskPoints.Max(p => p.Y) * floodFillSize)+1, (maskPoints.Max(p => p.X) * floodFillSize)+1);
+                (maskPoints.Max(p => p.Y) * floodFillSize) + 1, (maskPoints.Max(p => p.X) * floodFillSize) + 1);
 
             newArea.X += Region.X;
             newArea.Y += Region.Y;
@@ -475,7 +477,7 @@ namespace Editor
             while (qindex < queue.Count)
             {
                 var pt = queue[qindex];
-                if (mask[pt.X,pt.Y])
+                if (mask[pt.X, pt.Y])
                 {
                     w = pt.X;
                     e = pt.X;
@@ -487,10 +489,10 @@ namespace Editor
                         points.AddDistinct(new RGPointI(i, pt.Y));
 
                         if (pt.Y > 0 && mask[pt.X, pt.Y - 1])
-                            queue.AddDistinct(new RGPointI(pt.X,pt.Y -1));
+                            queue.AddDistinct(new RGPointI(pt.X, pt.Y - 1));
 
                         if (pt.Y < mask.Height() - 1 && mask[pt.X, pt.Y + 1])
-                            queue.AddDistinct(new RGPointI(i,pt.Y +1));
+                            queue.AddDistinct(new RGPointI(i, pt.Y + 1));
                     }
                 }
 
@@ -518,7 +520,6 @@ namespace Editor
 
         public static SpriteSheet CreateSpriteSheet(IEnumerable<BitmapPortion> images, int width, string name, Color transparentColor)
         {
-            images = images.Distinct(new PixelEqualityComparer()).ToArray();
 
             int x = 0; int y = 0;
             int currentRowHeight = 0;
@@ -573,11 +574,11 @@ namespace Editor
         {
             var palette = this.GetPallete();
             var output = new byte[mRegion.Width, mRegion.Height];
-            for(int x= mRegion.Left; x < mRegion.Right;x++)
+            for (int x = mRegion.Left; x < mRegion.Right; x++)
             {
                 for (int y = mRegion.Top; y < mRegion.Bottom; y++)
                 {
-                    output[x-mRegion.Left, y-mRegion.Top] = palette.IndexOf(this.GetPixel(x, y));
+                    output[x - mRegion.Left, y - mRegion.Top] = palette.IndexOf(this.GetPixel(x, y));
                 }
             }
 
@@ -590,10 +591,10 @@ namespace Editor
         {
             var bmp = new Bitmap(Region.Width, Region.Height);
 
-            for(int y = 0; y < Region.Height; y++)
-                for (int x = 0; x < Region.Width; x++)             
+            for (int y = 0; y < Region.Height; y++)
+                for (int x = 0; x < Region.Width; x++)
                     bmp.SetPixel(x, y, this.GetPixel(Region.X + x, Region.Y + y));
-                
+
 
             bmp.Save(Paths.TestPath + "/test.bmp");
         }
@@ -613,6 +614,37 @@ namespace Editor
         public int GetHashCode(BitmapPortion obj)
         {
             return obj.GetHashCode();
+        }
+    }
+
+    public static class GenericEqualityComparerUtil
+    {
+        public static IEnumerable<T> Distinct<T>(this IEnumerable<T> list, Func<T, T, bool> fnEquals, Func<T, int> fnGetHashCode)
+        {
+            var comparer = new GenericEqualityComparer<T>(fnEquals, fnGetHashCode);
+            return list.Distinct(comparer).ToArray();
+        }
+    }
+
+    class GenericEqualityComparer<T> : IEqualityComparer<T>
+    {
+        private Func<T, T, bool> mEquals;
+        private Func<T, int> mGetHashCode;
+
+        public GenericEqualityComparer(Func<T, T, bool> fnEquals, Func<T, int> fnGetHashCode)
+        {
+            mEquals = fnEquals;
+            mGetHashCode = fnGetHashCode;
+        }
+
+        public bool Equals(T x, T y)
+        {
+            return mEquals(x, y);
+        }
+
+        public int GetHashCode(T obj)
+        {
+            return mGetHashCode(obj);
         }
     }
 }

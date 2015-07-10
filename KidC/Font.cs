@@ -13,7 +13,9 @@ namespace KidC
         public static IGameFont ClockFont { get; private set; }
         public static IGameFont SplashScreenFont { get; private set; }
         public static IGameFont PauseMenuFont { get; private set; }
-        private static FontResource<VariableSpaceFont> BigFont;
+   
+        private static FontResource<VariableSpaceFont> BigFontWhite;
+        private static FontResource<VariableSpaceFont> BigFontGreen;
 
         public static void Init()
         {
@@ -42,13 +44,12 @@ namespace KidC
             pauseMenuFont.AddCharacters("serapmontyl", new RGPointI(0,1));
             PauseMenuFont = pauseMenuFont;
 
-            BigFont = new FontResource<VariableSpaceFont>("bigfont2");
+            BigFontGreen = new FontResource<VariableSpaceFont>("bigfont2");
+            BigFontWhite = new FontResource<VariableSpaceFont>("bigfont1");
         }
 
-        public static IGameFont GetBigFont(GameContext ctx)
-        {
-            return BigFont.GetObject(ctx);
-        }
+        public static IGameFont GetBigFontWhite(GameContext ctx) { return BigFontWhite.GetObject(ctx);  }
+        public static IGameFont GetBigFontGreen(GameContext ctx) { return BigFontGreen.GetObject(ctx); }
 
 
     }

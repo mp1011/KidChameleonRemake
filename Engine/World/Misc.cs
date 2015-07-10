@@ -27,7 +27,13 @@ namespace Engine
 
         public RGRectangleI Area
         {
-            get { return RGRectangleI.Create(Location, RGSizeI.Empty); }            
+            get
+            {
+                var x = Location.X;
+                var y = Location.Y;
+                var pad = 2;
+                return RGRectangleI.FromTLBR(y - pad, x - pad, y + pad, x + pad);
+            }
         }
 
         public Direction Direction

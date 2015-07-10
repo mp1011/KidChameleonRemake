@@ -27,6 +27,8 @@ namespace Editor
 
         public bool mIsTileset;
 
+        public DrawRectangleType RectangleType { get { return ImagePanel.DrawRectangle; } set { ImagePanel.DrawRectangle = value; } }
+
         public TilePanelUserControl() : base()
         {           
             this.InitializeComponent();
@@ -34,7 +36,7 @@ namespace Editor
 
             this.ImagePanel.MouseAction += new Editor.ImagePanel.MouseActionEventHandler(ImagePanel_ImageClicked);
             this.Resize += TilePanelUserControl_Resize;
-            this.ImagePanel.DrawRectangle = DrawRectangleType.ShiftDrag;
+            this.ImagePanel.DrawRectangle = DrawRectangleType.ShiftDrag;            
         }
 
         void TilePanelUserControl_Resize(object sender, EventArgs e)        
@@ -47,9 +49,19 @@ namespace Editor
                 this.SetFromMap(this.Map);
         }
 
+        private RGPointI mLastGridPoint;
 
         void ImagePanel_ImageClicked(object sender, ImageEventArgs e)
         {
+            var gridPoint = (e.Point as EditorGridPoint);
+            if (gridPoint != null)
+            {
+                if (gridPoint.Equals(mLastGridPoint))
+                    return;
+
+                mLastGridPoint = gridPoint.GridPoint;
+            }
+             
             mSelectionGrid.HandleMouseAction(e);
             this.RefreshImage();
         }
@@ -57,7 +69,6 @@ namespace Editor
         public void SetFromMap(Map m)
         {
             this.Map = m;
-            this.ClearOverlay();
             mSelectionGrid.SetGrid(this.ImagePanel, Map.TileDimensions, (x, y) => this.Map.GetTileAtCoordinates(x, y));
             this.AddOverlayItem(mSelectionGrid);
 

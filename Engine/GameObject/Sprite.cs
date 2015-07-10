@@ -32,7 +32,16 @@ namespace Engine
         /// </summary>
         public RGPoint OriginalSpeed { get; private set; }
 
-        public Direction Direction { get; set; }
+        private Lockable<Direction> mDirection = new Lockable<Direction>(Direction.Right);
+
+        public Direction Direction
+        {
+            get { return mDirection.Value; }
+            set
+            {
+                mDirection.SetValue(value);
+            }
+        }
 
         public RGRectangleI Area
         {
@@ -55,32 +64,56 @@ namespace Engine
         public int X { get { return this.Location.X; } }
         public int Y { get { return this.Location.Y; } }
 
-        private int mCurrentAnimationKey = 0;   
+        private Lockable<int> mCurrentAnimationKey = new Lockable<int>(0);   
+        
         public int CurrentAnimationKey
         {
-            get { return mCurrentAnimationKey; }
-            set
-            {
-                if (mCurrentAnimationKey == value)
-                    return;
-
-                if (!mAnimations.ContainsKey(value))
-                    return;
-
-                mCurrentAnimationKey = value;
-                CurrentAnimation.Reset();
-            }
+            get { return mCurrentAnimationKey.Value; }
         }
 
         public bool SetAnimation(int key)
         {
-            this.CurrentAnimationKey = key;
+            return SetAnimation(key, null,false);
+        }
+
+        public bool SetAnimation(int key, ILogicObject owner, bool claimLock)
+        {
+            if (claimLock)
+                owner.ClaimLock(mCurrentAnimationKey);
+
+            if (mCurrentAnimationKey.Value == key)
+                return false;
+
+            if (!mAnimations.ContainsKey(key))
+                return false;
+
+            if (!mCurrentAnimationKey.SetValue(key, owner))
+                return false;
+
+            CurrentAnimation.Reset();
+
             return this.CurrentAnimationKey == key;
+        }
+
+        public void ReleaseAnimationKeyLock(ILogicObject owner)
+        {
+            mCurrentAnimationKey.ClearOwner(owner);
+        }
+
+        public void LockDirection(Direction d, ILogicObject lockOwner)
+        {
+            this.ClaimLock(mDirection);
+            mDirection.SetValue(d, lockOwner);
+        }
+
+        public void UnlockDirection(ILogicObject lockOwner)
+        {
+            this.ReleaseLock(mDirection);
         }
 
         public GeneralLogicObject BehaviorState { get; private set; }
       
-        public SpriteAnimation CurrentAnimation { get { return mAnimations[mCurrentAnimationKey]; } }
+        public SpriteAnimation CurrentAnimation { get { return mAnimations[mCurrentAnimationKey.Value]; } }
 
         public ObjectType ObjectType { get; private set; }
 
@@ -101,7 +134,7 @@ namespace Engine
 
         public void RemoveCollisionType(ObjectType i)
         {
-            mCollisionTypes = CollisionTypes.Where(p => p.IsNot(i)).ToArray();
+            mCollisionTypes = mCollisionTypes.NeverNull().Where(p => p.IsNot(i)).ToArray();
         }
 
         public void ReAddCollisionType(ObjectType i)
@@ -126,6 +159,9 @@ namespace Engine
 
             this.DrawLayer = drawLayer;
             this.BehaviorState = new GeneralLogicObject(this);
+
+            if(Context.Listeners != null)
+                Context.Listeners.SpriteListener.Register(this);
         }
 
         //public Sprite(GameContext ctx, ObjectType type)
@@ -141,8 +177,8 @@ namespace Engine
             var anim = new SpriteAnimation(this, a, this.mRenderOptions );
             mAnimations.Add(key, anim);
 
-            if (this.mCurrentAnimationKey == 0)
-                mCurrentAnimationKey = key;
+            if (this.mCurrentAnimationKey.Value == 0)
+                mCurrentAnimationKey.SetValue(key);
 
             return anim;
         }
@@ -150,13 +186,13 @@ namespace Engine
         public void SetSingleAnimation(Animation a)
         {
             mAnimations.Add(0, new SpriteAnimation(this, a, this.mRenderOptions));
-            this.CurrentAnimationKey = 0;
+            this.SetAnimation(0);
         }
 
         public void AddAnimation(int key, GameResource<Animation> resource)
         {
-            if (mCurrentAnimationKey == 0)
-                mCurrentAnimationKey = key;
+            if (mCurrentAnimationKey.Value == 0)
+                mCurrentAnimationKey.SetValue(key);
 
             mAnimations.Add(key, new SpriteAnimation(this, resource.GetObject(this.Context), this.mRenderOptions));
         }
@@ -206,13 +242,6 @@ namespace Engine
                 response.ShouldBlock = false;
                 return;
             }
-
-            //foreach (var behavior in mBehaviors)
-            //{
-            //    behavior.HandleCollision(collision,response);
-            //    if (!response.ShouldContinueHandling)
-            //        return;
-            //}
         }
 
         public void BeforeCollision(CollisionEvent collision)
@@ -229,7 +258,30 @@ namespace Engine
             return this.ObjectType.ToString() + ":" + this.CurrentAnimation.Texture.Path;
         }
 
+        /// <summary>
+        /// Creates a copy of this sprite and adds it to the same layer at the same location.
+        /// 
+        /// Does not copy behaviors
+        /// </summary>
+        /// <returns></returns>
+        public Sprite Copy(bool copyAnimations, bool copyBehaviors)
+        {
+            var newSprite = new Sprite(this.Context, this.DrawLayer, this.ObjectType);
 
+            if(copyAnimations)
+                newSprite.mAnimations = this.mAnimations;
+
+            if (copyBehaviors)
+                throw new NotImplementedException();
+
+            this.DrawLayer.AddObject(newSprite);
+
+            newSprite.Location = this.Location;
+            newSprite.Direction = this.Direction;
+            newSprite.SetAnimation(this.CurrentAnimationKey);
+
+            return newSprite;
+        }
 
 
 

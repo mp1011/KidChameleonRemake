@@ -59,14 +59,14 @@ namespace KidC
                     if (!mNoAirSword)
                     {
                         SoundManager.PlaySound(Sounds.RedStealthShout);
-                        this.Sprite.CurrentAnimationKey = KCAnimation.AttackAlt;
+                        this.Sprite.SetAnimation(KCAnimation.AttackAlt);
                         mPlatformCtl.NoAnimationChanges = true;
                     }
                 }
                 else if(CanAttack())
                 {
                     mPlatformCtl.Pause();
-                    this.Sprite.CurrentAnimationKey = KCAnimation.Attack;
+                    this.Sprite.SetAnimation(KCAnimation.Attack);
                     SoundManager.PlaySound(Sounds.RedStealthAttack);
                 }
             }

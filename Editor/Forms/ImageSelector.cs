@@ -536,7 +536,8 @@ namespace Editor.Forms
                     System.IO.File.Delete(file);
             }
 
-            int fileNum = 0;
+            int fileNum = System.IO.Directory.GetFiles(fc.SelectedPath).Select(p => System.IO.Path.GetFileNameWithoutExtension(p).TryParseInt(-1)).MaxOrDefault(p => p, 0);
+
             foreach (var panel in SelectedImages)
                 panel.SavePortion(System.IO.Path.Combine(fc.SelectedPath, (++fileNum) + ".png"));
         }

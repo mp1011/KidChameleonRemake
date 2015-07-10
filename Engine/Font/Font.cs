@@ -100,7 +100,8 @@ namespace Engine
             if (letterLocations.ContainsKey(character))
                 return RGRectangleI.FromXYWH(letterLocations[character].X, letterLocations[character].Y, cellSize.Width, cellSize.Height);
             else
-                return RGRectangleI.Empty;
+                throw new Exception("This font does not contain the character " + character);
+
         }
     }
 
@@ -143,8 +144,8 @@ namespace Engine
         {
             if (mLetterLocations.ContainsKey(character))
                 return mLetterLocations[character];
-            else
-                return RGRectangleI.Empty;
+            else            
+                throw new Exception("This font does not contain the character " + character);
         }
 
         private class SaveModel

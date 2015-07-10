@@ -13,9 +13,10 @@ namespace Editor
         None,
         MouseDown,
         Move,
-        Click,
+        Click, // = mouseup
         DoubleClick,
-        RectangleSelection
+        RectangleSelection,
+        Wheel
     }
 
     class ImageEventArgs : EventArgs
@@ -23,12 +24,21 @@ namespace Editor
         public EditorPoint Point { get; private set; }
         public MouseButtons Buttons { get; private set; }
         public MouseActionType Action { get; private set; }
+        public int MouseWheelScroll { get; private set; }
 
         public ImageEventArgs(EditorPoint pt, MouseButtons buttons, MouseActionType action)
         {
             this.Action = action;
             this.Point = pt;
             this.Buttons = buttons;
+        }
+
+        public ImageEventArgs(EditorPoint pt, MouseActionType action, int mouseWheelScroll)
+        {
+            this.Action = action;
+            this.Point = pt;
+            this.Buttons = MouseButtons.None;
+            this.MouseWheelScroll = mouseWheelScroll;
         }
     }
 

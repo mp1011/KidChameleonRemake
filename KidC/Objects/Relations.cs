@@ -19,12 +19,14 @@ namespace KidC
             SetXisY(KCObjectType.Collectable, ObjectType.Thing);
             SetXisY(KCObjectType.Gem, KCObjectType.Collectable);
             SetXisY(KCObjectType.Puff, ObjectType.Decoration);
+            SetXisY(KCObjectType.Clock, KCObjectType.Collectable);
 
             SetXisY(KCObjectType.Helmet, KCObjectType.Collectable);
             SetXisY(KCObjectType.IronKnightHelmet, KCObjectType.Helmet);
             SetXisY(KCObjectType.RedStealthHelmet, KCObjectType.Helmet);
 
             SetXisY(KCObjectType.Dragon, KCObjectType.Enemy);
+            SetXisY(KCObjectType.Flag, KCObjectType.Collectable);
         }
 
 

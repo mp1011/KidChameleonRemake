@@ -43,9 +43,9 @@ namespace KidC
         }
 
         protected override Switch OnTriggered(HitInfo hitInfo)
-        {
+        {           
             SoundManager.PlaySound(this.GetHitSound(hitInfo.Event));
-            OnHit();
+            OnHit(hitInfo);
             mHealthController.Damage(hitInfo.Damage);
             return Switch.On;
         }
@@ -66,7 +66,7 @@ namespace KidC
             AfterHit();
         }
 
-        protected abstract void OnHit();
+        protected abstract void OnHit(HitInfo hitInfo);
         protected abstract void WhileHit();
         protected abstract void AfterHit();
 

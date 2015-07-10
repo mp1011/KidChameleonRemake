@@ -96,7 +96,7 @@ namespace KidC
                 var puff = KCObjectType.Puff.CreateSpriteInstance(mLayer, this.Context).Sprite;
                 puff.Location = this.Location.Offset(0, -24);
 
-                new CreateObjectWhenDestroyed(puff, mPrize, RGPoint.Empty);
+                new CreateObjectWhenDestroyed(puff, mPrize, RGPointI.Empty);
             }
         }
 

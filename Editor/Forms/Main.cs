@@ -14,6 +14,10 @@ namespace Editor.Forms
         public Main()
         {
             InitializeComponent();
+
+          //  var log = new Forms.frmLog();
+          //  log.Show();
+       
         }
 
         private void btnGraphicExtractor_Click(object sender, EventArgs e)
@@ -34,6 +38,12 @@ namespace Editor.Forms
         private void btnFontEditor_Click(object sender, EventArgs e)
         {
             FontEditor.GetOrOpen();
+        }
+
+        private void btnShowLog_Click(object sender, EventArgs e)
+        {
+            var log = new frmLog();
+            log.Show();
         }
     }
 }

@@ -6,10 +6,31 @@ using System.Text;
 namespace Engine
 {
 
+    public class BehaviorLogger
+    {
+        private static StringBuilder mLog = new StringBuilder();
+
+        public static void Log(params string[] text)
+        {
+            foreach (var txt in text)
+                mLog.Append(txt);
+
+            mLog.AppendLine();
+        }
+
+        public static string GetLog()
+        {
+            return mLog.ToString();
+        }
+    }
+
     public static class BehaviorChainExtensions
     {
         public static T ContinueWith<T>(this ILogicObject o, T newBehavior) where T : ILogicObject
         {
+            if (newBehavior == null)
+                return default(T);
+
             new OnExitWaiter(o, newBehavior);
             return newBehavior;
         }
@@ -41,7 +62,7 @@ namespace Engine
                 if (obj.Alive)
                     return;
 
-
+            BehaviorLogger.Log("All behaviors finished");
             this.Kill(Engine.ExitCode.Finished);
         }
 
@@ -63,6 +84,7 @@ namespace Engine
 
         protected override void OnExit()
         {
+            BehaviorLogger.Log(mWaitObject.ToString(), " finished, continuing with ", mContinuation.ToString());
             mContinuation.Paused = false;
         }
     }
@@ -140,6 +162,10 @@ namespace Engine
             mWaitSeconds = seconds;
         }
 
+        protected override void OnResume()
+        {
+            mStartTime = this.Context.CurrentFrameNumber;
+        }
         protected override void Update()
         {
             if (this.Paused != mWasPaused)

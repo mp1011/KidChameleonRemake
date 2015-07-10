@@ -1,11 +1,5 @@
-﻿Improved mapping
-	extreme slowness drawing
-	ctrl+mousewheel = zoom
-	ctrl+drag = pan
-	in draw mode - render current cell (shaded yellow) over cursor
-	g = toggle grid
-	alt+click = "touchup" mode - cycles between cells that fit the surrounding
-	browsable attribute on tile class
-	scroll to object from list
-	layout object page
-	add object crash
+﻿easier way to apply match sides
+
+
+tile selector
+	[show][hide] NAME

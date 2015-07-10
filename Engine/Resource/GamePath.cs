@@ -15,7 +15,8 @@ namespace Engine
         Maps = 4,
         Sounds = 5,
         Stats = 6,
-        Fonts = 7
+        Fonts = 7,
+        Recordings = 8
     }
 
     public static class PathTypeUtil
@@ -31,6 +32,7 @@ namespace Engine
                 case PathType.Sounds: return "wav";
                 case PathType.Stats: return "txt";
                 case PathType.Fonts: return "txt";
+                case PathType.Recordings: return "txt";
                 default: return "";
             }
         }

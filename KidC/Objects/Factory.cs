@@ -11,6 +11,8 @@ namespace KidC
         public static void Init()
         {
             ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Gem, CreateGem);
+            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Clock, CreateClock);
+
             ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Puff, CreatePuff);
 
             ObjectFactory.AddSpriteFactoryMethod(KCObjectType.IronKnightHelmet, (ctx, lyr) => CreateHelmet(ctx, lyr, KCObjectType.IronKnightHelmet, KCObjectType.IronKnight, Sounds.IronKnightTransform, "ironknight", 28));
@@ -25,6 +27,9 @@ namespace KidC
 
 
             ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Dragon, Dragon.Create);
+
+            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Flag, Flag.Create);
+
         }
 
 
@@ -34,10 +39,10 @@ namespace KidC
             var spriteSheet = SpriteSheet.Load(spriteSheetName, ctx);
 
             sprite.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, spriteSheetIndex));
-            new CollectableController(sprite, Sounds.None);
-            new GravityController(sprite);
+            new CollectableController(sprite, Sounds.None,null,null);
+            new PrizeCollisionDelayer(sprite);
+            new GravityController(sprite, GravityStrength.Low);
             sprite.AddCollisionChecks(ObjectType.Block, KCObjectType.Player);
-
             new HelmetController(sprite, playerType, transformSound);
     
             return new SpriteCreationInfo(sprite);            
@@ -51,12 +56,32 @@ namespace KidC
 
             sprite.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, 0, 1, 2, 3));
             sprite.CurrentAnimation.SetFrameDuration(2);
-            new CollectableController(sprite, Sounds.GetDiamond);          
-            new PrizeController(sprite);
-            new GravityController(sprite);
+            new CollectableController(sprite, Sounds.GetDiamond, ctx.CurrentMapHUD().GemsCounter, new AdjustStat(sprite, StatType.Gems,1));          
+            new PrizeCollisionDelayer(sprite);
+            new GravityController(sprite, GravityStrength.Low);
             sprite.AddCollisionChecks(ObjectType.Block, KCObjectType.Player);
 
             return new SpriteCreationInfo(sprite);            
+        }
+
+        private static SpriteCreationInfo CreateClock(GameContext ctx, Layer layer)
+        {
+            var sprite = new Sprite(ctx, layer, KCObjectType.Clock);
+            var spriteSheet = SpriteSheet.Load("clock", ctx);
+
+            sprite.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, 0, 0, 0, 0, 0, 0, 1, 2));
+            sprite.CurrentAnimation.SetFrameDuration(8);
+
+            var clockPos = ctx.CurrentMapHUD().Clock;
+            var targetPosition = new WorldPoint(ctx, clockPos.Area.Right+8, clockPos.Location.Y);
+
+            new CollectableController(sprite, Sounds.None, targetPosition, new DelayWaiter(sprite,3)).ContinueWith(new AdjustStat(sprite, StatType.TimeRemaining,30));
+            new PrizeCollisionDelayer(sprite);
+            new GravityController(sprite, GravityStrength.Low);
+            new PlaySoundWhileAlive(sprite, Sounds.ClockTick);
+            sprite.AddCollisionChecks(ObjectType.Block, KCObjectType.Player);
+
+            return new SpriteCreationInfo(sprite);
         }
 
 

@@ -37,10 +37,10 @@
             this.tileProperties = new System.Windows.Forms.PropertyGrid();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pnlMain = new System.Windows.Forms.SplitContainer();
-            this.pnlTileset = new Editor.TilePanelUserControl();
-            this.pnlBase = new Editor.TilePanelUserControl();
+            this.tabMain = new System.Windows.Forms.TabControl();
+            this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pnlProperties = new System.Windows.Forms.Panel();
-            this.pnlFilter = new System.Windows.Forms.Panel();
+            this.tabPage2 = new System.Windows.Forms.TabPage();
             this.txtDblClickGroup = new System.Windows.Forms.TextBox();
             this.pnlGroupBox = new System.Windows.Forms.Panel();
             this.txtGroupLeftTop = new System.Windows.Forms.TextBox();
@@ -52,24 +52,24 @@
             this.txtGroupRightTop = new System.Windows.Forms.TextBox();
             this.txtGroupTopLeft = new System.Windows.Forms.TextBox();
             this.txtGroupRightBottom = new System.Windows.Forms.TextBox();
+            this.pnlFilter = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.tabMain = new System.Windows.Forms.TabControl();
-            this.tabPage1 = new System.Windows.Forms.TabPage();
-            this.tabPage2 = new System.Windows.Forms.TabPage();
+            this.pnlTileset = new Editor.TilePanelUserControl();
+            this.pnlBase = new Editor.TilePanelUserControl();
             ((System.ComponentModel.ISupportInitialize)(this.pnlMain)).BeginInit();
             this.pnlMain.Panel1.SuspendLayout();
             this.pnlMain.Panel2.SuspendLayout();
             this.pnlMain.SuspendLayout();
-            this.pnlProperties.SuspendLayout();
-            this.pnlFilter.SuspendLayout();
-            this.pnlGroupBox.SuspendLayout();
-            this.menuStrip1.SuspendLayout();
             this.tabMain.SuspendLayout();
             this.tabPage1.SuspendLayout();
+            this.pnlProperties.SuspendLayout();
             this.tabPage2.SuspendLayout();
+            this.pnlGroupBox.SuspendLayout();
+            this.pnlFilter.SuspendLayout();
+            this.menuStrip1.SuspendLayout();
             this.SuspendLayout();
             // 
             // chkFilterExclusive
@@ -153,24 +153,28 @@
             this.pnlMain.SplitterDistance = 464;
             this.pnlMain.TabIndex = 3;
             // 
-            // pnlTileset
+            // tabMain
             // 
-            this.pnlTileset.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTileset.Location = new System.Drawing.Point(0, 0);
-            this.pnlTileset.Name = "pnlTileset";
-            this.pnlTileset.SelectionMode = Editor.SelectionMode.None;
-            this.pnlTileset.Size = new System.Drawing.Size(464, 488);
-            this.pnlTileset.TabIndex = 0;
+            this.tabMain.Controls.Add(this.tabPage1);
+            this.tabMain.Controls.Add(this.tabPage2);
+            this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.tabMain.Location = new System.Drawing.Point(0, 58);
+            this.tabMain.Name = "tabMain";
+            this.tabMain.SelectedIndex = 0;
+            this.tabMain.Size = new System.Drawing.Size(631, 563);
+            this.tabMain.TabIndex = 9;
             // 
-            // pnlBase
+            // tabPage1
             // 
-            this.pnlBase.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBase.Location = new System.Drawing.Point(0, 488);
-            this.pnlBase.Name = "pnlBase";
-            this.pnlBase.SelectionMode = Editor.SelectionMode.None;
-            this.pnlBase.Size = new System.Drawing.Size(464, 133);
-            this.pnlBase.TabIndex = 1;
-            this.pnlBase.Load += new System.EventHandler(this.pnlBase_Load);
+            this.tabPage1.Controls.Add(this.tileProperties);
+            this.tabPage1.Controls.Add(this.pnlProperties);
+            this.tabPage1.Location = new System.Drawing.Point(4, 22);
+            this.tabPage1.Name = "tabPage1";
+            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage1.Size = new System.Drawing.Size(623, 537);
+            this.tabPage1.TabIndex = 0;
+            this.tabPage1.Text = "Properties";
+            this.tabPage1.UseVisualStyleBackColor = true;
             // 
             // pnlProperties
             // 
@@ -183,15 +187,17 @@
             this.pnlProperties.Size = new System.Drawing.Size(617, 109);
             this.pnlProperties.TabIndex = 7;
             // 
-            // pnlFilter
+            // tabPage2
             // 
-            this.pnlFilter.Controls.Add(this.txtGroup);
-            this.pnlFilter.Controls.Add(this.chkFilterExclusive);
-            this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Top;
-            this.pnlFilter.Location = new System.Drawing.Point(0, 0);
-            this.pnlFilter.Name = "pnlFilter";
-            this.pnlFilter.Size = new System.Drawing.Size(631, 58);
-            this.pnlFilter.TabIndex = 6;
+            this.tabPage2.Controls.Add(this.txtDblClickGroup);
+            this.tabPage2.Controls.Add(this.pnlGroupBox);
+            this.tabPage2.Location = new System.Drawing.Point(4, 22);
+            this.tabPage2.Name = "tabPage2";
+            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
+            this.tabPage2.Size = new System.Drawing.Size(623, 537);
+            this.tabPage2.TabIndex = 1;
+            this.tabPage2.Text = "Groups";
+            this.tabPage2.UseVisualStyleBackColor = true;
             // 
             // txtDblClickGroup
             // 
@@ -200,7 +206,6 @@
             this.txtDblClickGroup.Name = "txtDblClickGroup";
             this.txtDblClickGroup.Size = new System.Drawing.Size(160, 33);
             this.txtDblClickGroup.TabIndex = 11;
-            this.txtDblClickGroup.TextChanged += new System.EventHandler(this.txtDblClickGroup_TextChanged);
             this.txtDblClickGroup.DoubleClick += new System.EventHandler(this.txtDblClickGroup_DoubleClick);
             // 
             // pnlGroupBox
@@ -292,6 +297,16 @@
             this.txtGroupRightBottom.Size = new System.Drawing.Size(78, 33);
             this.txtGroupRightBottom.TabIndex = 3;
             // 
+            // pnlFilter
+            // 
+            this.pnlFilter.Controls.Add(this.txtGroup);
+            this.pnlFilter.Controls.Add(this.chkFilterExclusive);
+            this.pnlFilter.Dock = System.Windows.Forms.DockStyle.Top;
+            this.pnlFilter.Location = new System.Drawing.Point(0, 0);
+            this.pnlFilter.Name = "pnlFilter";
+            this.pnlFilter.Size = new System.Drawing.Size(631, 58);
+            this.pnlFilter.TabIndex = 6;
+            // 
             // menuStrip1
             // 
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
@@ -325,40 +340,27 @@
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // tabMain
+            // pnlTileset
             // 
-            this.tabMain.Controls.Add(this.tabPage1);
-            this.tabMain.Controls.Add(this.tabPage2);
-            this.tabMain.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.tabMain.Location = new System.Drawing.Point(0, 58);
-            this.tabMain.Name = "tabMain";
-            this.tabMain.SelectedIndex = 0;
-            this.tabMain.Size = new System.Drawing.Size(631, 563);
-            this.tabMain.TabIndex = 9;
+            this.pnlTileset.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTileset.Location = new System.Drawing.Point(0, 0);
+            this.pnlTileset.Name = "pnlTileset";
+            this.pnlTileset.RectangleType = Editor.DrawRectangleType.None;
+            this.pnlTileset.SelectionMode = Editor.SelectionMode.Multi;
+            this.pnlTileset.Size = new System.Drawing.Size(464, 488);
+            this.pnlTileset.TabIndex = 0;
+            this.pnlTileset.Load += new System.EventHandler(this.pnlTileset_Load);
             // 
-            // tabPage1
+            // pnlBase
             // 
-            this.tabPage1.Controls.Add(this.tileProperties);
-            this.tabPage1.Controls.Add(this.pnlProperties);
-            this.tabPage1.Location = new System.Drawing.Point(4, 22);
-            this.tabPage1.Name = "tabPage1";
-            this.tabPage1.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage1.Size = new System.Drawing.Size(623, 537);
-            this.tabPage1.TabIndex = 0;
-            this.tabPage1.Text = "Properties";
-            this.tabPage1.UseVisualStyleBackColor = true;
-            // 
-            // tabPage2
-            // 
-            this.tabPage2.Controls.Add(this.txtDblClickGroup);
-            this.tabPage2.Controls.Add(this.pnlGroupBox);
-            this.tabPage2.Location = new System.Drawing.Point(4, 22);
-            this.tabPage2.Name = "tabPage2";
-            this.tabPage2.Padding = new System.Windows.Forms.Padding(3);
-            this.tabPage2.Size = new System.Drawing.Size(623, 537);
-            this.tabPage2.TabIndex = 1;
-            this.tabPage2.Text = "Groups";
-            this.tabPage2.UseVisualStyleBackColor = true;
+            this.pnlBase.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBase.Location = new System.Drawing.Point(0, 488);
+            this.pnlBase.Name = "pnlBase";
+            this.pnlBase.RectangleType = Editor.DrawRectangleType.ShiftDrag;
+            this.pnlBase.SelectionMode = Editor.SelectionMode.None;
+            this.pnlBase.Size = new System.Drawing.Size(464, 133);
+            this.pnlBase.TabIndex = 1;
+            this.pnlBase.Load += new System.EventHandler(this.pnlBase_Load);
             // 
             // TilesetEditor
             // 
@@ -370,22 +372,23 @@
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "TilesetEditor";
             this.Text = "Tileset";
+            this.Load += new System.EventHandler(this.TilesetEditor_Load);
             this.Resize += new System.EventHandler(this.TilesetEditor_Resize);
             this.pnlMain.Panel1.ResumeLayout(false);
             this.pnlMain.Panel2.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)(this.pnlMain)).EndInit();
             this.pnlMain.ResumeLayout(false);
-            this.pnlProperties.ResumeLayout(false);
-            this.pnlFilter.ResumeLayout(false);
-            this.pnlFilter.PerformLayout();
-            this.pnlGroupBox.ResumeLayout(false);
-            this.pnlGroupBox.PerformLayout();
-            this.menuStrip1.ResumeLayout(false);
-            this.menuStrip1.PerformLayout();
             this.tabMain.ResumeLayout(false);
             this.tabPage1.ResumeLayout(false);
+            this.pnlProperties.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
             this.tabPage2.PerformLayout();
+            this.pnlGroupBox.ResumeLayout(false);
+            this.pnlGroupBox.PerformLayout();
+            this.pnlFilter.ResumeLayout(false);
+            this.pnlFilter.PerformLayout();
+            this.menuStrip1.ResumeLayout(false);
+            this.menuStrip1.PerformLayout();
             this.ResumeLayout(false);
             this.PerformLayout();
 

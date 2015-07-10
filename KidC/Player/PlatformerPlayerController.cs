@@ -93,9 +93,9 @@ namespace KidC
             if (!mIsOnGround)
             {
                 if (this.Sprite.MotionManager.MotionOffset.Y <= 0)
-                    this.CurrentAnimationKey = KCAnimation.Jump;
+                    this.CurrentAnimationKey=KCAnimation.Jump;
                 else
-                    this.CurrentAnimationKey = KCAnimation.Fall;
+                    this.CurrentAnimationKey=KCAnimation.Fall;
             }
           
 
@@ -116,7 +116,7 @@ namespace KidC
             {
                 Sprite.MotionManager.MainMotion.Decel = this.MotionStats.CrawlDecel;
                 Sprite.MotionManager.MainMotion.Accel = this.MotionStats.CrawlAccel;
-                this.CurrentAnimationKey = KCAnimation.Crawl;
+                this.CurrentAnimationKey=KCAnimation.Crawl;
             }
             else
                 return false;
@@ -177,6 +177,18 @@ namespace KidC
             mJump.Start(this.MotionStats.LongJumpDuration);
         }
 
+        public void DoBounce(float speed)
+        {
+            mJumpBeginFrame = Context.CurrentFrameNumber;
+            mJumpSpeed = speed;
+
+            if (Player.Input.KeyDown(KCButton.Jump))
+                mJump.Start(this.MotionStats.LongJumpDuration*2);
+            else
+                mJump.Start(this.MotionStats.ShortJumpDuration);
+        }
+
+
         private bool PlayerCanJump()
         {
             return this.mIsOnGround && mJumpBeginFrame == 0;
@@ -208,13 +220,13 @@ namespace KidC
                 return;
 
             if (this.Sprite.MotionManager.MotionOffset.X == 0)
-                this.Sprite.CurrentAnimationKey = KCAnimation.Stand;
+                this.Sprite.SetAnimation(KCAnimation.Stand);
             else
             {
                 var mo = this.Sprite.MotionManager.Vector.GetMagnitudeInDirection(this.Sprite.Direction);
                 if (mo < 0)
                 {
-                    this.Sprite.CurrentAnimationKey = KCAnimation.Turn;
+                    this.Sprite.SetAnimation(KCAnimation.Turn);
 
                     if (mIsOnGround)
                         Sprite.MotionManager.MainMotion.Accel = this.MotionStats.TurnAccel;
@@ -222,12 +234,13 @@ namespace KidC
                         Sprite.MotionManager.MainMotion.Accel = this.MotionStats.AirTurnAccel;
 
                     if (this.Sprite.CurrentAnimationKey != KCAnimation.Turn)
-                        this.Sprite.CurrentAnimationKey = KCAnimation.Walk;
+                        this.Sprite.SetAnimation(KCAnimation.Walk);
                 }
                 else
-                    this.Sprite.CurrentAnimationKey = KCAnimation.Walk;
+                    this.Sprite.SetAnimation(KCAnimation.Walk);
 
-                this.Sprite.CurrentAnimation.SpeedModifier = this.Sprite.MotionManager.Vector.Magnitude / this.MotionStats.WalkSpeed;
+                if(this.Sprite.CurrentAnimationKey == KCAnimation.Walk)
+                    this.Sprite.CurrentAnimation.SpeedModifier = this.Sprite.MotionManager.Vector.Magnitude / this.MotionStats.WalkSpeed;
             }
 
         }
@@ -327,7 +340,7 @@ namespace KidC
             //no movement, player falls down hill
             if (dir == null)
             {
-                Sprite.CurrentAnimationKey = KCAnimation.ClimbDown;
+                Sprite.SetAnimation(KCAnimation.ClimbDown);
                 Sprite.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);
                 Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + this.MotionStats.UpHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);//.RotateTowards(Direction.Down, 45);
@@ -336,14 +349,14 @@ namespace KidC
             }
             else if (dir == mCurrentSlopeDirection && this.CanClimbSlopes) // moving up the slope
             {
-                Sprite.CurrentAnimationKey = KCAnimation.ClimbUp;
+                Sprite.SetAnimation(KCAnimation.ClimbUp);
                 Sprite.Direction = mCurrentSlopeDirection;
                 Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + this.MotionStats.UpHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection;//.RotateTowards(Direction.Up, 45);
             }
             else //moving down the slope
             {
-                Sprite.CurrentAnimationKey = KCAnimation.ClimbDown;
+                Sprite.SetAnimation(KCAnimation.ClimbDown);
                 Sprite.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);
                 Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed + this.MotionStats.DownHillSpeedMod;
                 Sprite.MotionManager.MainMotion.Direction = mCurrentSlopeDirection.Reflect(Orientation.Horizontal);//.RotateTowards(Direction.Down, 45);
@@ -386,7 +399,7 @@ namespace KidC
             set
             {
                 if (!this.NoAnimationChanges)
-                    this.Sprite.CurrentAnimationKey = value;
+                    this.Sprite.SetAnimation(value, this,false);
             }
         }
 

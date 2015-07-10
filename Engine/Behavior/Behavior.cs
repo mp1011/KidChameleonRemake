@@ -11,7 +11,9 @@ namespace Engine
         public Sprite Sprite { get; private set; }
 
         public SpriteBehavior(Sprite sprite)
-            : this(sprite, RelationFlags.Normal) { }
+            : this(sprite, RelationFlags.Normal) 
+        {
+        }
 
 
         public SpriteBehavior(Sprite sprite, RelationFlags relationFlags)

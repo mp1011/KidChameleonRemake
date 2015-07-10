@@ -31,6 +31,7 @@
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(LevelEditor));
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.newToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlLeftRight = new System.Windows.Forms.SplitContainer();
@@ -54,10 +55,11 @@
             this.propSpecialTile = new System.Windows.Forms.PropertyGrid();
             this.lstGroups = new System.Windows.Forms.CheckedListBox();
             this.pgeObjects = new System.Windows.Forms.TabPage();
+            this.lstObjects = new System.Windows.Forms.ListBox();
             this.pgObject = new System.Windows.Forms.PropertyGrid();
             this.pbObjectPreview = new System.Windows.Forms.PictureBox();
             this.cboObjectType = new System.Windows.Forms.ComboBox();
-            this.lstObjects = new System.Windows.Forms.ListBox();
+            this.chkAutoMode = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.pnlLeftRight)).BeginInit();
             this.pnlLeftRight.Panel1.SuspendLayout();
@@ -85,10 +87,17 @@
             // fileToolStripMenuItem
             // 
             this.fileToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.newToolStripMenuItem,
             this.openToolStripMenuItem,
             this.saveToolStripMenuItem});
             this.fileToolStripMenuItem.Name = "fileToolStripMenuItem";
             resources.ApplyResources(this.fileToolStripMenuItem, "fileToolStripMenuItem");
+            // 
+            // newToolStripMenuItem
+            // 
+            this.newToolStripMenuItem.Name = "newToolStripMenuItem";
+            resources.ApplyResources(this.newToolStripMenuItem, "newToolStripMenuItem");
+            this.newToolStripMenuItem.Click += new System.EventHandler(this.newToolStripMenuItem_Click);
             // 
             // openToolStripMenuItem
             // 
@@ -126,10 +135,12 @@
             // 
             resources.ApplyResources(this.pnlMap, "pnlMap");
             this.pnlMap.Name = "pnlMap";
+            this.pnlMap.RectangleType = Editor.DrawRectangleType.ShiftDrag;
             this.pnlMap.SelectionMode = Editor.SelectionMode.None;
             // 
             // pnlTop
             // 
+            this.pnlTop.Controls.Add(this.chkAutoMode);
             this.pnlTop.Controls.Add(this.cboGridSnap);
             this.pnlTop.Controls.Add(this.btnRandomize);
             this.pnlTop.Controls.Add(this.chkSelect);
@@ -171,8 +182,6 @@
             // chkShowGrid
             // 
             resources.ApplyResources(this.chkShowGrid, "chkShowGrid");
-            this.chkShowGrid.Checked = true;
-            this.chkShowGrid.CheckState = System.Windows.Forms.CheckState.Checked;
             this.chkShowGrid.Name = "chkShowGrid";
             this.chkShowGrid.UseVisualStyleBackColor = true;
             this.chkShowGrid.CheckedChanged += new System.EventHandler(this.chkShowGrid_CheckedChanged);
@@ -180,10 +189,10 @@
             // tbZoom
             // 
             resources.ApplyResources(this.tbZoom, "tbZoom");
+            this.tbZoom.Maximum = 20;
             this.tbZoom.Minimum = 1;
             this.tbZoom.Name = "tbZoom";
             this.tbZoom.Value = 1;
-            this.tbZoom.Scroll += new System.EventHandler(this.tbZoom_Scroll);
             this.tbZoom.ValueChanged += new System.EventHandler(this.tbZoom_ValueChanged);
             // 
             // tabMain
@@ -234,6 +243,7 @@
             // 
             resources.ApplyResources(this.pnlTileset, "pnlTileset");
             this.pnlTileset.Name = "pnlTileset";
+            this.pnlTileset.RectangleType = Editor.DrawRectangleType.ShiftDrag;
             this.pnlTileset.SelectionMode = Editor.SelectionMode.None;
             // 
             // panel1
@@ -256,6 +266,7 @@
             this.lstGroups.FormattingEnabled = true;
             this.lstGroups.Name = "lstGroups";
             this.lstGroups.ItemCheck += new System.Windows.Forms.ItemCheckEventHandler(this.lstGroups_ItemCheck);
+            this.lstGroups.SelectedIndexChanged += new System.EventHandler(this.lstGroups_SelectedIndexChanged);
             // 
             // pgeObjects
             // 
@@ -266,6 +277,12 @@
             resources.ApplyResources(this.pgeObjects, "pgeObjects");
             this.pgeObjects.Name = "pgeObjects";
             this.pgeObjects.UseVisualStyleBackColor = true;
+            // 
+            // lstObjects
+            // 
+            this.lstObjects.FormattingEnabled = true;
+            resources.ApplyResources(this.lstObjects, "lstObjects");
+            this.lstObjects.Name = "lstObjects";
             // 
             // pgObject
             // 
@@ -284,11 +301,11 @@
             resources.ApplyResources(this.cboObjectType, "cboObjectType");
             this.cboObjectType.Name = "cboObjectType";
             // 
-            // lstObjects
+            // chkAutoMode
             // 
-            this.lstObjects.FormattingEnabled = true;
-            resources.ApplyResources(this.lstObjects, "lstObjects");
-            this.lstObjects.Name = "lstObjects";
+            resources.ApplyResources(this.chkAutoMode, "chkAutoMode");
+            this.chkAutoMode.Name = "chkAutoMode";
+            this.chkAutoMode.UseVisualStyleBackColor = true;
             // 
             // LevelEditor
             // 
@@ -354,5 +371,7 @@
         private System.Windows.Forms.ComboBox cboObjectType;
         private System.Windows.Forms.ComboBox cboGridSnap;
         private System.Windows.Forms.ListBox lstObjects;
+        private System.Windows.Forms.ToolStripMenuItem newToolStripMenuItem;
+        private System.Windows.Forms.CheckBox chkAutoMode;
     }
 }

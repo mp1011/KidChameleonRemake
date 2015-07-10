@@ -11,6 +11,7 @@ namespace Engine
         void PlaySound(SoundResource s);
         void PlaySound(SoundResource s, float volume);
         bool IsSoundPlaying(SoundResource s);
+        void StopSound(SoundResource s);
     }
 
     public class SoundManager
@@ -19,6 +20,16 @@ namespace Engine
         public static void PlaySound(SoundResource s) { Core.EngineBase.Current.SoundManager.PlaySound(s); }
 
         public static bool IsSoundPlaying(SoundResource s) { return Core.EngineBase.Current.SoundManager.IsSoundPlaying(s); }
+
+        public static void PlaySoundIfNotPlaying(SoundResource s)
+        {
+            if (IsSoundPlaying(s))
+                return;
+
+            PlaySound(s);
+        }
+
+        public static void StopSound(SoundResource s) { Core.EngineBase.Current.SoundManager.StopSound(s);  }
     }
 
     public class SoundResource : GameResource 

@@ -32,14 +32,14 @@ namespace Engine
 
         #region Public
 
-        public static MovingText MoveIn(GameText text, Layer layer, Direction fromDirection)
+        public static MovingText MoveIn(GameText text, Layer layer, Direction fromDirection, int offset)
         {
             var movingText = new MovingText(text, layer);
-             movingText.mName = "Move in: \"" + text.Text + "\"";
-             movingText.mMakeTextReappearOnFinish = true;
+            movingText.mName = "Move in: \"" + text.Text + "\"";
+            movingText.mMakeTextReappearOnFinish = true;
             foreach (var letter in movingText.mLetters)
             {
-                letter.Location = letter.OriginalLocation.TopLeft.Offset(fromDirection, 200);
+                letter.Location = letter.OriginalLocation.TopLeft.Offset(fromDirection, offset);
                 var seek = new SeekPointController(movingText, letter, new WorldPoint(movingText.Context, letter.OriginalLocation.X, letter.OriginalLocation.Y),5.0f);
                 letter.SetMotionBehavior(seek);
             }

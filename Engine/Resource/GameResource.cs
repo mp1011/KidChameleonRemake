@@ -45,6 +45,8 @@ namespace Engine
 
         public GameResource(GamePath path) : base(path) { }
 
+        public GameResource(string name, PathType pathType) : this(new GamePath(pathType,name)) { }
+
         public GameResource() : base(GamePath.Undefined) { }
 
         protected virtual bool NeedsLoad()

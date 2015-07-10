@@ -44,7 +44,7 @@ namespace Editor
 
         public ImagePalette(IEnumerable<Color> colors)
         {
-            mColors = colors.OrderBy(p => (int)p.R + p.G + p.B + p.A).Distinct().ToArray();
+            mColors = colors.Where(p=>p.A == 255).OrderBy(p => (int)p.R + p.G + p.B + p.A).Distinct().ToArray();
             mColors = new Color[] { Color.Transparent }.Union(mColors).ToArray();
         }
 

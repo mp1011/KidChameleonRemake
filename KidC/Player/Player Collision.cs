@@ -12,12 +12,15 @@ namespace KidC
 
         private float mHitBounceSpeed;
         private bool mSecondaryHitboxIsDamaging;
+        private NoHitBonus mNoHitBonus;
+
         protected override bool AllowRetrigger { get { return false; } }
 
         public PlayerHitController(Sprite s, bool secondaryHitboxIsDamaging, GravityController gravityController, HealthController healthController) : base(s, 60, healthController)
         {
             mSecondaryHitboxIsDamaging = secondaryHitboxIsDamaging;
             mGravityController = gravityController;
+            mNoHitBonus = this.Context.GetBonusTrackers().OfType<NoHitBonus>().FirstOrDefault();
         }
 
         protected override bool ShouldHandleCollision(Engine.Collision.CollisionEvent evt)
@@ -70,9 +73,12 @@ namespace KidC
             base.HandleCollisionEx(cEvent, response);
         }
 
-        protected override void OnHit()
+        protected override void OnHit(HitInfo hitInfo)
         {
-            Context.GetStats().CurrentHealth--;
+            if (hitInfo.Damage > 0)
+                mNoHitBonus.Reject();
+
+            Context.GetStats().CurrentHealth -= hitInfo.Damage;
 
             if (Context.GetStats().CurrentHealth <= 0)
                 this.Sprite.Kill(Engine.ExitCode.Destroyed);
@@ -90,6 +96,9 @@ namespace KidC
 
         protected override SoundResource GetHitSound(Engine.Collision.CollisionEvent evt)
         {
+            if (evt == null)
+                return Sounds.None;
+
             return Sounds.PlayerHit;
         }
     }

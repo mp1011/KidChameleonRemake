@@ -23,8 +23,8 @@ namespace Editor
             TypeDescriptor.AddAttributes(typeof(RGColor), new EditorAttribute(typeof(RGColorEditor),typeof(System.Drawing.Design.UITypeEditor)));
             TypeDescriptor.AddAttributes(typeof(TileFlags), new EditorAttribute(typeof(FlagEnumEditor.FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor)));
             TypeDescriptor.AddAttributes(typeof(EditorDirectionFlags), new EditorAttribute(typeof(FlagEnumEditor.FlagEnumUIEditor), typeof(System.Drawing.Design.UITypeEditor)));
-  
-         
+
+          
             var engine = new EditorEngine();
             Program.EditorGame = new KidC.KidCGame();
             Program.EditorContext = Program.EditorGame.GameContextCreate(engine, Program.EditorGame);

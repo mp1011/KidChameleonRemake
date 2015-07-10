@@ -22,6 +22,12 @@ namespace KidC
             return ReflectionHelper.CreateObjectByAttribute<ILevelTheme, ThemeAttribute>(this, t => t.Theme == this.Theme);
         }
 
+        public int SpeedBonusSeconds {get; set;}
+        public int PathBonusAmount { get; set; }
+
+        private List<BonusTracker> mBonusTrackers;
+        public IEnumerable<BonusTracker> BonusTrackers { get { return mBonusTrackers.AsEnumerable(); } }
+
         protected override string TilesetName
         {
             get 
@@ -51,6 +57,13 @@ namespace KidC
             {
                 GlobalActionHandler.Create(world);
                 context.GetStats().RestoreHealth();
+
+                mBonusTrackers = new List<BonusTracker>();
+                mBonusTrackers.Add(new SpeedBonus(world));
+                mBonusTrackers.Add(new PathBonus(world));
+                mBonusTrackers.Add(new NoPrizeBonus(world));
+                mBonusTrackers.Add(new NoHitBonus(world));
+                mBonusTrackers.Add(new TimeBonus(world));                
             }
 
             return world;

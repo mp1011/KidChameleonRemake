@@ -6,7 +6,7 @@ using Engine;
 
 namespace KidC
 {
-    class Clock : LogicObject, IDrawableRemovable 
+    class Clock : LogicObject, IDrawableRemovable, IWithPosition 
     {
         private GameText mLabel;
     
@@ -21,6 +21,11 @@ namespace KidC
         {
         }
 
+        public void AdjustSeconds(int change)
+        {
+            mStartSeconds += change;
+        }
+
         public bool TimesUp
         {
             get
@@ -28,9 +33,16 @@ namespace KidC
                 if (mClockStart == 0)
                     return false;
 
-                var secondsElapsed = Context.ElapsedSecondsSince(mClockStart);
-                var secondsRemaining = Math.Max(0, mStartSeconds - secondsElapsed);
-                return secondsRemaining == 0;
+                return this.SecondsRemaining == 0;
+            }
+        }
+
+        public int SecondsRemaining
+        {
+            get
+            {
+                var secondsElapsed = Context.ElapsedSecondsSince(mClockStart);           
+                return Math.Max(0, mStartSeconds - secondsElapsed);
             }
         }
 
@@ -62,6 +74,17 @@ namespace KidC
                 return;
 
             this.mLabel.Draw(p, canvas);
+        }
+
+
+        public RGRectangleI Area
+        {
+            get { return mLabel.Area; }
+        }
+
+        public Direction Direction
+        {
+            get { return Direction.Right; }
         }
     }
 }

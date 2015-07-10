@@ -49,7 +49,6 @@
             this.dgFont.Size = new System.Drawing.Size(782, 276);
             this.dgFont.TabIndex = 0;
             this.dgFont.CellContentClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgFont_CellContentClick);
-            this.dgFont.CellValueChanged += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgFont_CellValueChanged);
             this.dgFont.DataError += new System.Windows.Forms.DataGridViewDataErrorEventHandler(this.dgFont_DataError);
             this.dgFont.EditingControlShowing += new System.Windows.Forms.DataGridViewEditingControlShowingEventHandler(this.dgFont_EditingControlShowing);
             // 

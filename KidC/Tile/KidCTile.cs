@@ -90,6 +90,7 @@ namespace KidC
                 case SpecialTile.Prize: return new PrizeBlock(this, tileLayer, this.GetPrizeType());
                 case SpecialTile.Rock: return new BreakableTile(this, tileLayer);
                 case SpecialTile.Metal: return new MetalBlock(this, tileLayer);
+                case SpecialTile.Rubber: return new RubberBlock(this, tileLayer);
                 default: return new PlainTile(this, tileLayer);
             }
 

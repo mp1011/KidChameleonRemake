@@ -50,6 +50,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Behavior\Action.cs" />
     <Compile Include="Behavior\Behavior.cs" />
     <Compile Include="Behavior\BehaviorChain.cs" />
     <Compile Include="Behavior\BehaviorPresets.cs" />
@@ -57,6 +58,7 @@
     <Compile Include="Behavior\Interaction.cs" />
     <Compile Include="Behavior\LevelEffects.cs" />
     <Compile Include="Behavior\Movement.cs" />
+    <Compile Include="Behavior\OnCollidedWith.cs" />
     <Compile Include="Collision\Border.cs" />
     <Compile Include="Collision\CollisionManager.cs" />
     <Compile Include="Collision\CollisionResponse.cs" />
@@ -68,6 +70,7 @@
     <Compile Include="Diagnostic\DebugRectangle.cs" />
     <Compile Include="Diagnostic\DebugTracker.cs" />
     <Compile Include="Core\EngineBase.cs" />
+    <Compile Include="Diagnostic\ErrorTracker.cs" />
     <Compile Include="Editor\EditorVisibleAttribute.cs" />
     <Compile Include="Font\ActiveFont.cs" />
     <Compile Include="Font\Font.cs" />
@@ -80,9 +83,11 @@
     <Compile Include="GameObject\ObjectEntry.cs" />
     <Compile Include="GameObject\Sprite.cs" />
     <Compile Include="General\ButtonListener.cs" />
+    <Compile Include="General\Extensions.cs" />
     <Compile Include="General\GameContext.cs" />
     <Compile Include="General\intx.cs" />
     <Compile Include="General\Listener.cs" />
+    <Compile Include="General\Lockable.cs" />
     <Compile Include="General\LogicObject.cs" />
     <Compile Include="General\Geometry.cs" />
     <Compile Include="General\ObjectType.cs" />
@@ -97,6 +102,8 @@
     <Compile Include="Graphics\SimpleGraphic.cs" />
     <Compile Include="Graphics\SpriteSheet.cs" />
     <Compile Include="Graphics\TextureCache.cs" />
+    <Compile Include="Graphics\TextureDissolve.cs" />
+    <Compile Include="Graphics\TextureMask.cs" />
     <Compile Include="Interface\InterfaceRectangle.cs" />
     <Compile Include="Interface\TextMenu.cs" />
     <Compile Include="Motion\Interfaces.cs" />
@@ -104,6 +111,7 @@
     <Compile Include="Motion\Physics.cs" />
     <Compile Include="Paths.cs" />
     <Compile Include="Player\Input.cs" />
+    <Compile Include="Player\InputRecorder.cs" />
     <Compile Include="Player\Mouse.cs" />
     <Compile Include="Player\Player.cs" />
     <Compile Include="Resource\DevelopmentResource.cs" />
@@ -112,6 +120,7 @@
     <Compile Include="Serialization\Saving.cs" />
     <Compile Include="SharpDX\Engine.cs" />
     <Compile Include="Resource\Stats.cs" />
+    <Compile Include="Utilities\String.cs" />
     <Compile Include="World\Layer.cs" />
     <Compile Include="World\Map.cs" />
     <Compile Include="World\Misc.cs" />

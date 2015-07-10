@@ -21,13 +21,19 @@ namespace Engine
         public static ObjectType IronKnightHelmet { get { return new ObjectType(ObjectType.CustomIDStart + 2001, "Iron Knight Helmet"); } }
         public static ObjectType RedStealthHelmet { get { return new ObjectType(ObjectType.CustomIDStart + 2002, "Red Stealth Helmet"); } }
 
-        public static ObjectType Gem { get { return new ObjectType(ObjectType.CustomIDStart + 3001, "Gem"); } }
+        public static ObjectType Gem { get { return new ObjectType((int)PrizeType.Gem, "Gem"); } }//3001
         public static ObjectType Puff { get { return new ObjectType(ObjectType.CustomIDStart + 3002, "Puff"); } }
+        public static ObjectType Clock { get { return new ObjectType((int)PrizeType.Clock, "Clock"); } } //3003
+       
+        [EditorVisible]
+        public static ObjectType Flag { get { return new ObjectType(ObjectType.CustomIDStart + 3004, "Flag"); } }
 
         public static ObjectType Enemy { get { return new ObjectType(ObjectType.CustomIDStart + 4000, "Enemy"); } }
 
         [EditorVisible]
         public static ObjectType Dragon { get { return new ObjectType(ObjectType.CustomIDStart + 4001, "Dragon"); } }
+
+    
     }
 
     public enum PrizeType
@@ -35,7 +41,8 @@ namespace Engine
         None = 0,
         Gem = ObjectType.CustomIDStart + 3001,
         IronKnightHelmet = ObjectType.CustomIDStart + 2001,
-        RedStealthHelmet = ObjectType.CustomIDStart + 2002
+        RedStealthHelmet = ObjectType.CustomIDStart + 2002,
+        Clock = ObjectType.CustomIDStart + 3003
     }
 
 

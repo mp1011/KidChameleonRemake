@@ -108,7 +108,7 @@ namespace Engine
                     m_TextArea.X = Int16.MaxValue;
                     m_TextArea.Y = Int16.MaxValue;
 
-                    int right = 0, bottom = 0;
+                    int right = Int16.MinValue, bottom = Int16.MinValue;
 
                     foreach (var letter in this.Letters)
                     {
@@ -289,10 +289,13 @@ namespace Engine
                     foundNonSpace = true;
 
                     if (Char.IsWhiteSpace(lineLetter.Character))
+                    {
                         spaceAfter += lineLetter.Location.Width;
+                        lineWidth += lineLetter.Location.Width;
+                    }
                     else
                     {
-                        spaceBefore = 0;
+                        spaceAfter = 0;
                         lineWidth += lineLetter.Location.Width;
                     }
                 }

@@ -9,6 +9,7 @@ namespace Engine.XNA
     class XNASound
     {
         public SoundEffect Effect { get; set; }
+        public SoundEffectInstance EffectInstance { get; set; }
         public DateTime LastPlayTime { get; set; }
     }
 
@@ -31,7 +32,12 @@ namespace Engine.XNA
                 return;
 
             sound.LastPlayTime = DateTime.Now;
-            sound.Effect.Play(volume, 0, 0);
+
+            if (sound.EffectInstance == null)
+                sound.EffectInstance = sound.Effect.CreateInstance();
+
+            sound.EffectInstance.Volume = volume;
+            sound.EffectInstance.Play();
         }
 
 
@@ -56,6 +62,13 @@ namespace Engine.XNA
         {
             var sound = mSoundLibrary.TryGet(s.Path.Name, null);
             return sound != null && IsSoundPlaying(sound);        
+        }
+
+        public void StopSound(SoundResource s)
+        {
+            var sound = mSoundLibrary.TryGet(s.Path.Name, null);
+            if (sound != null && sound.EffectInstance != null)
+                sound.EffectInstance.Stop();
         }
 
         private bool IsSoundPlaying(XNASound sound)

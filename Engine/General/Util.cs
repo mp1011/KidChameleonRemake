@@ -7,6 +7,11 @@ namespace Engine
 {
     public static class Util
     {
+        public static T[] GetEnumValues<T>()
+        {
+            return Enum.GetValues(typeof(T)).OfType<T>().ToArray();
+        }
+
         public static bool EqualsAny<T>(this T item, params T[] others) where T : struct
         {
             return others.Contains(item);
@@ -24,14 +29,18 @@ namespace Engine
 
         public static int LimitNumber(this int number, int max)
         {
-            if (number > 0)
-                return Math.Min(number, max);
-            if (number < 0)
-                return Math.Max(number, -max);
-            else
-                return 0;
+            return number.LimitNumber(max, -max);
         }
 
+        public static int LimitNumber(this int number, int max, int min)
+        {
+            if (number > max)
+                return max;
+            if (number < min)
+                return min;
+
+            return number;
+        }
 
         public static void AddOrSet<K, V>(this Dictionary<K, V> dic, K key, V val)
         {
@@ -388,15 +397,7 @@ namespace Engine
             return !String.IsNullOrEmpty(str);
         }
 
-        public static bool IsNullOrEmpty<T>(this IEnumerable<T> list)
-        {
-            return list == null || !list.Any();
-        }
-
-        public static bool NotNullOrEmpty<T>(this IEnumerable<T> list)
-        {
-            return !list.IsNullOrEmpty();
-        }
+     
 
         public static string StringJoin(this IEnumerable<string> list, string separator)
         {
@@ -463,7 +464,6 @@ namespace Engine
             list.Add(newItem);
             return newItem;
         }
-
     }
 
    

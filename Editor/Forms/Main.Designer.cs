@@ -32,6 +32,7 @@
             this.btnGraphicExtractor = new System.Windows.Forms.Button();
             this.btnTileEditor = new System.Windows.Forms.Button();
             this.btnFontEditor = new System.Windows.Forms.Button();
+            this.btnShowLog = new System.Windows.Forms.Button();
             this.SuspendLayout();
             // 
             // btnLevelEditor
@@ -74,11 +75,22 @@
             this.btnFontEditor.UseVisualStyleBackColor = true;
             this.btnFontEditor.Click += new System.EventHandler(this.btnFontEditor_Click);
             // 
+            // btnShowLog
+            // 
+            this.btnShowLog.Location = new System.Drawing.Point(242, 79);
+            this.btnShowLog.Name = "btnShowLog";
+            this.btnShowLog.Size = new System.Drawing.Size(69, 40);
+            this.btnShowLog.TabIndex = 4;
+            this.btnShowLog.Text = "Console";
+            this.btnShowLog.UseVisualStyleBackColor = true;
+            this.btnShowLog.Click += new System.EventHandler(this.btnShowLog_Click);
+            // 
             // Main
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.ClientSize = new System.Drawing.Size(340, 262);
+            this.Controls.Add(this.btnShowLog);
             this.Controls.Add(this.btnFontEditor);
             this.Controls.Add(this.btnTileEditor);
             this.Controls.Add(this.btnGraphicExtractor);
@@ -95,6 +107,7 @@
         private System.Windows.Forms.Button btnGraphicExtractor;
         private System.Windows.Forms.Button btnTileEditor;
         private System.Windows.Forms.Button btnFontEditor;
+        private System.Windows.Forms.Button btnShowLog;
 
     }
 }

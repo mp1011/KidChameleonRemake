@@ -205,9 +205,11 @@ namespace Engine
             }
             set
             {
-                mPaused = value;
-                if (!value)
+                if (mPaused && !value)
                     mLastUnpauseTime = mContext.CurrentFrameNumber;
+
+                mPaused = value;
+               
             }
         }
 

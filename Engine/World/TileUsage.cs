@@ -5,66 +5,79 @@ using System.Text;
 
 namespace Engine
 {
+    public enum GroupSide
+    {
+        LeftTop,
+        TopLeft,
+        TopRight,
+        RightTop,
+        RightBottom,
+        BottomRight,
+        BottomLeft,
+        LeftBottom
+    }
+
+    public static class GroupSideExtensions
+    {
+        public static GroupSide GetAdjacentSide(this GroupSide side)
+        {
+            switch (side)
+            {
+                case GroupSide.LeftTop: return GroupSide.RightTop;
+                case GroupSide.TopLeft: return GroupSide.BottomLeft;
+                case GroupSide.TopRight: return GroupSide.BottomRight;
+                case GroupSide.RightTop: return GroupSide.LeftTop;
+                case GroupSide.RightBottom: return GroupSide.LeftBottom;
+                case GroupSide.BottomRight: return GroupSide.TopRight;
+                case GroupSide.BottomLeft: return GroupSide.TopLeft;
+                case GroupSide.LeftBottom: return GroupSide.RightBottom;
+            }
+
+            return side;
+        }
+
+        public static RGPointI ToOffset(this GroupSide side)
+        {
+            switch (side)
+            {
+                case GroupSide.LeftTop: return new RGPointI(-1, 0);
+                case GroupSide.TopLeft: return new RGPointI(0, -1);
+                case GroupSide.TopRight: return new RGPointI(0, -1);
+                case GroupSide.RightTop: return new RGPointI(1, 0);
+                case GroupSide.RightBottom: return new RGPointI(1, 0);
+                case GroupSide.BottomRight: return new RGPointI(0, 1);
+                case GroupSide.BottomLeft: return new RGPointI(0, 1);
+                case GroupSide.LeftBottom: return new RGPointI(-1, 0);
+            }
+
+            return RGPointI.Empty;
+        }
+    }
+
     public class TileUsage
     {
-        /// <summary>
-        /// Represents 8 sides, from top left, going clockwise
-        /// </summary>
-        private  string[] mSideGroups;
 
-        public string[] SideGroups
+        private Dictionary<GroupSide, string> mSideGroups;
+
+        public Dictionary<GroupSide, string> SideGroups
         {
             get
             {
                 if (mSideGroups == null)
-                    mSideGroups = new string[8];
+                    mSideGroups = new Dictionary<GroupSide, string>();
                 return mSideGroups;
             }
-            set
-            {
-                mSideGroups = value;
-            }
         }
-
-        public string[] Groups { get; set; }
 
         public IEnumerable<string> DistinctGroupNames
         {
             get
             {
-                return SideGroups.SelectMany(p => p.NotNull().Split(',')).Where(p=>!String.IsNullOrEmpty(p)).Distinct();
+                return SideGroups.Values.Where(p => p.NotNullOrEmpty()).SelectMany(p => p.Split(',')).Where(p=>p!="*").Distinct().OrderBy(p => p);
             }
         }
-
-        public string SingleGroup
-        {
-            get
-            {
-                if(SideGroups.NotNullOrEmpty() && SideGroups.All(p=> p == SideGroups.First()))
-                    return SideGroups.First();
-                else
-                    return null;
-            }
-            set
-            {
-                if (value.IsNullOrEmpty())
-                    return;
-
-                this.SideGroups = Enumerable.Range(0, 8).Select(p => value).ToArray(); 
-            }
-        }
-
-        public string TopLeftGroup { get { return SideGroups.ElementAtOrDefault(0); } set { SideGroups[0] = value; } }
-        public string TopRightGroup { get { return SideGroups.ElementAtOrDefault(1); } set { SideGroups[1] = value; } }
-        public string RightTopGroup { get { return SideGroups.ElementAtOrDefault(2); } set { SideGroups[2] = value; } }
-        public string RightBottomGroup { get { return SideGroups.ElementAtOrDefault(3); } set { SideGroups[3] = value; } }
-        public string BottomRightGroup { get { return SideGroups.ElementAtOrDefault(4); } set { SideGroups[4] = value; } }
-        public string BottomLeftGroup { get { return SideGroups.ElementAtOrDefault(5); } set { SideGroups[5] = value; } }
-        public string LeftBottomGroup { get { return SideGroups.ElementAtOrDefault(6); } set { SideGroups[6] = value; } }
-        public string LeftTopGroup { get { return SideGroups.ElementAtOrDefault(7); } set { SideGroups[7] = value; } }
 
         public int RandomUsageWeight { get; set; }
-
      
         public TileUsage()
         {
@@ -72,12 +85,12 @@ namespace Engine
 
         public bool ContainsGroups(IEnumerable<string> groups)
         {
-            return groups.Any(p => this.Groups.NeverNull().Contains(p));
+            return groups.Any(p => this.DistinctGroupNames.Contains(p));
         }
 
         public override string ToString()
         {
-            return SideGroups.StringJoin(" ");
+            return SideGroups.Values.StringJoin(" ");
         }
 
     }

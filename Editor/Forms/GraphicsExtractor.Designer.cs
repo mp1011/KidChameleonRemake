@@ -51,6 +51,8 @@
             this.chkShowRegion = new System.Windows.Forms.CheckBox();
             this.dirNextPixel = new Editor.DirectionSelector();
             this.pnlClickAction = new System.Windows.Forms.Panel();
+            this.rdoFindTiles = new System.Windows.Forms.RadioButton();
+            this.chkCropToNew = new System.Windows.Forms.CheckBox();
             this.rdoHitbox2 = new System.Windows.Forms.RadioButton();
             this.txtFloodFillRes = new System.Windows.Forms.NumericUpDown();
             this.rdoHitbox = new System.Windows.Forms.RadioButton();
@@ -64,7 +66,6 @@
             this.pnlTransparentColor = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlImage = new Editor.BitmapPortionPanelUserControl();
-            this.chkCropToNew = new System.Windows.Forms.CheckBox();
             this.menuStrip1.SuspendLayout();
             this.pnlTools.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtMoveRecAmount)).BeginInit();
@@ -298,6 +299,7 @@
             // 
             // pnlClickAction
             // 
+            this.pnlClickAction.Controls.Add(this.rdoFindTiles);
             this.pnlClickAction.Controls.Add(this.chkCropToNew);
             this.pnlClickAction.Controls.Add(this.rdoHitbox2);
             this.pnlClickAction.Controls.Add(this.txtFloodFillRes);
@@ -315,6 +317,27 @@
             this.pnlClickAction.Size = new System.Drawing.Size(327, 125);
             this.pnlClickAction.TabIndex = 5;
             // 
+            // rdoFindTiles
+            // 
+            this.rdoFindTiles.AutoSize = true;
+            this.rdoFindTiles.Location = new System.Drawing.Point(165, 76);
+            this.rdoFindTiles.Name = "rdoFindTiles";
+            this.rdoFindTiles.Size = new System.Drawing.Size(70, 17);
+            this.rdoFindTiles.TabIndex = 13;
+            this.rdoFindTiles.Text = "Find Tiles";
+            this.rdoFindTiles.UseVisualStyleBackColor = true;
+            this.rdoFindTiles.CheckedChanged += new System.EventHandler(this.rdoWithRec_CheckedChanged);
+            // 
+            // chkCropToNew
+            // 
+            this.chkCropToNew.AutoSize = true;
+            this.chkCropToNew.Location = new System.Drawing.Point(219, 55);
+            this.chkCropToNew.Name = "chkCropToNew";
+            this.chkCropToNew.Size = new System.Drawing.Size(96, 17);
+            this.chkCropToNew.TabIndex = 12;
+            this.chkCropToNew.Text = "To New Image";
+            this.chkCropToNew.UseVisualStyleBackColor = true;
+            // 
             // rdoHitbox2
             // 
             this.rdoHitbox2.AutoSize = true;
@@ -324,7 +347,7 @@
             this.rdoHitbox2.TabIndex = 11;
             this.rdoHitbox2.Text = "Set Secondary Hitbox";
             this.rdoHitbox2.UseVisualStyleBackColor = true;
-            this.rdoHitbox2.CheckedChanged += new System.EventHandler(this.rdoHitbox2_CheckedChanged);
+            this.rdoHitbox2.CheckedChanged += new System.EventHandler(this.rdoWithRec_CheckedChanged);
             // 
             // txtFloodFillRes
             // 
@@ -357,7 +380,7 @@
             this.rdoHitbox.TabIndex = 9;
             this.rdoHitbox.Text = "Set Hitbox";
             this.rdoHitbox.UseVisualStyleBackColor = true;
-            this.rdoHitbox.CheckedChanged += new System.EventHandler(this.rdoHitbox_CheckedChanged);
+            this.rdoHitbox.CheckedChanged += new System.EventHandler(this.rdoWithRec_CheckedChanged);
             // 
             // rdoSetOrigin
             // 
@@ -391,7 +414,7 @@
             this.rdoCrop.TabIndex = 7;
             this.rdoCrop.Text = "Crop";
             this.rdoCrop.UseVisualStyleBackColor = true;
-            this.rdoCrop.CheckedChanged += new System.EventHandler(this.rdoCrop_CheckedChanged);
+            this.rdoCrop.CheckedChanged += new System.EventHandler(this.rdoWithRec_CheckedChanged);
             // 
             // rdoNoAction
             // 
@@ -481,16 +504,6 @@
             this.pnlImage.Size = new System.Drawing.Size(819, 367);
             this.pnlImage.TabIndex = 4;
             // 
-            // chkCropToNew
-            // 
-            this.chkCropToNew.AutoSize = true;
-            this.chkCropToNew.Location = new System.Drawing.Point(219, 55);
-            this.chkCropToNew.Name = "chkCropToNew";
-            this.chkCropToNew.Size = new System.Drawing.Size(96, 17);
-            this.chkCropToNew.TabIndex = 12;
-            this.chkCropToNew.Text = "To New Image";
-            this.chkCropToNew.UseVisualStyleBackColor = true;
-            // 
             // GraphicsExtractor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -557,5 +570,6 @@
         private System.Windows.Forms.RadioButton rdoHitbox2;
         private System.Windows.Forms.CheckBox chkCreateFlashTexture;
         private System.Windows.Forms.CheckBox chkCropToNew;
+        private System.Windows.Forms.RadioButton rdoFindTiles;
     }
 }

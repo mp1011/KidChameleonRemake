@@ -57,4 +57,42 @@ namespace KidC
             return (ctx as KCContext).Stats;
         }
     }
+
+    enum StatType
+    {
+        Gems,
+        TimeRemaining,
+        Lives,
+        Continues,
+        Score
+    }
+
+    class AdjustStat : Engine.Action
+    {
+        public StatType Stat { get; private set; }
+        public int Change { get; private set; }
+
+        public AdjustStat(ILogicObject owner, StatType stat, int change)
+            : base(owner)
+        {
+            this.Stat = stat;
+            this.Change = change;
+        }
+
+        protected override ExitCode DoAction()
+        {
+            switch (Stat)
+            {
+                case StatType.Gems:
+                    Context.GetStats().Gems += Change;
+                    return Engine.ExitCode.Finished;
+                case StatType.TimeRemaining:
+                    Context.CurrentMapHUD().Clock.AdjustSeconds(Change);
+                    return Engine.ExitCode.Finished;
+                default:
+                    throw new NotImplementedException();
+            }
+        }
+ 
+    }
 }

@@ -55,7 +55,7 @@ namespace KidC
             protected override Switch OnTriggered(bool arg)
             {
                 this.Sprite.MotionManager.MainMotion.Set(0f);
-                this.Sprite.CurrentAnimationKey = KCAnimation.AttackAlt;
+                this.Sprite.SetAnimation(KCAnimation.AttackAlt);
                 return Switch.On;
             }
 
@@ -63,7 +63,7 @@ namespace KidC
             {
                 this.Sprite.MotionManager.MainMotion.Set(0f);
                 if (this.TriggerDuration > 30)
-                    this.Sprite.CurrentAnimationKey = KCAnimation.Attack;
+                    this.Sprite.SetAnimation(KCAnimation.Attack);
 
                 if (this.TriggerDuration > 160)
                     return Switch.Off;

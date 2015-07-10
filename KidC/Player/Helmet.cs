@@ -34,6 +34,8 @@ namespace KidC
     {
         private int mDefaultMaxHealth;
         private bool mPlayIntroAnimation = false;
+        private bool mTransformToKidOnExit = false;
+
         private HelmetController mPickedUpHelmet;
         private RGPointI mLockPosition = RGPointI.Empty;
         protected override bool AllowRetrigger { get { return false; } }
@@ -56,11 +58,12 @@ namespace KidC
         {
             mPickedUpHelmet = state;
             mLockPosition = this.Sprite.Location;
+            this.Sprite.LockDirection(this.Sprite.Direction, this);
 
             if (state != null)
             {
                 SoundManager.PlaySound(mPickedUpHelmet.TransformSound);
-                this.Sprite.CurrentAnimationKey = KCAnimation.TransitionOut;
+                this.Sprite.SetAnimation(KCAnimation.TransitionOut,this,true);
             }
 
             return Switch.On;
@@ -94,6 +97,9 @@ namespace KidC
 
         protected override void OnTriggerStop()
         {
+            this.Sprite.ReleaseAnimationKeyLock(this);
+            this.Sprite.UnlockDirection(this);
+
             if(mPickedUpHelmet != null)
                 DoTransform();
         }
@@ -105,20 +111,37 @@ namespace KidC
 
             if (mPlayIntroAnimation)
             {
-                this.Sprite.CurrentAnimationKey = KCAnimation.TransitionIn;
-         
+                this.Sprite.SetAnimation(KCAnimation.TransitionIn,this,true);
                 if (this.Sprite.CurrentAnimationKey == KCAnimation.TransitionIn)
                     this.Trigger(null);
             }
         }
 
+        protected override void OnExit()
+        {
+            if (this.ExitCode == Engine.ExitCode.Destroyed && mTransformToKidOnExit)
+            {
+                var transform = this.Sprite.Copy(false, false);
+                transform.SetSingleAnimation(this.Sprite.GetAnimation(KCAnimation.TransitionOut).Animation);
+                new DestroyWhenAnimationFinished(transform);
+                new CreateObjectWhenDestroyed(transform, KCObjectType.JamesKid, RGPointI.Empty,s=>
+                    {
+                        SoundManager.PlaySound(Sounds.Bummer);
+                        var hitCtl = s.GetBehavior<PlayerHitController>();
+                        hitCtl.Trigger(new HitInfo { Damage = 0 });                        
+                    });
+            }
+        }
 
         private void DoTransform()
         {
             this.Sprite.Kill(Engine.ExitCode.Removed);
             var newCharacter = ObjectFactory.CreateSprite(mPickedUpHelmet.PlayerType, this.Sprite.DrawLayer, this.Context);
 
-            newCharacter.GetBehavior<TransformationController>().mPlayIntroAnimation = true;
+            var ctl = newCharacter.GetBehavior<TransformationController>();
+            ctl.mPlayIntroAnimation = true;
+            ctl.mTransformToKidOnExit = true;
+
             newCharacter.Sprite.Location = this.Sprite.Location;
             newCharacter.Sprite.Direction = this.Sprite.Direction;
             this.Sprite.DrawLayer.AddObject(newCharacter.Sprite);

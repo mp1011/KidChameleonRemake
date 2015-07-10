@@ -36,6 +36,7 @@ namespace Engine
     public class StackedRenderInfo
     {
         public RGColor FadeColor { get; set; }
+        public ITextureBreakup TextureBreakup { get; set; }
 
         public StackedRenderInfo()
         {
@@ -47,10 +48,15 @@ namespace Engine
             if (other == null)
                 return;
 
+            if (other.TextureBreakup != null)
+                this.TextureBreakup = other.TextureBreakup;
+
             if(other.FadeColor.Equals(RGColor.White))
                 return;
 
             this.FadeColor = other.FadeColor;
+
+          
         }
     }
 
@@ -62,6 +68,7 @@ namespace Engine
         {
             this.Visible = true;
             this.VisibleInEditor = true;
+          //  this.TextureBreakup = new GridTextureBreakup();
         }
 
         public float Transparency = 1f;
@@ -70,6 +77,8 @@ namespace Engine
         public bool Visible = true;
         public bool VisibleInEditor = true;
         public bool Flashing { get; private set; }
+
+        public ITextureBreakup TextureBreakup { get;set;}
 
         private ulong mLastFlashFrame;
         private bool mFlashOn;

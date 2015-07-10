@@ -24,10 +24,10 @@ namespace KidC
             return 1; //todo
         }
 
-        protected override void OnHit()
+        protected override void OnHit(HitInfo hitInfo)
         {
             this.Sprite.MotionManager.MainMotion.Set(0f);
-            this.Sprite.CurrentAnimationKey = KCAnimation.Hurt;
+            this.Sprite.SetAnimation(KCAnimation.Hurt);
         }
 
         protected override void AfterHit()
@@ -56,7 +56,7 @@ namespace KidC
 
         protected override void OnResume()
         {
-            this.Sprite.CurrentAnimationKey = KCAnimation.Dying;
+            this.Sprite.SetAnimation(KCAnimation.Dying);
             this.Sprite.RemoveCollisionType(ObjectType.Thing);
         }
 
@@ -68,7 +68,7 @@ namespace KidC
             {
                 if (this.Sprite.CurrentAnimationKey != KCAnimation.Dead)
                 {
-                    this.Sprite.CurrentAnimationKey = KCAnimation.Dead;
+                    this.Sprite.SetAnimation(KCAnimation.Dead);
                     new DelayWaiter(this,2.0f).ContinueWith(new KillObject(this.Sprite, ExitCode.Destroyed));                   
                 }
             }

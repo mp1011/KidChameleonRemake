@@ -68,7 +68,7 @@ namespace KidC
 
         protected override void OnEntrance()
         {
-            var font = FontManager.GetBigFont(this.Context);
+            var font = FontManager.GetBigFontWhite(this.Context);
 
             mContinuesText = new GameText(this, font, "continues", new RGPointI(0, 100), Context.ScreenLocation.Width, Alignment.Center, Alignment.Near);
             mContinuesNum = new GameText(this, font, "2", new RGPointI(0, 120), Context.ScreenLocation.Width, Alignment.Center, Alignment.Near);
@@ -83,9 +83,9 @@ namespace KidC
 
             var action = new FadeBG(this.mWorld, RGColor.FromRGB(100, 100, 100), 30)
             .ContinueWithMulti(
-                MovingText.MoveIn(mContinuesText, mWorld.ScreenLayer, Direction.Left),
-                MovingText.MoveIn(mContinuesNum, mWorld.ScreenLayer, Direction.Right),
-                MovingText.MoveIn(mScoreText, mWorld.ScreenLayer, Direction.Down))         
+                MovingText.MoveIn(mContinuesText, mWorld.ScreenLayer, Direction.Left,200),
+                MovingText.MoveIn(mContinuesNum, mWorld.ScreenLayer, Direction.Right, 200),
+                MovingText.MoveIn(mScoreText, mWorld.ScreenLayer, Direction.Down, 200))         
             .ContinueWith(new DelayWaiter(this, 5.0f))
             .ContinueWithMulti(
                 MovingText.MoveOut(mContinuesText,mWorld.ScreenLayer, Direction.Right),

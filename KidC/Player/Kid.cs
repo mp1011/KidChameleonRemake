@@ -21,7 +21,7 @@ namespace KidC
 
         protected override Switch OnTriggered(Direction state)
         {
-            this.Sprite.CurrentAnimationKey = KCAnimation.Flip;
+            this.Sprite.SetAnimation(KCAnimation.Flip);
             this.Sprite.CurrentAnimation.Reset();
 
             SoundManager.PlaySound(Sounds.KidFlip);
@@ -30,7 +30,7 @@ namespace KidC
 
         protected override Switch OnTriggerUpdate(Direction flipDir)
         {
-            this.Sprite.CurrentAnimationKey = KCAnimation.Flip;
+            this.Sprite.SetAnimation(KCAnimation.Flip);
             
             if (flipDir == Direction.Left)
                 this.Sprite.Location = new RGPointI(mFlipBlock.TileArea.Left, mFlipBlock.TileArea.Top);
@@ -42,6 +42,11 @@ namespace KidC
                 return Switch.Off;            
             else
                 return Switch.On;
+        }
+
+        protected override void OnTriggerStop()
+        {
+            this.Sprite.MotionManager.StopAllMotion();
         }
 
         protected override void OnEntrance()

@@ -61,10 +61,14 @@ namespace Engine.Collision
 
                 if (response.ShouldBlock)
                 {
+                    Diagnostic.ErrorTracker.RecordWatchValues();
+
                     if (response.NewLocation.HasValue)
                         CollidingObject.Location = response.NewLocation.Value;
                     else if (!response.CorrectionVector.IsEmpty)
                         CollidingObject.Location = CollidingObject.Location.Offset(response.CorrectionVector);
+
+                    Diagnostic.ErrorTracker.CheckForErrors();
                 }
               
                 if (response.ShouldDestroy)
@@ -89,9 +93,10 @@ namespace Engine.Collision
 
             var possibleRectangles = new List<CorrectionRec>();
             var m = CollidingObject.MotionManager.Vector.MotionOffset;
-            if (m.X >= 0)
+          
+            //if (m.X >= 0)
                 possibleRectangles.Add(leftCorrection);
-            if (m.X <= 0)
+          //  if (m.X <= 0)
                 possibleRectangles.Add(rightCorrection);
 
             if (m.Y >= 0)
@@ -116,13 +121,16 @@ namespace Engine.Collision
                     // continue;
                 }
 
-                correctionRectangle = possibleRectangles.MinElement(p => p.Rec.Center.GetDistanceTo(collidedArea.Center));
+             //   correctionRectangle = possibleRectangles.MinElement(p => p.Rec.Center.GetDistanceTo(collidedArea.Center));
+                correctionRectangle = possibleRectangles.MinElement(p => p.Rec.Center.GetDistanceTo(originalArea.Center));
+
             }
 
             var correctionVector = correctionRectangle.Rec.TopLeft.Difference(CollidingObject.Area.TopLeft);
       
             collisionEvent.CollisionSide = correctionRectangle.Side;
 
+            
             var collisionResponse = new CollisionResponse() { CorrectionVector = correctionVector, ShouldBlock = true };
             var finalX = CollidingObject.Location.X + correctionVector.X;
             var finalY = CollidingObject.Location.Y + correctionVector.Y;

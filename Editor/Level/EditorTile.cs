@@ -10,6 +10,12 @@ using System.ComponentModel;
 namespace Editor
 {
 
+    class EditorTileHelper
+    {
+
+       
+    }
+
     class EditorTile
     {
         public TileDef TileDef { get; set; }

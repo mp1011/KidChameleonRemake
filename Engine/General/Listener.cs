@@ -11,9 +11,11 @@ namespace Engine
         public Listeners(ILogicObject owner)
         {
             CollisionListener = new CollisionListener(owner);
+            SpriteListener = new SpriteListener(owner);
         }
 
         public CollisionListener CollisionListener { get; private set; }
+        public SpriteListener SpriteListener { get; private set; }
     }
 
     public abstract class Listener<T> : LogicObject
@@ -42,5 +44,10 @@ namespace Engine
     public class CollisionListener : Listener<ICollidable>
     {
         public CollisionListener(ILogicObject owner) : base(owner) { }
+    }
+
+    public class SpriteListener : Listener<Sprite>
+    {
+        public SpriteListener(ILogicObject owner) : base(owner) { }
     }
 }

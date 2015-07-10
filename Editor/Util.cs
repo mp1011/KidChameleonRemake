@@ -186,15 +186,22 @@ namespace Editor
             return copy;
         }
 
+        private static Dictionary<string, Bitmap> mImageCache = new Dictionary<string, Bitmap>();
+
         public static Bitmap GetImage(this TextureResource resource)
         {
             var editorResource = resource as EditorTextureResource;
             if (editorResource != null)
                 return editorResource.GetBitmap();
 
+            var bmp = mImageCache.TryGet(resource.Path.FullPath, null);
+            if (bmp != null)
+                return bmp;
+
             var fileStream = System.IO.File.OpenRead(resource.Path.FullPath);
-            var bmp = new Bitmap(fileStream);
+            bmp = new Bitmap(fileStream);
             fileStream.Close();
+            mImageCache.AddOrSet(resource.Path.FullPath, bmp);
             return bmp;
         }
 

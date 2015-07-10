@@ -65,6 +65,7 @@ namespace Editor
 
     class OverlayRectangle : IDrawable
     {
+        public BitmapPortion Image { get; set; }
         public Pen Pen { get; set; }
         public Brush Brush { get; set; }
 
@@ -88,6 +89,9 @@ namespace Editor
 
             if (Area == null)
                 return;
+
+            if (Image != null)
+                g.DrawImage(Image.Image, Area.ClientRectangle.ToSystemRec(), Image.Region.ToSystemRec(), GraphicsUnit.Pixel);
 
             if (Brush != null)
                 g.FillRectangle(this.Brush, Area.ClientRectangle.ToSystemRec());
@@ -141,7 +145,6 @@ namespace Editor
 
             mSelected = new bool[GridSize.Width, GridSize.Height];
             mGetItem = getItem;
-            this.ShowGridLines = true;
         }
 
         public void SetGrid(TilePanel panel, RGSizeI tileDimensions, Func<int, int, T> getItem)
@@ -150,7 +153,6 @@ namespace Editor
             this.BottomRight = EditorGridPoint.FromImagePoint(tileDimensions.Width * panel.Tileset.TileSize.Width, tileDimensions.Height * panel.Tileset.TileSize.Height, panel);
             mSelected = new bool[GridSize.Width, GridSize.Height];
             mGetItem = getItem;
-            this.ShowGridLines = true;
         }
 
        

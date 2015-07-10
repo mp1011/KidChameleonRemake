@@ -34,7 +34,7 @@ namespace Engine
                 if (_blankTile == null)
                 {
                     _blankTile = new TileDef(TileFlags.Invisible, 0, 0, RGPoint.Empty, new DirectionFlags());
-                    _blankTile.Usage.SingleGroup = "empty";
+                   // _blankTile.Usage.SingleGroup = "empty";
                 }
 
                 return _blankTile;
@@ -49,7 +49,7 @@ namespace Engine
                 if (_blankSolidTile == null)
                 {
                     _blankSolidTile = new TileDef(TileFlags.Invisible | TileFlags.Solid, -1, 0, RGPoint.Empty, new DirectionFlags());
-                    _blankSolidTile.Usage.SingleGroup = "empty";
+                 //   _blankSolidTile.Usage.SingleGroup = "empty";
                 }
 
                 return _blankSolidTile;
@@ -88,16 +88,7 @@ namespace Engine
 
         [DisplayName("Flags")]
         public TileFlags _FlagsForEditor { get { return this.Flags; } set { this.Flags = value; } }
-
-        public string Groups
-        {
-            get { return this.Usage.Groups.StringJoin(","); }
-            set
-            {
-                this.Usage.Groups = value.Split(',').Select(p => p.Trim()).ToArray();
-            }
-        }
-
+     
         #endregion
 
         #region Properties
@@ -201,7 +192,7 @@ namespace Engine
             public RGRectangleI[] SourcePositions;
             public int FrameDuration;
             public DirectionFlags Sides;
-            public string[] SideGroups;
+            public Dictionary<GroupSide,string> SideGroups;
             public string[] Groups;
             public int RandomUsageWeight;
             public object ExtraData;
@@ -216,7 +207,6 @@ namespace Engine
                 SourcePositions = this.SourcePositions,
                 FrameDuration = this.FrameDuration,
                 Sides = this.Sides,
-                Groups = this.Usage.Groups,
                 SideGroups = this.Usage.SideGroups,
                 RandomUsageWeight = this.Usage.RandomUsageWeight,
                 ExtraData = GetSaveModelExtra()
@@ -247,12 +237,11 @@ namespace Engine
             this.FrameDuration = model.FrameDuration;
             this.Sides = model.Sides;
 
-            this.Usage.SideGroups = model.SideGroups;
-            this.Usage.Groups = model.Groups;
-            this.Usage.RandomUsageWeight = model.RandomUsageWeight;
-            if (this.Usage.Groups.Length == 1 && this.Usage.Groups[0].Contains(","))
-                this.Usage.Groups = this.Usage.Groups[0].Split(',');
+            foreach (var key in model.SideGroups.Keys)
+                this.Usage.SideGroups.AddOrSet(key, model.SideGroups[key]);
 
+            this.Usage.RandomUsageWeight = model.RandomUsageWeight;
+       
             this.LoadExtra(model.ExtraData);
         }
 
@@ -298,7 +287,7 @@ namespace Engine
 
         public override string ToString()
         {
-            return this.TileID + " " + this.Flags.ToString() + " " + this.Usage.SideGroups.StringJoin(",");
+            return this.TileID + " " + this.Flags.ToString() + " " + this.Usage.ToString();
         }
 
         public void SetValues(int? id, TileFlags? flags, DirectionFlags sides, RGRectangleI? source)
@@ -314,6 +303,15 @@ namespace Engine
 
             if (source.HasValue)
                 this.SourcePositions = new RGRectangleI[] { source.Value };
+        }
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as TileDef;
+            if (other == null)
+                return false;
+
+            return other.TileID == this.TileID;
         }
     }
 
@@ -377,6 +375,16 @@ namespace Engine
 
         public abstract bool IsSpecial { get; }
         public abstract CollidingTile CreateCollidingTile(TileLayer tileLayer);
+
+        public override bool Equals(object obj)
+        {
+            var other = obj as TileInstance;
+            if (other == null)
+                return false;
+
+            return other.TileLocation.Equals(this.TileLocation) &&
+                other.TileDef.Equals(this.TileDef);
+        }
     }
 
 

@@ -14,7 +14,7 @@ namespace KidC
         public RGPointI Location { get; set; }
         public RGRectangleI Area
         {
-            get { throw new NotImplementedException();  }
+            get { return RGRectangleI.Create(this.Location, this.Location.Offset(64, 64)); }
         }
 
         public Direction Direction
@@ -32,12 +32,12 @@ namespace KidC
 
         protected override void OnEntrance()
         {
-            mAmountText = new GameText(this, FontManager.ClockFont, "9x", RGPointI.Empty, 16, Alignment.Far, Alignment.Center);
+            mAmountText = new GameText(this, FontManager.ClockFont, "9X", RGPointI.Empty, 16, Alignment.Far, Alignment.Center);
         }
 
         protected override void Update()
         {
-            mAmountText.Text = this.Amount + "x";
+            mAmountText.Text = this.Amount + "X";
             mAmountText.Location = Location.Offset(-mAmountText.TextArea.Width-16,0);
             mAnimation.Location = Location;
         }

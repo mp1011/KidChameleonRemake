@@ -27,7 +27,10 @@ namespace Engine
 
         public virtual World CreateWorld(GameContext context) { throw new NotImplementedException(); }
 
-        public WorldInfo() { }
+        public WorldInfo() 
+        {
+            this.Objects = new List<ObjectEntry>();
+        }
 
         public Map UpdateMap(GameContext context)
         {
@@ -45,7 +48,8 @@ namespace Engine
                 {
                     for (int x = 0; x < this.Map.TileDimensions.Width; x++)
                     {
-                        newMap.SetTile(x, y, this.Map.GetTile(x, y).TileID);
+                        var tileToCopy = this.Map.GetTileAtCoordinates(x, y);
+                        newMap.SetTile(x, y, tileToCopy);
                     }
                 }
             }

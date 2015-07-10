@@ -15,7 +15,7 @@ namespace Editor
     abstract class ImagePanel
     {
         public const float ZoomMin = .5f;
-        public const float ZoomMax = 5;
+        public const float ZoomMax = 10f;
 
         private Control mControl;
 
@@ -31,8 +31,9 @@ namespace Editor
             control.MouseDown += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseDown);
             control.MouseMove += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseMove);
             control.MouseUp += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseUp);
-            control.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseDoubleClick);       
-            control.Resize += new System.EventHandler(this.ImagePanel_Resize);
+            control.MouseDoubleClick += new System.Windows.Forms.MouseEventHandler(this.ImagePanel_MouseDoubleClick);
+            control.MouseWheel += new MouseEventHandler(this.ImagePanel_MouseWheel);
+            control.Resize += new System.EventHandler(this.ImagePanel_Resize);           
         }
 
         void control_MouseDoubleClick(object sender, MouseEventArgs e)
@@ -40,51 +41,7 @@ namespace Editor
             throw new NotImplementedException();
         }
 
-        private RGPointI mPan = RGPointI.Empty;
-
-        public RGPointI Pan
-        {
-            get { return mPan; }
-            set
-            {
-                mPan = value;
-                this.RecalcDrawArea();
-                foreach (var item in mOverlayItems)
-                {
-                    foreach (var pt in item.GetPoints())
-                    {
-                        pt.RecalcClientPoint();
-                    }
-                }
-            }
-        }
-
-        private float mZoom = 1f;
-        public float Zoom
-        {
-            get
-            {
-                return mZoom;
-            }
-            set
-            {
-                if (value < ZoomMin)
-                    mZoom = ZoomMin;
-                else if (value > ZoomMax)
-                    mZoom = ZoomMax;
-                else
-                    mZoom = value;
-
-                this.RecalcDrawArea();
-                foreach (var item in mOverlayItems)
-                {
-                    foreach (var pt in item.GetPoints())
-                    {
-                        pt.RecalcClientPoint();
-                    }
-                }
-            }
-        }
+       
   
         public RGSizeI Size { get { return new RGSizeI(mControl.Width, mControl.Height); } }
 
@@ -157,7 +114,7 @@ namespace Editor
         private int mCurrentChangeHashcode;
         public void RefreshImage()
         {
-            frmLog.AddLine("Refresh Image -" + WorkingImageSize.Width + "x" + WorkingImageSize.Height);
+          //  frmLog.AddLine("Refresh Image -" + WorkingImageSize.Width + "x" + WorkingImageSize.Height);
             Graphics gWorking=null, gWorking2, gControl=null;
             try
             {
@@ -190,7 +147,7 @@ namespace Editor
                     gWorking.Dispose();
                 gControl.Dispose();
 
-                frmLog.AddLine("Change hash code = " + mCurrentChangeHashcode + " -" + WorkingImageSize.Width + "x" + WorkingImageSize.Height);
+               // frmLog.AddLine("Change hash code = " + mCurrentChangeHashcode + " -" + WorkingImageSize.Width + "x" + WorkingImageSize.Height);
             }
             catch (Exception e)
             {
@@ -321,7 +278,14 @@ namespace Editor
             {
                 MouseAction(this, new ImageEventArgs(this.CreateEditorPoint(e.X, e.Y), e.Button, MouseActionType.DoubleClick));
             }
+        }
 
+        private void ImagePanel_MouseWheel(object sender, MouseEventArgs e)
+        {
+            if (MouseAction != null)
+            {
+                MouseAction(this, new ImageEventArgs(this.CreateEditorPoint(e.X, e.Y), MouseActionType.Wheel, e.Delta));
+            }
         }
 
         private void ImagePanel_Paint(object sender, PaintEventArgs e)
@@ -404,6 +368,74 @@ namespace Editor
 
         protected abstract EditorPoint CreateEditorPoint(int clientX, int clientY);
         protected abstract EditorPoint CreateEditorPointFromImagePoint(int imageX, int imageY);
+
+
+        #region Pan + Zoom
+
+        private RGRectangleI mViewPort;
+
+        private RGPointI mPan = RGPointI.Empty;
+
+        public RGPointI Pan
+        {
+            get { return mPan; }
+            set
+            {
+                if (!mPan.Equals(value))
+                    frmLog.AddLine("Pan = " + value.ToString());
+
+                mPan = value;
+                //if (mPan.X < 0)
+                //    mPan.X = 0;
+                //if (mPan.Y < 0)
+                //    mPan.Y = 0;
+                //if (mPan.X > WorkingImageSize.Width)
+                //    mPan.X = WorkingImageSize.Width;
+                //if (mPan.Y > WorkingImageSize.Height)
+                //    mPan.Y = WorkingImageSize.Height;
+
+           //     mPan = new RGPointI(32, 32);
+                this.RecalcDrawArea();
+                foreach (var item in mOverlayItems)
+                {
+                    foreach (var pt in item.GetPoints())
+                    {
+                        pt.RecalcClientPoint();
+                    }
+                }
+            }
+        }
+
+        private float mZoom = 1f;
+        public float Zoom
+        {
+            get
+            {
+                return mZoom;
+            }
+            set
+            {
+                if (value < ZoomMin)
+                    mZoom = ZoomMin;
+                else if (value > ZoomMax)
+                    mZoom = ZoomMax;
+                else
+                    mZoom = value;
+
+                this.RecalcDrawArea();
+                foreach (var item in mOverlayItems)
+                {
+                    foreach (var pt in item.GetPoints())
+                    {
+                        pt.RecalcClientPoint();
+                    }
+                }
+            }
+        }
+
+        #endregion
+
+
     }
 
 

@@ -66,7 +66,7 @@ namespace KidC
                     mPlatformController.Pause();
                     mPlatformController.GravityController.GravityEnabled = false;
                     this.Sprite.MotionManager.StopMotionInDirection(new DirectionFlags(false, false, true, true));
-                    this.Sprite.CurrentAnimationKey = KCAnimation.IronKnightClimb;
+                    this.Sprite.SetAnimation(KCAnimation.IronKnightClimb);
                 }
                 else
                 {

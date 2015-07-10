@@ -9,6 +9,7 @@ using System.Windows.Forms;
 using Engine;
 using Editor.Forms;
 using System.IO;
+using Engine.Collision;
 
 namespace Editor.Forms
 {
@@ -65,7 +66,7 @@ namespace Editor.Forms
                 Name = "Group",
                 Copy = (src, dest) =>
                     {
-                        dest.Groups = src.Groups;     
+                        //TODO    dest.Groups = src.Groups;     
                     }
             });
             chkProperties.Items.Add(new PropertyBinding<TileDef> { Name = "Random Usage", Copy = (src, dest) => dest.Usage.RandomUsageWeight = src.Usage.RandomUsageWeight });
@@ -101,15 +102,7 @@ namespace Editor.Forms
             pnlBase.RefreshImage();
         }
 
-        public void AddNewTiles(IEnumerable<BitmapPortion> newTiles)
-        {
-            int id = mTileset.GetTiles().MaxOrDefault(t => t.TileID,0);
-
-            var editorTiles = EditorTile.Create(newTiles, id);
-            mTileset.AddTiles(editorTiles.Select(p => p.TileDef));
-            pnlTileset.SetFromTileset(EditorTile.CreateTileset(editorTiles));
-            pnlTileset.RefreshImage();
-        }
+       
         
         public void LoadTileset()
         {
@@ -132,6 +125,8 @@ namespace Editor.Forms
             FileDialog.ShowSaveDialog<TileSet>(PathType.Tilesets, selectedFile =>
             {
                 var bitmap = mTileset.Texture.GetImage();
+
+                mTileset.Texture.Path.Name = System.IO.Path.GetFileNameWithoutExtension(selectedFile); 
                 bitmap.Save(mTileset.Texture.Path.FullPath);
                 BackupManager.CreateBackup(mTileset.Texture.Path.FullPath);
                 return mTileset;
@@ -139,11 +134,24 @@ namespace Editor.Forms
 
         }
 
-     
 
+        #region Tile Selection
+
+        private TileDef[] mLastSelectedTiles;
+
+        private IEnumerable<TileDef> SelectedTileDefs
+        {
+            get
+            {
+                return pnlTileset.SelectedTiles().Select(p => p.TileDef);
+            }
+        }
         private void OnTileSelected()
         {
-            ApplyGroupsToCurrent();
+            if(!mLastSelectedTiles.ContainsAll(SelectedTileDefs))
+                ApplyGroupsToCurrent();
+
+            mLastSelectedTiles = this.SelectedTileDefs.ToArray();
 
             var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
             if (selectedTile == null)
@@ -156,9 +164,13 @@ namespace Editor.Forms
             tileProperties.Refresh();
 
             pnlTilePreview.Refresh();
+
+            if(def != null)
+                Forms.frmLog.AddLine("TileID=" + def.TileID);
         }
 
-     
+        #endregion
+
 
         private void timer1_Tick(object sender, EventArgs e)
         {
@@ -263,9 +275,7 @@ namespace Editor.Forms
                     return;
 
                 e.Graphics.SetBlockyScaling();
-
-                throw new NotImplementedException();
-               // e.Graphics.DrawImage(tile.Image.Image, new Rectangle(0, 0, pnlTilePreview.Width, pnlTilePreview.Height), tile.Image.Region.ToSystemRec(), GraphicsUnit.Pixel);
+                e.Graphics.DrawImage(pnlTileset.Tileset.Texture.GetImage(), new Rectangle(0, 0, pnlTilePreview.Width, pnlTilePreview.Height), tile.SourcePosition.ToSystemRec(), GraphicsUnit.Pixel);
             }
             catch (Exception ex)
             {
@@ -282,33 +292,7 @@ namespace Editor.Forms
             }
         }
 
-        private void UpdateGroupTextBoxes()
-        {
-            var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
-            if (selectedTile == null)
-                return;
-
-            //var usg = selectedTile.TileDef.Usage;
-            //txtGroupTopLeft.Text = usg.TopLeftGroup;
-            //txtGroupTopRight.Text = usg.TopRightGroup;
-            //txtGroupRightTop.Text = usg.RightTopGroup;
-            //txtGroupRightBottom.Text = usg.RightBottomGroup;
-            //txtGroupBottomRight.Text = usg.BottomRightGroup;
-            //txtGroupBottomLeft.Text = usg.BottomLeftGroup;
-            //txtGroupLeftBottom.Text = usg.LeftBottomGroup;
-            //txtGroupLeftTop.Text = usg.LeftTopGroup;
-        }
-
-        private void ApplyGroupsToCurrent()
-        {
-            //var oldSelected = tileProperties.SelectedObject as EditorTile;
-            //if (oldSelected == null)
-            //    return;
-
-            //oldSelected.Groups = string.Join(" ", txtGroupTopLeft.Text, txtGroupTopRight.Text, txtGroupRightTop.Text, txtGroupRightBottom.Text, txtGroupBottomRight.Text,
-            //    txtGroupBottomLeft.Text, txtGroupLeftBottom.Text, txtGroupLeftTop.Text);
-
-        }
+       
 
         private void tileProperties_SelectedObjectsChanged(object sender, EventArgs e)
         {
@@ -325,6 +309,40 @@ namespace Editor.Forms
             this.Save();
         }
 
+        #region Tile Groups
+
+        private TextBox[] mGroupBoxes;
+
+        private void AssignTextboxSides()
+        {
+            txtGroupLeftTop.Tag = GroupSide.LeftTop;
+            txtGroupTopLeft.Tag = GroupSide.TopLeft;
+            txtGroupTopRight.Tag = GroupSide.TopRight;
+            txtGroupRightTop.Tag = GroupSide.RightTop;
+            txtGroupRightBottom.Tag = GroupSide.RightBottom;
+            txtGroupBottomRight.Tag = GroupSide.BottomRight;
+            txtGroupBottomLeft.Tag = GroupSide.BottomLeft;
+            txtGroupLeftBottom.Tag = GroupSide.LeftBottom;
+
+            mGroupBoxes = new TextBox[] { txtGroupLeftTop, txtGroupTopLeft, txtGroupTopRight, txtGroupRightTop, txtGroupRightBottom, txtGroupBottomRight, txtGroupBottomLeft, txtGroupLeftBottom};
+        }
+
+        private TextBox GetGroupBox(GroupSide side)
+        {
+            return mGroupBoxes.First(p => p.Tag.Equals(side));
+        }
+
+        private void txtDblClickGroup_DoubleClick(object sender, EventArgs e)
+        {
+            foreach(var box in mGroupBoxes)
+                AddDoubleClickGroup(box);         
+        }
+
+        private void txtGroup_DoubleClick(object sender, EventArgs e)
+        {
+            AddDoubleClickGroup(sender as TextBox);
+        }
+
         private void AddDoubleClickGroup(TextBox box)
         {
             var items = box.Text.Split(',');
@@ -337,28 +355,129 @@ namespace Editor.Forms
             }
         }
 
-        private void txtGroup_DoubleClick(object sender, EventArgs e)
+        private void UpdateGroupTextBoxes()
         {
-            AddDoubleClickGroup(sender as TextBox);
+            var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
+            if (selectedTile == null)
+                return;
+
+            var usg = selectedTile.TileDef.Usage;
+
+            foreach (var textbox in mGroupBoxes)
+                textbox.Text = usg.SideGroups.TryGet((GroupSide)textbox.Tag, String.Empty);
         }
 
-        private void txtDblClickGroup_TextChanged(object sender, EventArgs e)
+        private void ApplyGroupsToCurrent()
+        {
+            foreach (var tileDef in mLastSelectedTiles.NeverNull())
+            {             
+                foreach (var textbox in mGroupBoxes)
+                    tileDef.Usage.SideGroups.AddOrSet((GroupSide)textbox.Tag, textbox.Text);
+            }
+        }
+
+
+        #endregion
+
+        private void TilesetEditor_Load(object sender, EventArgs e)
+        {
+            AssignTextboxSides();
+        }
+
+        private void pnlTileset_Load(object sender, EventArgs e)
         {
 
         }
 
-        private void txtDblClickGroup_DoubleClick(object sender, EventArgs e)
+        #region Add Tiles
+
+        public void FindTiles(BitmapPortion image, RGRectangleI searchArea)
         {
-            AddDoubleClickGroup(txtGroupTopLeft);
-            AddDoubleClickGroup(txtGroupTopRight);
-            AddDoubleClickGroup(txtGroupRightTop);
-            AddDoubleClickGroup(txtGroupRightBottom);
-            AddDoubleClickGroup(txtGroupBottomRight);
-            AddDoubleClickGroup(txtGroupBottomLeft);
-            AddDoubleClickGroup(txtGroupLeftBottom);
-            AddDoubleClickGroup(txtGroupLeftTop);
+            if (this.SelectedTileDefs.Count() != 1)
+            {
+                MessageBox.Show("Please select a single tile", "Editor", MessageBoxButtons.OK);
+                return;
+            }
+
+            var offset = FindTileOffset(image, searchArea);
+            if (!offset.HasValue)
+                return;
+
+            var tiles = image.ExtractTiles(offset.Value, mTileset.TileSize.Width);
+            AddNewTiles(tiles);
         }
 
+        private RGPointI? FindTileOffset(BitmapPortion image, RGRectangleI searchArea)
+        {
+            
+            BitmapPortion selectedTile = GetBitmapPortionFromTileDef(this.SelectedTileDefs.First(), mTileset.Texture.GetImage());
+            RGRectangleI tileArea = RGRectangleI.FromXYWH(searchArea.X, searchArea.Y, mTileset.TileSize.Width, mTileset.TileSize.Height);
+            BitmapPortion possibleTile = image.CropToNew(tileArea);
+
+            while (true)
+            {
+                if (possibleTile.PixelsEqual(selectedTile))
+                    return tileArea.TopLeft;
+
+                tileArea.Left++;
+                tileArea.Right++;
+                if (tileArea.Right >= searchArea.Right)
+                {
+                    tileArea.Left = 0;
+                    tileArea.Width = mTileset.TileSize.Width;
+
+                    tileArea.Top++;
+                    tileArea.Bottom++;
+
+                    if (tileArea.Bottom >= searchArea.Bottom)
+                        return null;
+                }
+
+                possibleTile = image.CropToNew(tileArea);
+            }
+        }
+
+        public void AddNewTiles(IEnumerable<BitmapPortion> newTiles)
+        {
+            int id = mTileset.GetTiles().MaxOrDefault(t => t.TileID, 0);
+            var newEditorTiles = newTiles.Select(p => new { Image = p, TileDef = new TileDef(TileFlags.Passable, ++id, 0, RGPoint.Empty, DirectionFlags.None) });
+
+            var allTiles = newEditorTiles.ToArray(); 
+
+            if (mTileset.Texture != null)
+            {
+                var currentTileImage = mTileset.Texture.GetImage();
+                var currentTiles = mTileset.GetTiles().Select(p => new { Image = GetBitmapPortionFromTileDef(p, currentTileImage), TileDef = p });
+
+                allTiles = currentTiles.Union(newEditorTiles).ToArray();
+            }
+
+            allTiles = allTiles.Distinct((a, b) => a.Image.PixelsEqual(b.Image), a => a.Image.GetHashCode()).ToArray();
+
+            var img = BitmapPortion.CreateSpriteSheet(allTiles.Select(p => p.Image), 320, "tiles", Color.Transparent);
+            var img2 = new BitmapPortion(img.Image.GetImage().CloneImage());
+
+            id = 0;
+            foreach (var tile in allTiles)
+                tile.TileDef.SetValues(++id, null, null, img.Frames[id - 1].Source);
+
+            mTileset = new TileSet(img, allTiles.Select(p => p.TileDef));
+            pnlTileset.SetFromTileset(mTileset);
+            pnlTileset.RefreshImage();
+
+        }
+
+        private BitmapPortion GetBitmapPortionFromTileDef(TileDef t, Bitmap tileImage)
+        {
+            var bmp= new BitmapPortion(tileImage);
+            bmp.Crop(t.SourcePosition);
+            return bmp;
+        }
+      
+  
+
+
+        #endregion
 
     }
 }

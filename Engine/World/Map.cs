@@ -38,11 +38,18 @@ namespace Engine
         {
             if (x < 0 || y < 0 || x >= this.TileDimensions.Width || y >= this.TileDimensions.Height)
                 return;
+
+            mSpecialTiles.RemoveAll(p => p.TileLocation.X == x && p.TileLocation.Y == y);         
             mTiles[x, y] = tile;
-
-            mSpecialTiles.RemoveAll(p => p.TileLocation.X == x && p.TileLocation.Y == y);
-
         }
+
+        public void SetTile(int x, int y, TileInstance tile)
+        {         
+            SetTile(x, y, tile.TileDef.TileID);          
+            if(tile.IsSpecial)
+                UpdateSpecialInstance(tile);
+        }
+
 
         public TileDef GetTile(int x, int y)
         {
@@ -67,6 +74,7 @@ namespace Engine
 
         public void UpdateSpecialInstance(TileInstance t)
         {
+            t.Map = this;
             mSpecialTiles.RemoveAll(p => p.TileLocation.Equals(t.TileLocation));
 
             if (t.IsSpecial)

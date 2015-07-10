@@ -43,6 +43,7 @@
     <Compile Include="Enemy\Dragon.cs" />
     <Compile Include="Enemy\Enemy.cs" />
     <Compile Include="Font.cs" />
+    <Compile Include="Game\Bonus.cs" />
     <Compile Include="Game\Context.cs" />
     <Compile Include="Game\Game.cs" />
     <Compile Include="Game\GlobalActions.cs" />
@@ -57,10 +58,10 @@
     <Compile Include="HUD\Counter.cs" />
     <Compile Include="HUD\HealthGuage.cs" />
     <Compile Include="HUD\HUDLayer.cs" />
-    <Compile Include="Objects\CollectedItem.cs" />
     <Compile Include="Objects\Collision.cs" />
     <Compile Include="Objects\Decoration.cs" />
     <Compile Include="Objects\Factory.cs" />
+    <Compile Include="Objects\Flag.cs" />
     <Compile Include="Objects\GeneralBehavior.cs" />
     <Compile Include="Player\DeathBehavior.cs" />
     <Compile Include="Player\PlayerFactory.cs" />
@@ -79,6 +80,7 @@
     <Compile Include="Tile\MetalBlock.cs" />
     <Compile Include="Tile\PrizeBlock.cs" />
     <Compile Include="Tile\KidCTile.cs" />
+    <Compile Include="Tile\RubberBlock.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">

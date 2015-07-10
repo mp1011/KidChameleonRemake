@@ -51,7 +51,18 @@ namespace Engine.XNA
             if (options.FlipY)
                 mEffects = mEffects | SpriteEffects.FlipVertically;
 
-            mSpriteBatch.Draw(texture, dest.ToXNARec(), source.ToXNARec(), extraRenderInfo.FadeColor.ToXNAColor(), 0, Vector2.Zero, mEffects, 0);
+            if (options.TextureBreakup != null)
+            {
+                foreach (var cell in options.TextureBreakup.GetVisibleCells(source, dest))
+                    mSpriteBatch.Draw(texture, cell.Dest.ToXNARec(), cell.Src.ToXNARec(), extraRenderInfo.FadeColor.ToXNAColor(), 0, Vector2.Zero, mEffects, 0);
+            }
+            else if (extraRenderInfo.TextureBreakup != null)
+            {
+                foreach (var cell in extraRenderInfo.TextureBreakup.GetVisibleCells(source, dest))
+                    mSpriteBatch.Draw(texture, cell.Dest.ToXNARec(), cell.Src.ToXNARec(), extraRenderInfo.FadeColor.ToXNAColor(), 0, Vector2.Zero, mEffects, 0);
+            }
+            else
+                mSpriteBatch.Draw(texture, dest.ToXNARec(), source.ToXNARec(), extraRenderInfo.FadeColor.ToXNAColor(), 0, Vector2.Zero, mEffects, 0);
         }
        
     }

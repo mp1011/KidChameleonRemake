@@ -93,7 +93,7 @@ namespace Editor.Forms
         }
 
         private OverlayRectangle mCursor;
-
+        private BitmapPortion mCursorImage;
 
         private void mapProperties_Click(object sender, EventArgs e)
         {
@@ -106,9 +106,16 @@ namespace Editor.Forms
             pnlTileset.SetFromTileset(map.Tileset);
             pnlMap.SetFromMap(map);
             mCursor =null;
+            mCursorImage = null;
         }
 
         #region Loading and Saving
+
+        private void newToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            PromptSaveChanges();
+            this.WorldInfo = Program.EditorGame.WorldInfoCreate();
+        }
 
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -117,6 +124,7 @@ namespace Editor.Forms
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
+            PromptSaveChanges();
             var loadedFile= FileDialog.ShowLoad<WorldInfo>(PathType.Maps, this.WorldInfo.GetType());
             System.IO.File.WriteAllText("lastmap", loadedFile.Name);
             LoadMap(loadedFile.Data);          
@@ -139,18 +147,18 @@ namespace Editor.Forms
             pnlMap.AddOverlayItem(overlay);
 
             mCursor = null;
+            mCursorImage = null;
             AddGridSnaps();
             UpdateControls();
         }
 
         #endregion
 
-        private void tbZoom_Scroll(object sender, EventArgs e)
+        private void PromptSaveChanges()
         {
-    
+            if (MessageBox.Show("put a save prompt here. Press no to skip saving", "...", MessageBoxButtons.YesNo) == System.Windows.Forms.DialogResult.No)
+                return;
         }
-
- 
 
         private void tbZoom_ValueChanged(object sender, EventArgs e)
         {
@@ -319,6 +327,7 @@ namespace Editor.Forms
             {
                 mCursor = new OverlayRectangle { Area = new EditorRectangle(), Pen = new Pen(Color.Orange), Brush = new SolidBrush(Color.FromArgb(150, Color.Orange)) };
                 pnlMap.AddOverlayItem(mCursor);
+                mCursorImage = new BitmapPortion(pnlTileset.ImagePanel.Tileset.Texture.GetImage());
             }
 
             var gridPoint = (e.Point as EditorGridPoint).SnapToGrid();
@@ -326,23 +335,84 @@ namespace Editor.Forms
 
             mCursor.Area.TopLeft = gridPoint;
             mCursor.Area.BottomRight = gridPoint.OffsetGrid(1, 1);
+            mCursor.Image = null;
+
+            if (e.Action == MouseActionType.Wheel)
+                HandleWheelScroll(e.MouseWheelScroll);
+            else if(HandlePan(e))
+                return;
+            else if (Control.ModifierKeys == Keys.Alt)
+            {
+                if(e.Action == MouseActionType.Click)   
+                    HandleTileAlter(gridPoint, e);
+                return;
+            }
 
             switch (CurrentAction)
             {
                 case EditorAction.Draw: DrawTile(gridPoint, e); break;
                 case EditorAction.PlaceObject: HandleObjectMouseClick(gridPoint, e); break;
             }
-          
+
+
+            if (chkAutoMode.Checked && CurrentAction == EditorAction.Draw)
+            {
+                if (e.Action == MouseActionType.Click)
+                    RandomizeAddedTiles();
+                else if (e.Action == MouseActionType.MouseDown)
+                    mMatchTiles.Clear();
+            }
+
+
             if (e.Buttons != System.Windows.Forms.MouseButtons.None || !originalCursorPos.Equals(mCursor.Area.TopLeft.ImagePoint))
                 pnlMap.RefreshImage();
 
 
         }
 
+        private void HandleWheelScroll(int amount)
+        {
+            tbZoom.Value = Util.LimitNumber(tbZoom.Value + amount, tbZoom.Maximum, tbZoom.Minimum);
+        }
+
+        private int mSelectedTileIndex = -1;
+        private TileDef GetNextSelectedTile()
+        {
+            if (mSelectedTileIndex < 0 || mSelectedTileIndex >= pnlTileset.SelectedTiles().Count())
+                mSelectedTileIndex = -1;
+            
+            mSelectedTileIndex++;
+
+            var instance = pnlTileset.SelectedTiles().ElementAtOrDefault(mSelectedTileIndex);
+            if (instance == null)
+                return TileDef.Blank;
+            else
+                return instance.TileDef;
+        }
+
+        private TileDef GetCurrentlySelectedTile()
+        {
+            if (mSelectedTileIndex < 0 || mSelectedTileIndex >= pnlTileset.SelectedTiles().Count())
+                mSelectedTileIndex = 0;
+
+            var instance = pnlTileset.SelectedTiles().ElementAtOrDefault(mSelectedTileIndex);
+            if (instance == null)
+                return TileDef.Blank;
+            else
+                return instance.TileDef;
+        }
 
         private void DrawTile(EditorGridPoint gridPoint, ImageEventArgs e)
-        {             
-            var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
+        {
+            TileDef selectedTile = GetCurrentlySelectedTile();
+
+            if (selectedTile == null)
+                mCursor.Image=null;
+            else
+            {
+                mCursor.Image = mCursorImage;
+                mCursorImage.Crop(selectedTile.SourcePosition);
+            }
 
             if (selectedTile != null && e.Action == MouseActionType.RectangleSelection)
             {
@@ -354,7 +424,7 @@ namespace Editor.Forms
 
                     for (int x = topLeft.X; x <= bottomRight.X; x++)
                         for (int y = topLeft.Y; y <= bottomRight.Y; y++)
-                            pnlMap.Map.SetTile(x, y, selectedTile.TileDef.TileID);
+                            pnlMap.Map.SetTile(x, y, selectedTile.TileID);
 
                     return;
                 }
@@ -363,7 +433,10 @@ namespace Editor.Forms
 
             if (selectedTile != null && e.Buttons == System.Windows.Forms.MouseButtons.Left)
             {
-                pnlMap.Map.SetTile(gridPoint.GridPoint.X, gridPoint.GridPoint.Y, selectedTile.TileDef.TileID);
+                pnlMap.Map.SetTile(gridPoint.GridPoint.X, gridPoint.GridPoint.Y, selectedTile.TileID);
+                AddTileToMatchGroupIfNeeded(gridPoint.GridPoint);
+                if (e.Buttons == System.Windows.Forms.MouseButtons.Left && e.Action == MouseActionType.Click)
+                    selectedTile = GetNextSelectedTile();
             }
             else if (e.Buttons == System.Windows.Forms.MouseButtons.Right)
             {     
@@ -382,17 +455,7 @@ namespace Editor.Forms
             }
         }
 
-        private void btnRandomize_Click(object sender, EventArgs e)
-        {
-            var h = new TileUsageHelper();
-            foreach (var tileInstance in pnlMap.SelectionGrid.SelectedItems())
-            {
-                h.RandomizeTile(tileInstance);
-            }
-
-            pnlMap.RefreshImage();
-        }
-
+       
 
         #endregion
 
@@ -402,7 +465,8 @@ namespace Editor.Forms
         {
             lstGroups.Items.Clear();
             lstGroups.Items.Add("All");
-            foreach (var group in pnlMap.Tileset.GetTiles().SelectMany(p => p.Usage.Groups).Distinct().ToArray())
+             
+            foreach (var group in pnlMap.Tileset.GetTiles().SelectMany(p => p.Usage.DistinctGroupNames).Distinct().ToArray())
             {
                 if (String.IsNullOrEmpty(group))
                     continue;
@@ -410,27 +474,47 @@ namespace Editor.Forms
             }
         }
 
-      
+        private bool mInItemCheck=false;
         private void lstGroups_ItemCheck(object sender, ItemCheckEventArgs e)
         {
-            var ts = pnlMap.Tileset;
-
-            if(e.Index == 0)
-            {              
-                if(lstGroups.GetItemChecked(0,e))
-                    pnlTileset.SetFromTileset(pnlMap.Tileset);
-
+            if (mInItemCheck)
                 return;
-            }
-            else 
+
+            try
             {
-                lstGroups.SetItemChecked(0, false);
+                mInItemCheck = true;
+                var ts = pnlMap.Tileset;
+
+                if (e.Index == 0)
+                {
+                    if (lstGroups.GetItemChecked(0, e))
+                    {
+                        pnlTileset.SetFromTileset(pnlMap.Tileset);
+                        for (int i = 1; i < lstGroups.Items.Count; i++)
+                            lstGroups.SetItemChecked(i, true);
+                    }
+                    else
+                    {
+                        for (int i = 1; i < lstGroups.Items.Count; i++)
+                            lstGroups.SetItemChecked(i, false);
+                    }
+
+                    return;
+                }
+                else
+                {
+                    lstGroups.SetItemChecked(0, false);
+                }
+
+                var groups = lstGroups.GetCheckedItems<string>(e);
+                var filteredTilset = new TileSet(ts.Texture, ts.TileSize, ts.GetTiles().Where(p => p.Usage.ContainsGroups(groups)));
+
+                pnlTileset.SetFromTileset(filteredTilset);
             }
-
-            var groups = lstGroups.GetCheckedItems<string>(e);
-            var filteredTilset = new TileSet(ts.Texture,ts.TileSize, ts.GetTiles().Where(p=> p.Usage.ContainsGroups(groups)));
-
-            pnlTileset.SetFromTileset(filteredTilset);
+            finally
+            {
+                mInItemCheck = false;
+            }
         }
 
 
@@ -653,7 +737,7 @@ namespace Editor.Forms
         {
             this.CurrentObjectEntry = new ObjectEntry() { SpriteType = SelectedObjectType, Location=point }; ;
             this.WorldInfo.Objects.Add(this.CurrentObjectEntry);
-            this.CurrentObjectEntry.CreateObject(new FixedLayer(new World()));
+            this.CurrentObjectEntry.CreateObject(new FixedLayer(new World(Program.EditorContext, this.WorldInfo)));
             pnlMap.RefreshImage();
         }
 
@@ -778,6 +862,106 @@ namespace Editor.Forms
 
         #endregion
 
+        #region Panning
+
+        private RGPointI mPanStartPos;
+        private RGPointI mOriginalPan;
+        private bool mIsPanning;
+
+        private bool HandlePan(ImageEventArgs e)
+        {
+
+            if (!mIsPanning)
+            {
+                if (Control.ModifierKeys == Keys.Control && e.Action == MouseActionType.MouseDown && !mIsPanning)
+                {
+                    mIsPanning = true;
+                    mPanStartPos = e.Point.ClientPoint;
+                    mOriginalPan = pnlMap.ImagePanel.Pan;
+                    return true;
+                }
+                else
+                    return false;
+            }
+            else
+            {
+                if(Control.ModifierKeys == Keys.Control && e.Buttons == System.Windows.Forms.MouseButtons.Left)
+                {
+                    var offset = e.Point.ClientPoint.Difference(mPanStartPos);
+                    pnlMap.ImagePanel.Pan = mOriginalPan.Offset(offset);
+                    pnlMap.RefreshImage();
+
+                    return true;
+                }
+                else
+                {
+                    mIsPanning=false;
+                    return false ;
+                }
+
+            }
+ 
+        }
+
+        #endregion 
+
+        private void lstGroups_SelectedIndexChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        #region Tile Matching
+
+        private List<TileInstance> mMatchTiles = new List<TileInstance>();
+
+        private void HandleTileAlter(EditorGridPoint location, ImageEventArgs e)
+        {
+            var tile = pnlMap.Map.GetTileAtCoordinates(location.GridPoint.X, location.GridPoint.Y);
+            Forms.frmLog.AddLine("Tile #" + tile.TileDef.TileID);
+
+            var newTile = TileUsageHelper.GetNextTileReplacement(tile,new TileMatchInfo(pnlTileset.SelectedTiles().Select(p=>p.TileDef), mMatchTiles));
+            if (newTile != null)
+            {
+                Forms.frmLog.AddLine("Chose Tile #" + newTile.TileID);
+
+                pnlMap.Map.SetTile(location.GridPoint.X, location.GridPoint.Y, newTile.TileID);
+                AddTileToMatchGroupIfNeeded(location.GridPoint);
+
+                var tile2 = pnlMap.Map.GetTileAtCoordinates(location.GridPoint.X, location.GridPoint.Y);
+                Forms.frmLog.AddLine("New Tile #" + tile2.TileDef.TileID);
+
+            }
+        }
+
+        private void AddTileToMatchGroupIfNeeded(RGPointI tile)
+        {
+            if (!chkAutoMode.Checked)
+                return;
+
+            var instance = pnlMap.Map.GetTileAtCoordinates(tile.X, tile.Y);
+            if(!mMatchTiles.Any(p=> p.Equals(instance)))
+                mMatchTiles.Add(instance);
+        }
+
+        private void chkMatchGroup_CheckedChanged(object sender, EventArgs e)
+        {
+            mMatchTiles.Clear();
+        }
+
+        private void btnRandomize_Click(object sender, EventArgs e)
+        {
+            RandomizeAddedTiles();
+        }
+
+        private void RandomizeAddedTiles()
+        {
+            var i = new TileMatchInfo(pnlTileset.SelectedTiles().Select(p => p.TileDef), mMatchTiles);
+            mMatchTiles = TileUsageHelper.RandomizeTiles(pnlMap.Map, i).ToList();
+        }
+
+        #endregion
+
+     
 
     }
 }

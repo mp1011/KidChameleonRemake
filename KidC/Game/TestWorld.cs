@@ -9,20 +9,15 @@ namespace KidC
     class TestWorldInfo : WorldInfo
     {
         public const bool UseTestWorld = false;
-
+        
         public override World CreateWorld(GameContext context)
         {
             var w = new World(context, this);
 
-            var font = FontManager.GetBigFont(context);
+            var screenWidth = (w.ScreenLayer.Location.Width/2)+35;
 
-            var continuesText = new GameText(w, font, "c", new RGPointI(0, 100), context.ScreenLocation.Width, Alignment.Center, Alignment.Near);
-            continuesText.Visible = false;
-            w.ScreenLayer.AddObject(continuesText);
-
-            var action = MovingText.MoveIn(continuesText, w.ScreenLayer, Direction.Left);
-
-            action.ContinueWith(MovingText.MoveOut(continuesText, w.ScreenLayer, Direction.Up));
+            var gt= new GameText(w, FontManager.GetBigFontGreen(context), "\"no prize bonus\"", new RGPointI(0, 100), screenWidth, Alignment.Far, Alignment.Near);
+            w.ScreenLayer.AddObject(gt);
 
             return w;
         }

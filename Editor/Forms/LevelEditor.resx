@@ -121,6 +121,12 @@
     <value>17, 17</value>
   </metadata>
   <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="newToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
+    <value>103, 22</value>
+  </data>
+  <data name="newToolStripMenuItem.Text" xml:space="preserve">
+    <value>New</value>
+  </data>
   <data name="openToolStripMenuItem.Size" type="System.Drawing.Size, System.Drawing">
     <value>103, 22</value>
   </data>
@@ -195,6 +201,39 @@
   <data name="&gt;&gt;pnlMap.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
+  <data name="chkAutoMode.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
+    <value>Button</value>
+  </data>
+  <data name="chkAutoMode.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkAutoMode.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="chkAutoMode.Location" type="System.Drawing.Point, System.Drawing">
+    <value>181, 39</value>
+  </data>
+  <data name="chkAutoMode.Size" type="System.Drawing.Size, System.Drawing">
+    <value>94, 23</value>
+  </data>
+  <data name="chkAutoMode.TabIndex" type="System.Int32, mscorlib">
+    <value>6</value>
+  </data>
+  <data name="chkAutoMode.Text" xml:space="preserve">
+    <value>Automatic Mode</value>
+  </data>
+  <data name="&gt;&gt;chkAutoMode.Name" xml:space="preserve">
+    <value>chkAutoMode</value>
+  </data>
+  <data name="&gt;&gt;chkAutoMode.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkAutoMode.Parent" xml:space="preserve">
+    <value>pnlTop</value>
+  </data>
+  <data name="&gt;&gt;chkAutoMode.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
   <data name="cboGridSnap.Location" type="System.Drawing.Point, System.Drawing">
     <value>367, 10</value>
   </data>
@@ -214,16 +253,16 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;cboGridSnap.ZOrder" xml:space="preserve">
-    <value>0</value>
+    <value>1</value>
   </data>
   <data name="btnRandomize.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
   </data>
   <data name="btnRandomize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>574, 7</value>
+    <value>281, 29</value>
   </data>
   <data name="btnRandomize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>76, 29</value>
+    <value>70, 33</value>
   </data>
   <data name="btnRandomize.TabIndex" type="System.Int32, mscorlib">
     <value>4</value>
@@ -241,7 +280,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;btnRandomize.ZOrder" xml:space="preserve">
-    <value>1</value>
+    <value>2</value>
   </data>
   <data name="chkSelect.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
     <value>Button</value>
@@ -274,7 +313,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;chkSelect.ZOrder" xml:space="preserve">
-    <value>2</value>
+    <value>3</value>
   </data>
   <data name="chkDraw.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
     <value>Button</value>
@@ -307,7 +346,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;chkDraw.ZOrder" xml:space="preserve">
-    <value>3</value>
+    <value>4</value>
   </data>
   <data name="chkShowGrid.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -325,7 +364,7 @@
     <value>1</value>
   </data>
   <data name="chkShowGrid.Text" xml:space="preserve">
-    <value>Show Grid</value>
+    <value>Show &amp;Grid</value>
   </data>
   <data name="&gt;&gt;chkShowGrid.Name" xml:space="preserve">
     <value>chkShowGrid</value>
@@ -337,7 +376,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;chkShowGrid.ZOrder" xml:space="preserve">
-    <value>4</value>
+    <value>5</value>
   </data>
   <data name="tbZoom.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -364,7 +403,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;tbZoom.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>6</value>
   </data>
   <data name="pnlTop.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Top</value>
@@ -687,6 +726,9 @@
   <data name="&gt;&gt;pgObject.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
+  <data name="pbObjectPreview.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
   <data name="pbObjectPreview.Location" type="System.Drawing.Point, System.Drawing">
     <value>306, 19</value>
   </data>
@@ -826,6 +868,12 @@
     <value>fileToolStripMenuItem</value>
   </data>
   <data name="&gt;&gt;fileToolStripMenuItem.Type" xml:space="preserve">
+    <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;newToolStripMenuItem.Name" xml:space="preserve">
+    <value>newToolStripMenuItem</value>
+  </data>
+  <data name="&gt;&gt;newToolStripMenuItem.Type" xml:space="preserve">
     <value>System.Windows.Forms.ToolStripMenuItem, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
   <data name="&gt;&gt;openToolStripMenuItem.Name" xml:space="preserve">

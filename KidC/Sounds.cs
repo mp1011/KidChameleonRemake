@@ -34,6 +34,11 @@ namespace KidC
         public static SoundResource PlayerDie { get; private set; }
         public static SoundResource NoTime { get; private set; }
         public static SoundResource KidFlip { get; private set; }
+        public static SoundResource Bummer { get; private set; }
+
+        public static SoundResource RubberBounce { get; private set; }
+        public static SoundResource ClockTick { get; private set; }
+        public static SoundResource ScoreCounter { get; private set; }
 
         static Sounds()
         {
@@ -57,6 +62,10 @@ namespace KidC
             sounds.Add(NoTime = new SoundResource("Voice - Oh God - (51)"));
             sounds.Add(EnemyHit = new SoundResource("Enemy - Shot Dead - (4B)"));
             sounds.Add(MetalBlockPing = new SoundResource("Block - Metal Hit - (12)"));
+            sounds.Add(RubberBounce = new SoundResource("Block - Rubber - (56)"));
+            sounds.Add(Bummer = new SoundResource("Voice - Bummer - (68)"));
+            sounds.Add(ClockTick = new SoundResource("Prize - Clock - (0E)"));
+            sounds.Add(ScoreCounter = new SoundResource("Score Counter - (0C)"));
             foreach(var sound in sounds)
                 SoundManager.LoadSound(sound);
 

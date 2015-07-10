@@ -25,7 +25,9 @@ namespace Engine.Core
 
         public abstract Func<EngineBase, GameBase, GameContext> GameContextCreate { get; }
         public abstract GameResource<WorldInfo> StartingWorld { get; }
-    
+
+        public abstract void OnStartup();
+     //   public abstract void OnShutdown();
 #endregion
 
 

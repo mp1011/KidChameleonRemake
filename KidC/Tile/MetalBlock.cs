@@ -9,12 +9,12 @@ namespace KidC
 {
     class MetalBlock : CollidingTile
     {
-        private KCTileInstance mInstance;
+      //  private KCTileInstance mInstance;
      
         public MetalBlock(TileInstance tile, TileLayer layer)
             : base(tile, layer) 
         {
-            mInstance = tile as KCTileInstance;
+           //mInstance = tile as KCTileInstance;
         }
 
         public override void HandleCollision(CollisionEvent collision, CollisionResponse collisionResponse)

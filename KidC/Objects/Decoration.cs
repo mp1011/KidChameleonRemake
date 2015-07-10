@@ -34,7 +34,7 @@ namespace KidC
 
             var g = new GravityController(debris);
             g.CurrentYSpeed = ySpeed;
-            new DestroyWhenOutOfFrame(debris);
+            new DestroyWhenOutOfFrame<Sprite>(debris,false);
 
             debris.MotionManager.MainMotion.Set(d, speed);
             layer.AddObject(debris);

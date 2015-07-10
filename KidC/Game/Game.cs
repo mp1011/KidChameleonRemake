@@ -41,18 +41,25 @@ namespace KidC
                 if(TestWorldInfo.UseTestWorld)
                    return new InMemoryResource<WorldInfo>(new TestWorldInfo());        
                 else 
-                    return new GameResource<WorldInfo>(new GamePath(PathType.Maps, "test"), typeof(KCWorldInfo));           
+                    return new GameResource<WorldInfo>(new GamePath(PathType.Maps, "woods"), typeof(KCWorldInfo));           
             }
         }
 
         public static Player CreatePlayer(GameContext ctx)
         {
             IGameInputDevice input = ctx.Engine.CreateInputDevice(ctx);
+        //    IGameInputDevice input = InputRecorder.Playback(ctx,"Demo");
+
             input.ButtonMappings.Add(KCButton.Run, GameKey.Button1);
             input.ButtonMappings.Add(KCButton.Jump, GameKey.Button2);
             input.ButtonMappings.Add(KCButton.Special, GameKey.Button3);
             input.ButtonMappings.Add(KCButton.Pause, GameKey.Start);
             return new Player(ctx, input);
+        }
+
+        public override void OnStartup()
+        {
+         //   new InputRecorder();
         }
     }
 }

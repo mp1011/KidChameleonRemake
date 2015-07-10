@@ -65,7 +65,8 @@ namespace Editor.Forms
 
         private void dgFont_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            
+            var row = this.EditorRows[e.RowIndex];
+            imgFont.Image = new BitmapPortion(row.CreateImage());
         }
 
         private void LoadImages(string folder)
@@ -85,12 +86,6 @@ namespace Editor.Forms
             if (row != null)
                 imgFont.Image = new BitmapPortion(row.CreateImage());
         }
-
-        private void dgFont_CellValueChanged(object sender, DataGridViewCellEventArgs e)
-        {
-            Console.WriteLine("X");
-        }
-
 
         private void dgFont_EditingControlShowing(object sender, DataGridViewEditingControlShowingEventArgs e)
         {

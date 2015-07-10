@@ -63,7 +63,8 @@ namespace Engine.Core
             GameSize = new RGSizeI(320, 240);        
             this.Context = game.GameContextCreate(this,game);
             this.Context.SetWorld(game.StartingWorld.GetObject(this.Context));
-            this.StartGame();      
+            game.OnStartup();
+            this.StartGame();            
         }
 
         #region Update Loop

@@ -93,7 +93,8 @@ namespace Editor.Forms
             Crop,
             SetOrigin,
             SetHitbox,
-            SetSecondaryHitbox
+            SetSecondaryHitbox,
+            FindTile
         }
 
         private Color TransparentColor
@@ -132,6 +133,7 @@ namespace Editor.Forms
                 if (rdoSetOrigin.Checked) return EditorAction.SetOrigin;
                 if (rdoHitbox.Checked) return EditorAction.SetHitbox;
                 if (rdoHitbox2.Checked) return EditorAction.SetSecondaryHitbox;
+                if (rdoFindTiles.Checked) return EditorAction.FindTile;
 
                 return EditorAction.None;
             }
@@ -148,6 +150,7 @@ namespace Editor.Forms
                     case EditorAction.SetOrigin: rdoSetOrigin.Checked = true; return;
                     case EditorAction.SetHitbox: rdoHitbox.Checked = true; return;
                     case EditorAction.SetSecondaryHitbox: rdoHitbox2.Checked = true; return;
+                    case EditorAction.FindTile: rdoFindTiles.Checked = true; pnlImage.DrawRectangle = DrawRectangleType.Drag; return;
                 }
 
                 this.ResetOverlay();
@@ -190,6 +193,7 @@ namespace Editor.Forms
                 case EditorAction.Crop: CropImage(imageRec); break;
                 case EditorAction.SetHitbox: SetHitbox(imageRec, HitboxType.Primary); break;
                 case EditorAction.SetSecondaryHitbox: SetHitbox(imageRec, HitboxType.Secondary); break;
+                case EditorAction.FindTile: FindTiles(imageRec); break;
             }
 
             if (this.ImageChanged != null)
@@ -289,6 +293,12 @@ namespace Editor.Forms
 
            
         }
+
+        private void FindTiles(RGRectangleI searchArea)
+        {
+            TilesetEditor.GetOrOpen().FindTiles(CurrentImage, searchArea);
+        }
+
 
         private void CropImage(RGRectangleI imageRec)
         {
@@ -432,35 +442,18 @@ namespace Editor.Forms
 
         #endregion
 
-        private void rdoCrop_CheckedChanged(object sender, EventArgs e)
+        private void rdoWithRec_CheckedChanged(object sender, EventArgs e)
         {
-            if (rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked)
+            if (rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked || rdoFindTiles.Checked)
                 pnlImage.DrawRectangle = DrawRectangleType.Drag;
             else
                 pnlImage.DrawRectangle = DrawRectangleType.None;
+            this.ResetOverlay();
         }
 
         private void chkShowRegion_CheckedChanged(object sender, EventArgs e)
         {
             pnlImage.DisplayPortionOnly = !chkShowRegion.Checked;
-        }
-
-        private void rdoHitbox_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked)
-                pnlImage.DrawRectangle = DrawRectangleType.Drag;
-            else
-                pnlImage.DrawRectangle = DrawRectangleType.None;
-            this.ResetOverlay();
-        }
-
-        private void rdoHitbox2_CheckedChanged(object sender, EventArgs e)
-        {
-            if (rdoCrop.Checked || rdoHitbox.Checked || rdoHitbox2.Checked)
-                pnlImage.DrawRectangle = DrawRectangleType.Drag;
-            else
-                pnlImage.DrawRectangle = DrawRectangleType.None;
-            this.ResetOverlay();
         }
 
         private void btnRectangleMoveSide_Click(object sender, EventArgs e)

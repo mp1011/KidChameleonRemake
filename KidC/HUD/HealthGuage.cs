@@ -6,11 +6,10 @@ using Engine;
 
 namespace KidC
 {
-    class HealthGuage: LogicObject, IDrawableRemovable 
+    class HealthGuage: LogicObject, IDrawableRemovable, IWithPosition 
     {
 
         private SimpleGraphic mCellGraphic;
-        private GameText mAmountText;
         public RGPointI Location { get; set; }
        
         public int MaxHealth { get; set; }
@@ -41,6 +40,17 @@ namespace KidC
                 mCellGraphic.Draw(p, canvas);
                 cursor = cursor.Offset(mCellGraphic.DestinationRec.Width, 0);
             }
+        }
+
+
+        public RGRectangleI Area
+        {
+            get { return mCellGraphic.DestinationRec; }
+        }
+
+        public Direction Direction
+        {
+            get { return Direction.Right; }
         }
     }
 }

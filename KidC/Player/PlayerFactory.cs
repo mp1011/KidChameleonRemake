@@ -23,14 +23,14 @@ namespace KidC
 
             var player = KidCGame.CreatePlayer(ctx);
           
-            var transformationController = new TransformationController(sprite, maxHealth);
+            var transformationController = spriteInfo.AddBehavior(new TransformationController(sprite, maxHealth));
 
-            new BehaviorExclusionController(sprite, transformationController);
-
+           
             var gravityCtl = new GravityController(sprite);
-            new PlayerHitController(sprite, secondaryHitboxIsDamaging, gravityCtl, new HealthController(sprite, 9999));
-            spriteInfo.AddBehavior(new PlatformerPlayerController(sprite, player, gravityCtl));
+            spriteInfo.AddBehavior(new PlayerHitController(sprite, secondaryHitboxIsDamaging, gravityCtl, new HealthController(sprite, 9999)));
+            var playerCtl = spriteInfo.AddBehavior(new PlatformerPlayerController(sprite, player, gravityCtl));
 
+            spriteInfo.AddBehavior(new BounceController(sprite, playerCtl));
             return spriteInfo;
         }
 
@@ -61,7 +61,7 @@ namespace KidC
 
             new PlayerDieController(player);
 
-            player.CurrentAnimationKey = KCAnimation.Stand;
+            player.SetAnimation(KCAnimation.Stand);
 
             return playerInfo;
         }
@@ -94,7 +94,7 @@ namespace KidC
             player.AddAnimation(KCAnimation.TransitionOut, CreateTransitionAnimation(spriteSheet, Direction.Right, 29, 4, 30, true));
 
             player.AddAnimation(KCAnimation.IronKnightClimb, new Animation(spriteSheet, Direction.Right, 22, 23, 24)).SetFrameDuration(10);
-            player.CurrentAnimationKey = KCAnimation.Stand;
+            player.SetAnimation(KCAnimation.Stand);
 
             return playerInfo;
         }
@@ -122,7 +122,7 @@ namespace KidC
             player.AddAnimation(KCAnimation.AttackAlt, new Animation(spriteSheet, Direction.Right, false, 20,23,22,21)).SetFrameDuration(1);
 
 
-            player.CurrentAnimationKey = KCAnimation.Stand;
+            player.SetAnimation(KCAnimation.Stand);
 
             return playerInfo;
         }
