@@ -93,7 +93,7 @@ namespace Editor
             mSelectionGrid.SetGrid(this.ImagePanel, Map.TileDimensions, (x, y) => this.Map.GetTileAtCoordinates(x, y));
             this.AddOverlayItem(mSelectionGrid);
 
-            this.RefreshImage();
+            this.RefreshImage(true);
         }
 
 
@@ -134,6 +134,12 @@ namespace Editor
         {
             ImagePanel.RefreshImage();
         }
+
+        public void RefreshImage(bool force)
+        {
+            ImagePanel.RefreshImage(force);
+        }
+
 
         public void AddOverlayItem(IDrawable item)
         {

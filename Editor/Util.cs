@@ -125,6 +125,11 @@ namespace Editor
             return Color.FromArgb(c.Red, c.Green, c.Blue);
         }
 
+        public static RGColor ToRGColor(this Color c)
+        {
+            return RGColor.FromRGB(c.R, c.G, c.B);
+        }
+
         public static Point ToSystemPoint(this RGPointI pt)
         {
             return new Point(pt.X, pt.Y);

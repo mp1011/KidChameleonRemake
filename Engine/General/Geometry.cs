@@ -1446,6 +1446,11 @@ namespace Engine
             RGColor other = (RGColor)obj;
             return this.Red == other.Red && this.Green == other.Green && this.Blue == other.Blue;
         }
+
+        public override int GetHashCode()
+        {
+            return this.Red * this.Green * this.Blue;
+        }
     }
 
     [Flags]

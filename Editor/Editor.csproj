@@ -52,6 +52,12 @@
     <Compile Include="Controls\ImagePanel.cs" />
     <Compile Include="Controls\ImagePanelEvents.cs" />
     <Compile Include="Controls\RGColorEditor.cs" />
+    <Compile Include="Controls\TileGroupAdder.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\TileGroupAdder.Designer.cs">
+      <DependentUpon>TileGroupAdder.cs</DependentUpon>
+    </Compile>
     <Compile Include="Forms\FontEditor.cs">
       <SubType>Form</SubType>
     </Compile>
@@ -139,6 +145,9 @@
     <Compile Include="Image\BitmapPortion.cs" />
     <Compile Include="Paths.cs" />
     <Compile Include="Program.cs" />
+    <EmbeddedResource Include="Controls\TileGroupAdder.resx">
+      <DependentUpon>TileGroupAdder.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\TilePanel.resx">
       <DependentUpon>TilePanel.cs</DependentUpon>
     </EmbeddedResource>

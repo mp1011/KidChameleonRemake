@@ -111,6 +111,14 @@ namespace Editor
             }
         }
 
+        public void RefreshImage(bool forceRefresh)
+        {
+            if (forceRefresh)
+                mCurrentChangeHashcode = 0;
+
+            RefreshImage();
+        }
+
         private int mCurrentChangeHashcode;
         public void RefreshImage()
         {

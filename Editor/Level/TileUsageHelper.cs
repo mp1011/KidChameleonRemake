@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Engine;
+using System.Drawing;
 
 namespace Editor
 {
@@ -78,8 +79,8 @@ namespace Editor
             //    if(matchInfo.TilesToMatch.NotNullOrEmpty() && !matchInfo.TilesToMatch.Any(p=>p.Equals(adjacentTile)))
              //       continue;
 
-                var theseGroups = tile.Usage.SideGroups.TryGet(groupSide, "").Split(new char[]{','},StringSplitOptions.RemoveEmptyEntries);
-                var otherGroups = adjacentTile.TileDef.Usage.SideGroups.TryGet(groupSide.GetAdjacentSide(), "").Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
+                var theseGroups = tile.Usage.SideGroups.TryGet(groupSide, new string[] { });
+                var otherGroups = adjacentTile.TileDef.Usage.SideGroups.TryGet(groupSide.GetAdjacentSide(), new string[] { });
 
                 //special case, blank tile has "empty" on all sides
                 if (adjacentTile.TileDef.IsBlank)
@@ -187,6 +188,126 @@ namespace Editor
                     .Where(p => CanFitTile(p, instance, info)).ToList();
             }
         }
+
+        public static void AutoDetectSides(TileDef keyTile, IEnumerable<TileDef> tileDefs, Bitmap tileImage)
+        {
+            var colorMap = new TileGroupAutodetectInfo(keyTile, tileImage);
+
+            foreach (var tile in tileDefs)
+                colorMap.TryFill(tile, tileImage);            
+        }
+
+        class TileGroupAutodetectInfo
+        {
+            public string Group { get; private set; }
+            public RGColor[] Colors { get; private set; }
+
+            public TileGroupAutodetectInfo(TileDef input, Bitmap tileImage)
+            {
+                this.Group = input.Usage.DistinctGroupNames.FirstOrDefault().NotNull();
+                List<RGColor> edgeColors = new List<RGColor>();
+                
+                foreach(GroupSide side in Enum.GetValues(typeof(GroupSide)))
+                    edgeColors.AddRange(GetEdgeColors(side, input.SourcePosition, tileImage));
+
+
+                Colors = edgeColors.Distinct().ToArray();
+            }
+
+
+            private RGColor[] GetEdgeColors(GroupSide side, RGRectangleI area, Bitmap tileImage)
+            {
+                List<RGColor> colors= new List<RGColor>();
+                if (area.IsEmpty)
+                    return colors.ToArray();
+
+                int xMin = 0, xMax = 0, yMin = 0, yMax = 0;
+
+                switch (side)
+                {
+                    case GroupSide.TopLeft:
+                        xMin = area.Left; xMax = area.Center.X;
+                        yMin = area.Top; yMax=area.Top;
+                        break;
+                    case GroupSide.TopRight:
+                        xMin = area.Center.X; xMax = area.Right-1;
+                        yMin = area.Top; yMax = area.Top;
+                        break;
+                    case GroupSide.BottomLeft:
+                        xMin = area.Left; xMax = area.Center.X;
+                        yMin = area.Bottom-1; yMax = area.Bottom-1;
+                        break;
+                    case GroupSide.BottomRight:
+                        xMin = area.Center.X; xMax = area.Right-1;
+                        yMin = area.Bottom-1; yMax = area.Bottom-1;
+                        break;
+                    case GroupSide.LeftTop:
+                        xMin = area.Left;xMax=area.Left;
+                        yMin = area.Top; yMax = area.Center.Y;
+                        break;
+                    case GroupSide.LeftBottom:
+                        xMin = area.Left; xMax = area.Left;
+                        yMin = area.Center.Y; yMax = area.Bottom-1;
+                        break;
+                    case GroupSide.RightTop:
+                        xMin = area.Right-1; xMax = area.Right-1;
+                        yMin = area.Top; yMax = area.Center.Y;
+                        break;
+                    case GroupSide.RightBottom:
+                        xMin = area.Right-1; xMax = area.Right-1;
+                        yMin = area.Center.Y; yMax = area.Bottom-1;
+                        break;
+                }
+
+                for (int x = xMin; x <= xMax; x++)
+                    for (int y = yMin; y <= yMax; y++)
+                        colors.AddDistinct(tileImage.GetPixel(x, y).ToRGColor());
+
+                return colors.OrderBy(p=>p.GetHashCode()).ToArray();
+
+            }
+
+
+            public void TryFill(TileDef other, Bitmap tileImage)
+            {
+                foreach (GroupSide side in Enum.GetValues(typeof(GroupSide)))
+                {
+                    var sideColors = GetEdgeColors(side, other.SourcePosition, tileImage);
+
+                    int matchCount = sideColors.Where(p => this.Colors.Contains(p)).Count();
+                    if (matchCount >= 2)
+                    {
+                        var currentSides = other.Usage.SideGroups.TryGet(side, new string[]{}).ToList();
+                        currentSides.AddDistinct(this.Group);
+                        other.Usage.SideGroups.AddOrSet(side, currentSides.ToArray());
+                    }
+                }
+            }
+        
+        }
+
+
+        public static TileSet AutoOrganize(TileSet set)
+        {
+            var specialTiles = set.GetTiles().Where(p => p.IsSpecial).ToArray();
+            var allGroupNames = set.GetTiles().SelectMany(p => p.Usage.DistinctGroupNames).Distinct().ToArray();
+            var oldOrder = set.GetTiles().ToList();
+            var newOrder = new List<TileDef>();
+
+            oldOrder.Transfer(newOrder, specialTiles);
+
+            string[] groups = oldOrder.Select(p => p.Usage.DistinctGroupNames.StringJoin(",")).Distinct().ToArray();
+
+            foreach (var group in groups)
+            {
+                oldOrder.Transfer(newOrder, oldOrder.Where(p => p.Usage.DistinctGroupNames.StringJoin(",").Equals(group)));
+            }
+
+            oldOrder.Transfer(newOrder, oldOrder);
+            return  new TileSet(set.Texture, set.TileSize, newOrder);
+
+        }
+
 
     }
 }

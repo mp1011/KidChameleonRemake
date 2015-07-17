@@ -120,6 +120,7 @@
     <Compile Include="Serialization\Saving.cs" />
     <Compile Include="SharpDX\Engine.cs" />
     <Compile Include="Resource\Stats.cs" />
+    <Compile Include="Utilities\List.cs" />
     <Compile Include="Utilities\String.cs" />
     <Compile Include="World\Layer.cs" />
     <Compile Include="World\Map.cs" />

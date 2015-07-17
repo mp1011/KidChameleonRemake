@@ -34,5 +34,10 @@ namespace Engine
             else
                 return defaultValue;
         }
+
+        public static IEnumerable<string> WhereNotNullOrEmpty(this IEnumerable<string> list)
+        {
+            return list.Where(p => p.NotNullOrEmpty());
+        }
     }
 }

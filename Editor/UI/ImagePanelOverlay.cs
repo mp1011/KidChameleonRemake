@@ -136,14 +136,14 @@ namespace Editor
             }
         }
 
-        private bool[,] mSelected;
+        private List<RGPointI> mSelected = new List<RGPointI>();
 
         public void SetGrid(EditorGridPoint topLeft, EditorGridPoint bottomRight, Func<int,int,T> getItem)
         {
             this.TopLeft = TopLeft;
             this.BottomRight = bottomRight;
 
-            mSelected = new bool[GridSize.Width, GridSize.Height];
+            mSelected = new List<RGPointI>();
             mGetItem = getItem;
         }
 
@@ -151,7 +151,7 @@ namespace Editor
         {
             this.TopLeft = EditorGridPoint.FromImagePoint(0, 0, panel);
             this.BottomRight = EditorGridPoint.FromImagePoint(tileDimensions.Width * panel.Tileset.TileSize.Width, tileDimensions.Height * panel.Tileset.TileSize.Height, panel);
-            mSelected = new bool[GridSize.Width, GridSize.Height];
+            mSelected = new List<RGPointI>();
             mGetItem = getItem;
         }
 
@@ -180,20 +180,14 @@ namespace Editor
                 }
             }
 
-            for (int y = 0; y < GridSize.Height; y++)
-                for (int x = 0; x < GridSize.Width; x++)
-                {
-                    if (mSelected[x, y])
-                    {
-                        var cell = this.TopLeft.OffsetGrid(x, y);
-                        var cell2 = cell.OffsetGrid(1,1);
-                        g.FillRectangle(fillBrush, new Rectangle(cell.ClientPoint.X, cell.ClientPoint.Y, cell2.ClientPoint.X - cell.ClientPoint.X, cell2.ClientPoint.Y - cell.ClientPoint.Y));
-                    }
-                }
+            foreach(var selected in mSelected)
+            {
+                var cell = this.TopLeft.OffsetGrid(selected.X, selected.Y);
+                var cell2 = cell.OffsetGrid(1,1);
+                g.FillRectangle(fillBrush, new Rectangle(cell.ClientPoint.X, cell.ClientPoint.Y, cell2.ClientPoint.X - cell.ClientPoint.X, cell2.ClientPoint.Y - cell.ClientPoint.Y));
+            }
 
         }
-
-
 
         private List<ImageEventArgs> mMouseEvents = new List<ImageEventArgs>();
 
@@ -245,9 +239,7 @@ namespace Editor
             if (mSelected == null)
                 return;
 
-            for (int y = 0; y < mSelected.GetLength(1); y++)
-                for (int x = 0; x < mSelected.GetLength(0); x++)
-                    mSelected[x, y] = false;
+            mSelected.Clear();
 
             if (SelectionChanged != null)
                 SelectionChanged(this, new EventArgs());
@@ -256,8 +248,11 @@ namespace Editor
         public void ToggleSelection(EditorGridPoint point)
         {
             var pt = point.GridPoint;
-            if(mSelected.ContainsIndex(pt.X,pt.Y))
-                mSelected[pt.X, pt.Y] = !mSelected[pt.X, pt.Y];
+
+            if (mSelected.Contains(pt))
+                mSelected.Remove(pt);
+            else
+                mSelected.Add(pt);
 
             if (SelectionChanged != null)
                 SelectionChanged(this, new EventArgs());
@@ -271,8 +266,14 @@ namespace Editor
 
         public void SetSelection(int x, int y, bool selected)
         {
-            if (mSelected.ContainsIndex(x, y))
-                mSelected[x,y] = selected;
+            if (mSelected == null)
+                return;
+
+            var pt = new RGPointI(x,y);
+            if (selected && !mSelected.Contains(pt))
+                mSelected.Add(pt);
+            else if (!selected && mSelected.Contains(pt))
+                mSelected.Remove(pt);
 
             if (SelectionChanged != null)
                 SelectionChanged(this, new EventArgs());
@@ -280,12 +281,7 @@ namespace Editor
 
         public IEnumerable<RGPointI> SelectedPoints()
         {
-            for(int y = 0; y < mSelected.GetLength(1); y++)
-                for (int x = 0; x < mSelected.GetLength(0); x++)
-                {
-                    if (mSelected[x, y])
-                        yield return new RGPointI(x, y);
-                }
+            return mSelected;
         }
 
         public IEnumerable<T> SelectedItems()
@@ -298,11 +294,11 @@ namespace Editor
             if (deselectOthers)
                 this.ClearSelection();
 
-            for (int y = 0; y < mSelected.GetLength(1); y++)
-                for (int x = 0; x < mSelected.GetLength(0); x++)
+            for (int y = 0; y < this.GridSize.Height; y++)
+                for (int x = 0; x < this.GridSize.Width; x++)
                 {
                     if (predicate(this.mGetItem(x, y)))
-                        mSelected[x, y] = true;
+                        SetSelection(x, y, true);
                 }
         }
 

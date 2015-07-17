@@ -1,5 +1,4 @@
-﻿easier way to apply match sides
-
+﻿ui to assign groups based on colors of edge
 
 tile selector
 	[show][hide] NAME

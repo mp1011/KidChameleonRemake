@@ -74,9 +74,7 @@ namespace Editor.Forms
             pnlBase.SelectionMode = SelectionMode.Single;
             pnlTileset.SelectionMode = SelectionMode.Multi;
 
-            foreach (var textbox in new TextBox[] { txtGroupTopLeft, txtGroupTopRight, txtGroupRightTop, txtGroupRightBottom, txtGroupBottomRight, txtGroupBottomLeft,
-                txtGroupLeftBottom,txtGroupLeftTop})
-                textbox.DoubleClick += new EventHandler(txtGroup_DoubleClick);
+               
         }
 
         private class PropertyBinding<TObject>
@@ -110,14 +108,13 @@ namespace Editor.Forms
             if (ts == null)
                 return;
 
-            mTileset = ts;
-            pnlTileset.SetFromTileset(ts);     
+            LoadTileset(ts);
         }
 
         public void LoadTileset(TileSet ts)
         {
             mTileset = ts;
-            pnlTileset.SetFromTileset(ts);
+            pnlTileset.SetFromTileset(ts);     
         }
 
         public void Save()
@@ -311,7 +308,7 @@ namespace Editor.Forms
 
         #region Tile Groups
 
-        private TextBox[] mGroupBoxes;
+        private TileGroupAdder[] mGroupBoxes;
 
         private void AssignTextboxSides()
         {
@@ -324,35 +321,38 @@ namespace Editor.Forms
             txtGroupBottomLeft.Tag = GroupSide.BottomLeft;
             txtGroupLeftBottom.Tag = GroupSide.LeftBottom;
 
-            mGroupBoxes = new TextBox[] { txtGroupLeftTop, txtGroupTopLeft, txtGroupTopRight, txtGroupRightTop, txtGroupRightBottom, txtGroupBottomRight, txtGroupBottomLeft, txtGroupLeftBottom};
+            mGroupBoxes = new TileGroupAdder[] { txtGroupLeftTop, txtGroupTopLeft, txtGroupTopRight, txtGroupRightTop, txtGroupRightBottom, txtGroupBottomRight, txtGroupBottomLeft, txtGroupLeftBottom};
+
+            txtDblClickGroup.NamesAdded += txtDblClickGroup_NamesAdded;
+            txtDblClickGroup.NamesRemoved += txtDblClickGroup_NamesRemoved;
+
+            foreach (var box in mGroupBoxes)
+            {
+                box.MainGroup = txtDblClickGroup;
+            }
         }
 
-        private TextBox GetGroupBox(GroupSide side)
+        void txtDblClickGroup_NamesRemoved(TileGroupAdder sender, string[] names)
+        {
+            foreach (var box in mGroupBoxes)
+            {
+                foreach (var name in names)
+                    box.RemoveName(name);
+            }
+        }
+
+        void txtDblClickGroup_NamesAdded(TileGroupAdder sender, string[] names)
+        {
+            foreach (var box in mGroupBoxes)
+            {
+                foreach (var name in names)
+                    box.AddName(name);
+            }
+        }
+
+        private TileGroupAdder GetGroupBox(GroupSide side)
         {
             return mGroupBoxes.First(p => p.Tag.Equals(side));
-        }
-
-        private void txtDblClickGroup_DoubleClick(object sender, EventArgs e)
-        {
-            foreach(var box in mGroupBoxes)
-                AddDoubleClickGroup(box);         
-        }
-
-        private void txtGroup_DoubleClick(object sender, EventArgs e)
-        {
-            AddDoubleClickGroup(sender as TextBox);
-        }
-
-        private void AddDoubleClickGroup(TextBox box)
-        {
-            var items = box.Text.Split(',');
-            if (!items.Contains(txtDblClickGroup.Text))
-            {
-                if (box.Text.IsNullOrEmpty())
-                    box.Text = txtDblClickGroup.Text;
-                else
-                    box.Text += "," + txtDblClickGroup.Text;
-            }
         }
 
         private void UpdateGroupTextBoxes()
@@ -364,15 +364,18 @@ namespace Editor.Forms
             var usg = selectedTile.TileDef.Usage;
 
             foreach (var textbox in mGroupBoxes)
-                textbox.Text = usg.SideGroups.TryGet((GroupSide)textbox.Tag, String.Empty);
+                textbox.Names = usg.SideGroups.TryGet((GroupSide)textbox.Tag, new string[]{});
         }
 
         private void ApplyGroupsToCurrent()
         {
+            if (mLastSelectedTiles.Length > 1)
+                return;
+
             foreach (var tileDef in mLastSelectedTiles.NeverNull())
             {             
                 foreach (var textbox in mGroupBoxes)
-                    tileDef.Usage.SideGroups.AddOrSet((GroupSide)textbox.Tag, textbox.Text);
+                    tileDef.Usage.SideGroups.AddOrSet((GroupSide)textbox.Tag, textbox.Names);
             }
         }
 
@@ -479,5 +482,35 @@ namespace Editor.Forms
 
         #endregion
 
+        private void btnAutoDetectSides_Click(object sender, EventArgs e)
+        {
+            ApplyGroupsToCurrent();
+
+            TileDef current = this.SelectedTileDefs.FirstOrDefault();
+            if (current == null)
+                return;
+
+            TileUsageHelper.AutoDetectSides(current, this.SelectedTileDefs.Skip(1), pnlTileset.Tileset.Texture.GetImage());
+            UpdateGroupTextBoxes();
+        }
+
+        private void btnAutoOrganize_Click(object sender, EventArgs e)
+        {
+            var newSet =  TileUsageHelper.AutoOrganize(mTileset);
+            LoadTileset(newSet);
+        }
+
+        private void btnGroupTogether_Click(object sender, EventArgs e)
+        {
+            List<TileDef> oldOrder = new List<TileDef>(mTileset.GetTiles());
+            List<TileDef> newOrder = new List<TileDef>();
+
+            oldOrder.Transfer(newOrder, oldOrder.TakeWhile(p => !SelectedTileDefs.Contains(p)));
+            oldOrder.Transfer(newOrder, SelectedTileDefs);
+            oldOrder.Transfer(newOrder, oldOrder);
+
+            var ts = new TileSet(mTileset.Texture, mTileset.TileSize, newOrder);
+            LoadTileset(ts);
+        }
     }
 }

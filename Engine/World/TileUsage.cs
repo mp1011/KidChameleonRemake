@@ -57,14 +57,14 @@ namespace Engine
     public class TileUsage
     {
 
-        private Dictionary<GroupSide, string> mSideGroups;
+        private Dictionary<GroupSide, string[]> mSideGroups;
 
-        public Dictionary<GroupSide, string> SideGroups
+        public Dictionary<GroupSide, string[]> SideGroups
         {
             get
             {
                 if (mSideGroups == null)
-                    mSideGroups = new Dictionary<GroupSide, string>();
+                    mSideGroups = new Dictionary<GroupSide, string[]>();
                 return mSideGroups;
             }
         }
@@ -73,8 +73,13 @@ namespace Engine
         {
             get
             {
-                return SideGroups.Values.Where(p => p.NotNullOrEmpty()).SelectMany(p => p.Split(',')).Where(p=>p!="*").Distinct().OrderBy(p => p);
+                return SideGroups.Values.Where(p => p.NotNullOrEmpty()).SelectMany(p => p).Where(p=>p!="*").Distinct().OrderBy(p => p);
             }
+        }
+
+        public int SideCount(string groupName)
+        {
+            return SideGroups.Values.Where(p => p.Contains(groupName)).Count();
         }
 
         public int RandomUsageWeight { get; set; }
@@ -88,10 +93,10 @@ namespace Engine
             return groups.Any(p => this.DistinctGroupNames.Contains(p));
         }
 
-        public override string ToString()
-        {
-            return SideGroups.Values.StringJoin(" ");
-        }
+        //public override string ToString()
+        //{
+        //    return SideGroups.Values.StringJoin(" ");
+        //}
 
     }
 }

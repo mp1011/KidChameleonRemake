@@ -118,6 +118,10 @@ namespace Engine
         public bool IsSloped { get { return (this.Flags & TileFlags.Sloped) > 0; } }
 
         [Browsable(false)]
+        public bool IsSpecial { get { return (this.Flags & TileFlags.Special) > 0; } }
+
+
+        [Browsable(false)]
         public RGRectangleI[] SourcePositions { get; private set; }
 
         [Browsable(false)]
@@ -200,6 +204,10 @@ namespace Engine
 
         public object GetSaveModel()
         {
+            var sideGroups = new Dictionary<GroupSide, string>();
+            foreach (var key in this.Usage.SideGroups.Keys)
+                sideGroups.Add(key, this.Usage.SideGroups[key].StringJoin(","));
+
             return new TileSaveModel
             {
                 Flags = this.Flags,
@@ -207,7 +215,7 @@ namespace Engine
                 SourcePositions = this.SourcePositions,
                 FrameDuration = this.FrameDuration,
                 Sides = this.Sides,
-                SideGroups = this.Usage.SideGroups,
+                SideGroups = sideGroups,
                 RandomUsageWeight = this.Usage.RandomUsageWeight,
                 ExtraData = GetSaveModelExtra()
             };
@@ -238,7 +246,7 @@ namespace Engine
             this.Sides = model.Sides;
 
             foreach (var key in model.SideGroups.Keys)
-                this.Usage.SideGroups.AddOrSet(key, model.SideGroups[key]);
+                this.Usage.SideGroups.AddOrSet(key, model.SideGroups[key].Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries));
 
             this.Usage.RandomUsageWeight = model.RandomUsageWeight;
        

@@ -37,28 +37,31 @@
             this.tileProperties = new System.Windows.Forms.PropertyGrid();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
             this.pnlMain = new System.Windows.Forms.SplitContainer();
+            this.pnlTileset = new Editor.TilePanelUserControl();
+            this.pnlBase = new Editor.TilePanelUserControl();
             this.tabMain = new System.Windows.Forms.TabControl();
             this.tabPage1 = new System.Windows.Forms.TabPage();
             this.pnlProperties = new System.Windows.Forms.Panel();
             this.tabPage2 = new System.Windows.Forms.TabPage();
-            this.txtDblClickGroup = new System.Windows.Forms.TextBox();
+            this.btnAutoOrganize = new System.Windows.Forms.Button();
+            this.btnAutoDetectSides = new System.Windows.Forms.Button();
+            this.txtDblClickGroup = new Editor.TileGroupAdder();
             this.pnlGroupBox = new System.Windows.Forms.Panel();
-            this.txtGroupLeftTop = new System.Windows.Forms.TextBox();
-            this.txtGroupBottomRight = new System.Windows.Forms.TextBox();
+            this.txtGroupLeftTop = new Editor.TileGroupAdder();
+            this.txtGroupBottomRight = new Editor.TileGroupAdder();
             this.pnlTilePreview = new System.Windows.Forms.Panel();
-            this.txtGroupBottomLeft = new System.Windows.Forms.TextBox();
-            this.txtGroupLeftBottom = new System.Windows.Forms.TextBox();
-            this.txtGroupTopRight = new System.Windows.Forms.TextBox();
-            this.txtGroupRightTop = new System.Windows.Forms.TextBox();
-            this.txtGroupTopLeft = new System.Windows.Forms.TextBox();
-            this.txtGroupRightBottom = new System.Windows.Forms.TextBox();
+            this.txtGroupBottomLeft = new Editor.TileGroupAdder();
+            this.txtGroupLeftBottom = new Editor.TileGroupAdder();
+            this.txtGroupTopRight = new Editor.TileGroupAdder();
+            this.txtGroupRightTop = new Editor.TileGroupAdder();
+            this.txtGroupTopLeft = new Editor.TileGroupAdder();
+            this.txtGroupRightBottom = new Editor.TileGroupAdder();
             this.pnlFilter = new System.Windows.Forms.Panel();
             this.menuStrip1 = new System.Windows.Forms.MenuStrip();
             this.fileToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.openToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.pnlTileset = new Editor.TilePanelUserControl();
-            this.pnlBase = new Editor.TilePanelUserControl();
+            this.btnGroupTogether = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.pnlMain)).BeginInit();
             this.pnlMain.Panel1.SuspendLayout();
             this.pnlMain.Panel2.SuspendLayout();
@@ -153,6 +156,28 @@
             this.pnlMain.SplitterDistance = 464;
             this.pnlMain.TabIndex = 3;
             // 
+            // pnlTileset
+            // 
+            this.pnlTileset.Dock = System.Windows.Forms.DockStyle.Fill;
+            this.pnlTileset.Location = new System.Drawing.Point(0, 0);
+            this.pnlTileset.Name = "pnlTileset";
+            this.pnlTileset.RectangleType = Editor.DrawRectangleType.None;
+            this.pnlTileset.SelectionMode = Editor.SelectionMode.Multi;
+            this.pnlTileset.Size = new System.Drawing.Size(464, 488);
+            this.pnlTileset.TabIndex = 0;
+            this.pnlTileset.Load += new System.EventHandler(this.pnlTileset_Load);
+            // 
+            // pnlBase
+            // 
+            this.pnlBase.Dock = System.Windows.Forms.DockStyle.Bottom;
+            this.pnlBase.Location = new System.Drawing.Point(0, 488);
+            this.pnlBase.Name = "pnlBase";
+            this.pnlBase.RectangleType = Editor.DrawRectangleType.ShiftDrag;
+            this.pnlBase.SelectionMode = Editor.SelectionMode.None;
+            this.pnlBase.Size = new System.Drawing.Size(464, 133);
+            this.pnlBase.TabIndex = 1;
+            this.pnlBase.Load += new System.EventHandler(this.pnlBase_Load);
+            // 
             // tabMain
             // 
             this.tabMain.Controls.Add(this.tabPage1);
@@ -189,6 +214,9 @@
             // 
             // tabPage2
             // 
+            this.tabPage2.Controls.Add(this.btnGroupTogether);
+            this.tabPage2.Controls.Add(this.btnAutoOrganize);
+            this.tabPage2.Controls.Add(this.btnAutoDetectSides);
             this.tabPage2.Controls.Add(this.txtDblClickGroup);
             this.tabPage2.Controls.Add(this.pnlGroupBox);
             this.tabPage2.Location = new System.Drawing.Point(4, 22);
@@ -199,14 +227,34 @@
             this.tabPage2.Text = "Groups";
             this.tabPage2.UseVisualStyleBackColor = true;
             // 
+            // btnAutoOrganize
+            // 
+            this.btnAutoOrganize.Location = new System.Drawing.Point(393, 123);
+            this.btnAutoOrganize.Name = "btnAutoOrganize";
+            this.btnAutoOrganize.Size = new System.Drawing.Size(160, 31);
+            this.btnAutoOrganize.TabIndex = 13;
+            this.btnAutoOrganize.Text = "Auto Organize";
+            this.btnAutoOrganize.UseVisualStyleBackColor = true;
+            this.btnAutoOrganize.Click += new System.EventHandler(this.btnAutoOrganize_Click);
+            // 
+            // btnAutoDetectSides
+            // 
+            this.btnAutoDetectSides.Location = new System.Drawing.Point(393, 74);
+            this.btnAutoDetectSides.Name = "btnAutoDetectSides";
+            this.btnAutoDetectSides.Size = new System.Drawing.Size(160, 31);
+            this.btnAutoDetectSides.TabIndex = 12;
+            this.btnAutoDetectSides.Text = "Auto Detect";
+            this.btnAutoDetectSides.UseVisualStyleBackColor = true;
+            this.btnAutoDetectSides.Click += new System.EventHandler(this.btnAutoDetectSides_Click);
+            // 
             // txtDblClickGroup
             // 
-            this.txtDblClickGroup.Location = new System.Drawing.Point(377, 6);
-            this.txtDblClickGroup.Multiline = true;
+            this.txtDblClickGroup.Location = new System.Drawing.Point(393, 6);
+            this.txtDblClickGroup.MainGroup = null;
             this.txtDblClickGroup.Name = "txtDblClickGroup";
-            this.txtDblClickGroup.Size = new System.Drawing.Size(160, 33);
+            this.txtDblClickGroup.Names = new string[0];
+            this.txtDblClickGroup.Size = new System.Drawing.Size(160, 62);
             this.txtDblClickGroup.TabIndex = 11;
-            this.txtDblClickGroup.DoubleClick += new System.EventHandler(this.txtDblClickGroup_DoubleClick);
             // 
             // pnlGroupBox
             // 
@@ -221,28 +269,30 @@
             this.pnlGroupBox.Controls.Add(this.txtGroupRightBottom);
             this.pnlGroupBox.Location = new System.Drawing.Point(8, 6);
             this.pnlGroupBox.Name = "pnlGroupBox";
-            this.pnlGroupBox.Size = new System.Drawing.Size(363, 263);
+            this.pnlGroupBox.Size = new System.Drawing.Size(379, 351);
             this.pnlGroupBox.TabIndex = 10;
             // 
             // txtGroupLeftTop
             // 
             this.txtGroupLeftTop.Location = new System.Drawing.Point(14, 52);
-            this.txtGroupLeftTop.Multiline = true;
+            this.txtGroupLeftTop.MainGroup = null;
             this.txtGroupLeftTop.Name = "txtGroupLeftTop";
-            this.txtGroupLeftTop.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupLeftTop.Names = new string[0];
+            this.txtGroupLeftTop.Size = new System.Drawing.Size(78, 49);
             this.txtGroupLeftTop.TabIndex = 7;
             // 
             // txtGroupBottomRight
             // 
-            this.txtGroupBottomRight.Location = new System.Drawing.Point(182, 220);
-            this.txtGroupBottomRight.Multiline = true;
+            this.txtGroupBottomRight.Location = new System.Drawing.Point(182, 236);
+            this.txtGroupBottomRight.MainGroup = null;
             this.txtGroupBottomRight.Name = "txtGroupBottomRight";
-            this.txtGroupBottomRight.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupBottomRight.Names = new string[0];
+            this.txtGroupBottomRight.Size = new System.Drawing.Size(78, 49);
             this.txtGroupBottomRight.TabIndex = 4;
             // 
             // pnlTilePreview
             // 
-            this.pnlTilePreview.Location = new System.Drawing.Point(98, 52);
+            this.pnlTilePreview.Location = new System.Drawing.Point(98, 68);
             this.pnlTilePreview.Name = "pnlTilePreview";
             this.pnlTilePreview.Size = new System.Drawing.Size(162, 162);
             this.pnlTilePreview.TabIndex = 0;
@@ -250,51 +300,56 @@
             // 
             // txtGroupBottomLeft
             // 
-            this.txtGroupBottomLeft.Location = new System.Drawing.Point(98, 220);
-            this.txtGroupBottomLeft.Multiline = true;
+            this.txtGroupBottomLeft.Location = new System.Drawing.Point(98, 236);
+            this.txtGroupBottomLeft.MainGroup = null;
             this.txtGroupBottomLeft.Name = "txtGroupBottomLeft";
-            this.txtGroupBottomLeft.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupBottomLeft.Names = new string[0];
+            this.txtGroupBottomLeft.Size = new System.Drawing.Size(78, 49);
             this.txtGroupBottomLeft.TabIndex = 5;
             // 
             // txtGroupLeftBottom
             // 
             this.txtGroupLeftBottom.Location = new System.Drawing.Point(14, 181);
-            this.txtGroupLeftBottom.Multiline = true;
+            this.txtGroupLeftBottom.MainGroup = null;
             this.txtGroupLeftBottom.Name = "txtGroupLeftBottom";
-            this.txtGroupLeftBottom.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupLeftBottom.Names = new string[0];
+            this.txtGroupLeftBottom.Size = new System.Drawing.Size(78, 49);
             this.txtGroupLeftBottom.TabIndex = 6;
             // 
             // txtGroupTopRight
             // 
             this.txtGroupTopRight.Location = new System.Drawing.Point(182, 13);
-            this.txtGroupTopRight.Multiline = true;
+            this.txtGroupTopRight.MainGroup = null;
             this.txtGroupTopRight.Name = "txtGroupTopRight";
-            this.txtGroupTopRight.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupTopRight.Names = new string[0];
+            this.txtGroupTopRight.Size = new System.Drawing.Size(78, 49);
             this.txtGroupTopRight.TabIndex = 1;
             // 
             // txtGroupRightTop
             // 
             this.txtGroupRightTop.Location = new System.Drawing.Point(266, 52);
-            this.txtGroupRightTop.Multiline = true;
+            this.txtGroupRightTop.MainGroup = null;
             this.txtGroupRightTop.Name = "txtGroupRightTop";
-            this.txtGroupRightTop.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupRightTop.Names = new string[0];
+            this.txtGroupRightTop.Size = new System.Drawing.Size(78, 49);
             this.txtGroupRightTop.TabIndex = 2;
             // 
             // txtGroupTopLeft
             // 
             this.txtGroupTopLeft.Location = new System.Drawing.Point(98, 13);
-            this.txtGroupTopLeft.Multiline = true;
+            this.txtGroupTopLeft.MainGroup = null;
             this.txtGroupTopLeft.Name = "txtGroupTopLeft";
-            this.txtGroupTopLeft.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupTopLeft.Names = new string[0];
+            this.txtGroupTopLeft.Size = new System.Drawing.Size(78, 49);
             this.txtGroupTopLeft.TabIndex = 0;
-            this.txtGroupTopLeft.Text = "grass,rock";
             // 
             // txtGroupRightBottom
             // 
             this.txtGroupRightBottom.Location = new System.Drawing.Point(266, 181);
-            this.txtGroupRightBottom.Multiline = true;
+            this.txtGroupRightBottom.MainGroup = null;
             this.txtGroupRightBottom.Name = "txtGroupRightBottom";
-            this.txtGroupRightBottom.Size = new System.Drawing.Size(78, 33);
+            this.txtGroupRightBottom.Names = new string[0];
+            this.txtGroupRightBottom.Size = new System.Drawing.Size(78, 49);
             this.txtGroupRightBottom.TabIndex = 3;
             // 
             // pnlFilter
@@ -340,27 +395,15 @@
             this.saveToolStripMenuItem.Text = "Save";
             this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
-            // pnlTileset
+            // btnGroupTogether
             // 
-            this.pnlTileset.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.pnlTileset.Location = new System.Drawing.Point(0, 0);
-            this.pnlTileset.Name = "pnlTileset";
-            this.pnlTileset.RectangleType = Editor.DrawRectangleType.None;
-            this.pnlTileset.SelectionMode = Editor.SelectionMode.Multi;
-            this.pnlTileset.Size = new System.Drawing.Size(464, 488);
-            this.pnlTileset.TabIndex = 0;
-            this.pnlTileset.Load += new System.EventHandler(this.pnlTileset_Load);
-            // 
-            // pnlBase
-            // 
-            this.pnlBase.Dock = System.Windows.Forms.DockStyle.Bottom;
-            this.pnlBase.Location = new System.Drawing.Point(0, 488);
-            this.pnlBase.Name = "pnlBase";
-            this.pnlBase.RectangleType = Editor.DrawRectangleType.ShiftDrag;
-            this.pnlBase.SelectionMode = Editor.SelectionMode.None;
-            this.pnlBase.Size = new System.Drawing.Size(464, 133);
-            this.pnlBase.TabIndex = 1;
-            this.pnlBase.Load += new System.EventHandler(this.pnlBase_Load);
+            this.btnGroupTogether.Location = new System.Drawing.Point(393, 176);
+            this.btnGroupTogether.Name = "btnGroupTogether";
+            this.btnGroupTogether.Size = new System.Drawing.Size(160, 31);
+            this.btnGroupTogether.TabIndex = 14;
+            this.btnGroupTogether.Text = "Group Together";
+            this.btnGroupTogether.UseVisualStyleBackColor = true;
+            this.btnGroupTogether.Click += new System.EventHandler(this.btnGroupTogether_Click);
             // 
             // TilesetEditor
             // 
@@ -382,9 +425,7 @@
             this.tabPage1.ResumeLayout(false);
             this.pnlProperties.ResumeLayout(false);
             this.tabPage2.ResumeLayout(false);
-            this.tabPage2.PerformLayout();
             this.pnlGroupBox.ResumeLayout(false);
-            this.pnlGroupBox.PerformLayout();
             this.pnlFilter.ResumeLayout(false);
             this.pnlFilter.PerformLayout();
             this.menuStrip1.ResumeLayout(false);
@@ -410,22 +451,25 @@
         private System.Windows.Forms.Panel pnlFilter;
         private System.Windows.Forms.SplitContainer pnlMain;
         private System.Windows.Forms.Panel pnlGroupBox;
-        private System.Windows.Forms.TextBox txtGroupLeftTop;
-        private System.Windows.Forms.TextBox txtGroupBottomRight;
-        private System.Windows.Forms.TextBox txtGroupBottomLeft;
-        private System.Windows.Forms.TextBox txtGroupLeftBottom;
-        private System.Windows.Forms.TextBox txtGroupTopRight;
-        private System.Windows.Forms.TextBox txtGroupRightTop;
-        private System.Windows.Forms.TextBox txtGroupTopLeft;
-        private System.Windows.Forms.TextBox txtGroupRightBottom;
+        private TileGroupAdder txtGroupLeftTop;
+        private TileGroupAdder txtGroupBottomRight;
+        private TileGroupAdder txtGroupBottomLeft;
+        private TileGroupAdder txtGroupLeftBottom;
+        private TileGroupAdder txtGroupTopRight;
+        private TileGroupAdder txtGroupRightTop;
+        private TileGroupAdder txtGroupTopLeft;
+        private TileGroupAdder txtGroupRightBottom;
         private System.Windows.Forms.MenuStrip menuStrip1;
         private System.Windows.Forms.ToolStripMenuItem fileToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem openToolStripMenuItem;
         private System.Windows.Forms.ToolStripMenuItem saveToolStripMenuItem;
-        private System.Windows.Forms.TextBox txtDblClickGroup;
+        private TileGroupAdder txtDblClickGroup;
         private System.Windows.Forms.TabControl tabMain;
         private System.Windows.Forms.TabPage tabPage1;
         private System.Windows.Forms.TabPage tabPage2;
+        private System.Windows.Forms.Button btnAutoDetectSides;
+        private System.Windows.Forms.Button btnAutoOrganize;
+        private System.Windows.Forms.Button btnGroupTogether;
 
 
 

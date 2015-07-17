@@ -126,7 +126,7 @@ namespace Engine
             {
                 for (int x = 0; x < TileDimensions.Width; x++)
                 {
-                    hc = unchecked(hc * 314159 + mTiles[x, y]);
+                    hc += unchecked(hc * 314159 + x + y + mTiles[x, y]);
                 }
             }
 
