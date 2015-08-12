@@ -8,6 +8,9 @@ namespace Engine
 
     public class Map : ISerializable  
     {
+
+        public string Name { get; set; }
+
         private GameResource<TileSet> mTilesetResource;
 
         private int[,] mTiles;
@@ -16,6 +19,8 @@ namespace Engine
         private GameContext mContext;
         private TileSet _mTileset;
         public TileSet Tileset { get { return _mTileset ?? (_mTileset = mTilesetResource.GetObject(this.mContext)); } }
+
+        private World World { get { return this.mContext.CurrentWorld; } }
 
         public Map()
         {
@@ -34,13 +39,18 @@ namespace Engine
             mTiles = new int[tilesX, tilesY];
         }
 
-        public void SetTile(int x, int y, int tile)
+        public TileInstance SetTile(int x, int y, int tile)
         {
             if (x < 0 || y < 0 || x >= this.TileDimensions.Width || y >= this.TileDimensions.Height)
-                return;
+                return GetTileAtGridCoordinates(x, y);
 
             mSpecialTiles.RemoveAll(p => p.TileLocation.X == x && p.TileLocation.Y == y);         
             mTiles[x, y] = tile;
+
+            if(mContext.CurrentWorld != null)
+                mContext.CurrentWorld.CollisionInfo.OnTileChanged(x, y);
+
+            return GetTileAtGridCoordinates(x, y);
         }
 
         public void SetTile(int x, int y, TileInstance tile)
@@ -59,7 +69,7 @@ namespace Engine
             return Tileset.GetTile(mTiles[x, y]);
         }
 
-        public TileInstance GetTileAtCoordinates(int x, int y)
+        public TileInstance GetTileAtGridCoordinates(int x, int y)
         {
             var specialTile = mSpecialTiles.FirstOrDefault(p => p.TileLocation.X == x && p.TileLocation.Y == y);
             if (specialTile != null)
@@ -86,7 +96,7 @@ namespace Engine
             int x = (int)(location.X / this.Tileset.TileSize.Width);
             int y = (int)(location.Y / this.Tileset.TileSize.Height);
 
-            return GetTileAtCoordinates(x, y);
+            return GetTileAtGridCoordinates(x, y);
         }
 
         public RGRectangleI GetTileLocation(int x, int y)
@@ -95,12 +105,7 @@ namespace Engine
         }
 
         public RGSizeI Size { get { return new RGSizeI(mTiles.GetLength(0) * Tileset.TileSize.Width, mTiles.GetLength(1) * Tileset.TileSize.Height); } }
-        public RGSizeI TileDimensions { get { return new RGSizeI(mTiles.GetLength(0), mTiles.GetLength(1)); } }
-
-        public RGPointI ScreenToTilePoint(RGPointI screenPoint)
-        {
-            return new RGPointI((int)(screenPoint.X / this.Tileset.TileSize.Width), (int)(screenPoint.Y / this.Tileset.TileSize.Height));
-        }
+        public RGSizeI TileDimensions { get { return new RGSizeI(mTiles.GetLength(0), mTiles.GetLength(1)); } }       
 
         public void Draw(Graphics.Painter painter, RGRectangleI canvas, RGPointI layerLocation)
         {
@@ -126,11 +131,16 @@ namespace Engine
             {
                 for (int x = 0; x < TileDimensions.Width; x++)
                 {
-                    hc += unchecked(hc * 314159 + x + y + mTiles[x, y]);
+                    hc = unchecked(hc * 314159 + mTiles[x, y]);
                 }
             }
 
             return hc;
+        }
+
+        public override string ToString()
+        {
+            return Name ?? base.ToString();
         }
 
         #region Saving
@@ -140,11 +150,12 @@ namespace Engine
             public GameResource<TileSet> TileSet;
             public List<TileInstance> SpecialTiles;
             public int[,] Tiles;
+            public string Name;
         }
 
         public object GetSaveModel()
         {
-            return new MapSaveModel { TileSet = this.mTilesetResource, SpecialTiles = mSpecialTiles, Tiles = this.mTiles };
+            return new MapSaveModel { TileSet = this.mTilesetResource, SpecialTiles = mSpecialTiles, Tiles = this.mTiles, Name = this.Name };
         }
 
         public Type GetSaveModelType()
@@ -158,7 +169,7 @@ namespace Engine
             this.mTilesetResource = model.TileSet;
             this.mTiles = model.Tiles;
             this.mSpecialTiles = model.SpecialTiles.NotNull();
-
+            this.Name = model.Name;
             foreach (var tile in mSpecialTiles)
                 tile.Map = this;
         }

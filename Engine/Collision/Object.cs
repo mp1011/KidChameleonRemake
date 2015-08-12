@@ -15,9 +15,9 @@ namespace Engine.Collision
         {
             mCollisionTypes = collisionTypes;
         }
-        protected override IEnumerable<CollisionEvent> CheckCollisions(Layer layer)
+        protected override IEnumerable<CollisionEvent> CheckCollisions(WorldCollisionInfo info)
         {
-            foreach (var collidable in this.Context.Listeners.CollisionListener.GetObjects())
+            foreach (var collidable in info.CollisionListener.GetObjects())
             {
                 if (collidable == this.CollidingObject)
                     continue;

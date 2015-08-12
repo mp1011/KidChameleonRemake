@@ -71,7 +71,7 @@ namespace KidC
             {
                 if (!mRestoredTile)
                 {
-                    var tileDef = mLayer.Map.Tileset.GetTiles().FirstOrDefault(p => p.TileID == (int)SpecialTile.Metal + 1000);
+                    var tileDef = mLayer.Map.Tileset.GetSpecialTile(SpecialTile.Metal);
                     mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, tileDef.TileID);
                     mRestoredTile = true;
                 }

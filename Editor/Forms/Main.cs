@@ -15,8 +15,7 @@ namespace Editor.Forms
         {
             InitializeComponent();
 
-          //  var log = new Forms.frmLog();
-          //  log.Show();
+         //   TileUsageHelper.BuildMatchesFromFolder(@"D:\Games\Emulation\Genesis\gensKMod_07\Screenshots\woods", "woods");
        
         }
 

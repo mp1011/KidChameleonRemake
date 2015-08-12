@@ -49,6 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="BackupManager.cs" />
+    <Compile Include="Controls\GroupFilter.cs">
+      <SubType>UserControl</SubType>
+    </Compile>
+    <Compile Include="Controls\GroupFilter.Designer.cs">
+      <DependentUpon>GroupFilter.cs</DependentUpon>
+    </Compile>
     <Compile Include="Controls\ImagePanel.cs" />
     <Compile Include="Controls\ImagePanelEvents.cs" />
     <Compile Include="Controls\RGColorEditor.cs" />
@@ -65,6 +71,7 @@
       <DependentUpon>FontEditor.cs</DependentUpon>
     </Compile>
     <Compile Include="Image\Palette.cs" />
+    <Compile Include="Level\ImageToLevel.cs" />
     <Compile Include="Level\TileEqualityComparer.cs" />
     <Compile Include="UI\DragHandler.cs" />
     <Compile Include="UI\ImagePanelOverlay.cs" />
@@ -74,10 +81,10 @@
     <Compile Include="Controls\TilePanel.Designer.cs">
       <DependentUpon>TilePanel.cs</DependentUpon>
     </Compile>
-    <Compile Include="DirectionSelector.cs">
+    <Compile Include="Controls\DirectionSelector.cs">
       <SubType>UserControl</SubType>
     </Compile>
-    <Compile Include="DirectionSelector.Designer.cs">
+    <Compile Include="Controls\DirectionSelector.Designer.cs">
       <DependentUpon>DirectionSelector.cs</DependentUpon>
     </Compile>
     <Compile Include="FlagsEnumEditor\FlagEnumEditor.cs">
@@ -145,13 +152,16 @@
     <Compile Include="Image\BitmapPortion.cs" />
     <Compile Include="Paths.cs" />
     <Compile Include="Program.cs" />
+    <EmbeddedResource Include="Controls\GroupFilter.resx">
+      <DependentUpon>GroupFilter.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Controls\TileGroupAdder.resx">
       <DependentUpon>TileGroupAdder.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Controls\TilePanel.resx">
       <DependentUpon>TilePanel.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="DirectionSelector.resx">
+    <EmbeddedResource Include="Controls\DirectionSelector.resx">
       <DependentUpon>DirectionSelector.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Forms\AnimationPreview.resx">

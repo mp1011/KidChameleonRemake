@@ -77,7 +77,7 @@ namespace KidC
             if (mLayer != null)
             {
                 var tile = mLayer.Map.GetTileAtLocation(this.Sprite.Location);
-                mSpawnTile = mLayer.Map.GetTileAtCoordinates(tile.TileLocation.X, tile.TileLocation.Y + 1);
+                mSpawnTile = mLayer.Map.GetTileAtGridCoordinates(tile.TileLocation.X, tile.TileLocation.Y + 1);
             }
             this.Sprite.RemoveCollisionType(ObjectType.Block);
         }

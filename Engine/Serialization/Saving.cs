@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
 using System.ComponentModel;
+using Newtonsoft.Json.Serialization;
 
 namespace Engine
 {
@@ -25,8 +26,16 @@ namespace Engine
         static Serializer()
         {
             mSettings = new JsonSerializerSettings();
+            mSettings.MissingMemberHandling = MissingMemberHandling.Ignore;
+            
             mSettings.Converters.Add(new ISerializableConverter());
             mSettings.Converters.Add(new TileInstanceConverter());
+            mSettings.Error = HandleError;
+        }
+
+        private static void HandleError(object sender, ErrorEventArgs e)
+        {
+            e.ErrorContext.Handled = true;
         }
 
         public static JsonSerializer CreateSerializer()
@@ -36,6 +45,7 @@ namespace Engine
             foreach (var c in mSettings.Converters)
                 s.Converters.Add(c);
 
+            s.Error += HandleError;
             return s;
         }
 
@@ -47,41 +57,62 @@ namespace Engine
 
         public static string ToJSON<T>(T item)
         {
-            var serializable = item as ISerializable;
-            if (serializable != null)
-                return JsonConvert.SerializeObject(serializable.GetSaveModel(),mSettings);
-            else
-                return JsonConvert.SerializeObject(item, mSettings);
+            try
+            {
+                var serializable = item as ISerializable;
+                if (serializable != null)
+                    return JsonConvert.SerializeObject(serializable.GetSaveModel(), mSettings);
+                else
+                    return JsonConvert.SerializeObject(item, mSettings);
+            }
+            catch (Exception ex)
+            {
+                throw ex.Flatten();
+            }
         }
 
         public static T FromJson<T>(string json) where T:  new()
         {
-            var item = new T();
-
-            var serializable = item as ISerializable;
-            if (serializable != null)
+            try
             {
-                var saveModel = JsonConvert.DeserializeObject(json, serializable.GetSaveModelType(),mSettings);
-                serializable.Load(saveModel);
-                return (T)serializable;
-            }
+                var item = new T();
 
-            return JsonConvert.DeserializeObject<T>(json, mSettings);           
+                var serializable = item as ISerializable;
+                if (serializable != null)
+                {
+                    var saveModel = JsonConvert.DeserializeObject(json, serializable.GetSaveModelType(),mSettings);
+                    serializable.Load(saveModel);
+                    return (T)serializable;
+                }
+
+                return JsonConvert.DeserializeObject<T>(json, mSettings);
+            }
+            catch (Exception ex)
+            {
+                throw ex.Flatten();
+            }
         }
 
         public static object FromJson(string json, Type type)
         {
-            var item = Activator.CreateInstance(type);
-
-            var serializable = item as ISerializable;
-            if (serializable != null)
+            try
             {
-                var saveModel = JsonConvert.DeserializeObject(json, serializable.GetSaveModelType(), mSettings);
-                serializable.Load(saveModel);
-                return serializable;
-            }
+                var item = Activator.CreateInstance(type);
 
-            return JsonConvert.DeserializeObject(json, type, mSettings);           
+                var serializable = item as ISerializable;
+                if (serializable != null)
+                {
+                    var saveModel = JsonConvert.DeserializeObject(json, serializable.GetSaveModelType(), mSettings);
+                    serializable.Load(saveModel);
+                    return serializable;
+                }
+
+                return JsonConvert.DeserializeObject(json, type, mSettings);
+            }
+            catch (Exception ex)
+            {
+                throw ex.Flatten();
+            }
         }
 
 
@@ -89,7 +120,6 @@ namespace Engine
 
     class ISerializableConverter : JsonConverter
     {
-
         public override bool CanConvert(Type objectType)
         {
             return typeof(ISerializable).IsAssignableFrom(objectType);
@@ -114,29 +144,36 @@ namespace Engine
                 throw new Exception("Deserialization failed for type: " + objectType.Name, ex);
             }
 
-            var s = Serializer.CreateSerializer();
-            var saveModel = s.Deserialize(reader, item.GetSaveModelType());
-
-            var itemBase = item as ISerializableBaseClass;
-            if (itemBase != null)
+            try
             {
-                try
+                var s = Serializer.CreateSerializer();
+               
+                var itemBase = item as ISerializableBaseClass;
+                if (itemBase != null)
                 {
-                    item = Activator.CreateInstance(itemBase.GetTargetType()) as ISerializable;
+                    try
+                    {
+                        item = Activator.CreateInstance(itemBase.GetTargetType()) as ISerializable;
+                    }
+                    catch (NotImplementedException ex) { }
                 }
-                catch (NotImplementedException ex) { }
+
+                var saveModel = s.Deserialize(reader, item.GetSaveModelType());
+                item.Load(saveModel);
+
+                return item;
             }
-
-            item.Load(saveModel);
-
-            return item;
+            catch (Exception e)
+            {
+                throw e.Flatten();
+            }
 
         }
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
-        {
+        {            
             ISerializable item = value as ISerializable;
-            serializer.Serialize(writer, item.GetSaveModel());
+            serializer.Serialize(writer, item.GetSaveModel());           
         }
     }
 
@@ -157,8 +194,14 @@ namespace Engine
 
         public override void WriteJson(JsonWriter writer, object value, JsonSerializer serializer)
         {
-            serializer.Serialize(writer, value);
+            try
+            {
+                serializer.Serialize(writer, value);
+            }
+            catch (Exception ex)
+            {
+                throw;
+            }
         }
     }
-
 }

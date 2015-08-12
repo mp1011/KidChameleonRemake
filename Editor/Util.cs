@@ -127,7 +127,7 @@ namespace Editor
 
         public static RGColor ToRGColor(this Color c)
         {
-            return RGColor.FromRGB(c.R, c.G, c.B);
+            return RGColor.FromRGBA(c.R, c.G, c.B,c.A);
         }
 
         public static Point ToSystemPoint(this RGPointI pt)
@@ -251,6 +251,15 @@ namespace Editor
             {
                 if (box.GetItemChecked(i, e))
                     yield return box.Items[i] as T;
+            }
+        }
+
+        public static void SetItemsChecked<T>(this CheckedListBox box, Predicate<T> isChecked)
+        {
+            for (int i = 0; i < box.Items.Count; i++)
+            {
+                var item = (T)box.Items[i];
+                box.SetItemChecked(i, isChecked(item));
             }
         }
 

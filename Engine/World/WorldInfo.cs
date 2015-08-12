@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Linq;
@@ -13,8 +14,23 @@ namespace Engine
         [Browsable(false)]
         public List<ObjectEntry> Objects { get; set; }
 
+        //[Browsable(false)]
+        //[JsonIgnore]
+        //public Map Map
+        //{
+        //    get
+        //    {
+        //        return Maps.NeverNull().FirstOrDefault();
+        //    }
+        //    set
+        //    {
+        //        if(Maps == null)
+        //            Maps = new Map[] { value };
+        //    }
+        //}
+
         [Browsable(false)]
-        public Map Map { get; set; }
+        public Map[] Maps { get; set; }
 
         public string Name { get; set; }
         public int ScreensWidth { get; set; }
@@ -27,12 +43,20 @@ namespace Engine
 
         public virtual World CreateWorld(GameContext context) { throw new NotImplementedException(); }
 
+        public GameResource<TileSet> TilesetResource
+        {
+            get
+            {
+                return new GameResource<TileSet>(new GamePath(PathType.Tilesets, this.TilesetName));
+            }
+        }
+
         public WorldInfo() 
         {
             this.Objects = new List<ObjectEntry>();
         }
 
-        public Map UpdateMap(GameContext context)
+        public Map[] UpdateMap(GameContext context)
         {
             if (ScreensWidth <= 0)
                 ScreensWidth = 1;
@@ -40,18 +64,22 @@ namespace Engine
             if (ScreensHeight <= 0)
                 ScreensHeight = 1;
 
-            var newMap = new Map(context, new GameResource<TileSet>(new GamePath(PathType.Tilesets, this.TilesetName)), ScreensWidth * 20, ScreensHeight * 15);
+            List<Map> newMaps = new List<Map>();
 
-            if (this.Map != null)
+            foreach (var map in Maps.NeverNull())
             {
-                for (int y = 0; y < this.Map.TileDimensions.Height; y++)
+                var newMap = new Map(context, this.TilesetResource, ScreensWidth * 20, ScreensHeight * 15);
+
+                for (int y = 0; y < map.TileDimensions.Height; y++)
                 {
-                    for (int x = 0; x < this.Map.TileDimensions.Width; x++)
+                    for (int x = 0; x < map.TileDimensions.Width; x++)
                     {
-                        var tileToCopy = this.Map.GetTileAtCoordinates(x, y);
+                        var tileToCopy = map.GetTileAtGridCoordinates(x, y);
                         newMap.SetTile(x, y, tileToCopy);
                     }
                 }
+
+                newMaps.Add(newMap);
             }
 
             if (this.Objects == null)
@@ -66,8 +94,8 @@ namespace Engine
                     o.PlacedObject.Location = o.Location;
             }
 
-            this.Map = newMap;
-            return newMap;
+            this.Maps = newMaps.ToArray();
+            return this.Maps;
         }
 
     }

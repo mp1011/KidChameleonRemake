@@ -52,6 +52,7 @@ namespace Engine
 
         public StackedRenderInfo ExtraRenderInfo { get; set; }
 
+        private TileLayer[] mTileLayers;
         private List<Layer> mLayers = new List<Layer>();
         private List<ObjectEntry> mEntries = new List<ObjectEntry>();
 
@@ -99,6 +100,7 @@ namespace Engine
             else
                 Area = RGRectangle.FromTLBR(mLayers.Min(p => p.Location.Top), mLayers.Min(p => p.Location.Left), mLayers.Max(p => p.Location.Bottom), mLayers.Max(p => p.Location.Right));
 
+            mTileLayers = mLayers.OfType<TileLayer>().ToArray();
             return layer;
         }
 
@@ -144,21 +146,22 @@ namespace Engine
             painter.PopRenderInfo();
         }
 
-        public TileInstance GetTopmostTile(RGPointI worldLocation, Predicate<TileInstance> condition)
+        #region Collision
+
+        private WorldCollisionInfo mCollisionInfo;
+        public WorldCollisionInfo CollisionInfo
         {
-            foreach (var layer in mLayers.OrderByDescending(p => p.Depth))
+            get
             {
-                TileLayer tileLayer = layer as TileLayer;
-                if (tileLayer == null)
-                    continue;
+                if (mCollisionInfo == null)
+                    mCollisionInfo = new WorldCollisionInfo(this);
 
-                var tile = tileLayer.Map.GetTileAtLocation(worldLocation);
-                if (condition(tile))
-                    return tile;
+                return mCollisionInfo;
             }
-
-            return null;
         }
+
+        #endregion 
+
 
         #region ILogicObject
         public bool Alive

@@ -17,9 +17,11 @@ namespace Editor
 
         public SelectionMode SelectionMode { get { return mSelectionGrid.SelectionMode; } set { mSelectionGrid.SelectionMode = value; } }
 
-        public Map Map { get; private set; }
+        public IEnumerable<Map> Maps { get; private set; }
 
-        public TileSet Tileset { get { if(Map == null) return null; return Map.Tileset; } }
+        public Map ActiveMap { get; set; }
+
+        public TileSet Tileset { get { if (Maps.IsNullOrEmpty()) return null; return Maps.First().Tileset; } }
 
         public SelectionGrid<TileInstance> SelectionGrid { get { return mSelectionGrid; } }
 
@@ -41,12 +43,12 @@ namespace Editor
 
         void TilePanelUserControl_Resize(object sender, EventArgs e)        
         {
-            if (this.Map == null)
+            if (this.Maps.IsNullOrEmpty())
                 return;
             else if (mIsTileset)
                 this.SetFromTileset(this.Tileset);
             else
-                this.SetFromMap(this.Map);
+                this.SetFromMap(this.Maps);
         }
 
         private RGPointI mLastGridPoint;
@@ -68,11 +70,19 @@ namespace Editor
 
         public void SetFromMap(Map m)
         {
-            this.Map = m;
-            mSelectionGrid.SetGrid(this.ImagePanel, Map.TileDimensions, (x, y) => this.Map.GetTileAtCoordinates(x, y));
+            SetFromMap(new Map[] { m });
+        }
+
+        public void SetFromMap(IEnumerable<Map> m)
+        {
+            this.Maps = m.ToArray();
+            this.ActiveMap = this.Maps.FirstOrDefault();
+
+            mSelectionGrid.SetGrid(this.ImagePanel, Maps.First().TileDimensions, (x, y) => this.ActiveMap.GetTileAtGridCoordinates(x, y));
             this.AddOverlayItem(mSelectionGrid);
 
             this.RefreshImage();
+         
         }
 
         public void SetFromTileset(TileSet ts)
@@ -80,20 +90,25 @@ namespace Editor
             this.mIsTileset = true;
             var tiles = ts.GetTiles().ToArray();
             int tilesPerRow = DetermineTilesPerRow(ts.GetTiles().Count());
-            Map = new Map(Program.EditorContext, new InMemoryResource<TileSet>(ts), tilesPerRow, (int)Math.Ceiling((float)(tiles.Length + 1) / tilesPerRow));
+            var map = new Map(Program.EditorContext, new InMemoryResource<TileSet>(ts), tilesPerRow, (int)Math.Ceiling((float)(tiles.Length + 1) / tilesPerRow));
 
             int i = 0;
-            for (int y = 0; y < Map.TileDimensions.Height; y++)
-                for (int x = 0; x < Map.TileDimensions.Width; x++)
+            for (int y = 0; y < map.TileDimensions.Height; y++)
+                for (int x = 0; x < map.TileDimensions.Width; x++)
                 {
-                    Map.SetTile(x, y, i++);
+                    map.SetTile(x, y, i++);
                 }
 
+            this.ActiveMap = map;
+            this.Maps = new Map[] { map };
+
             this.ClearOverlay();
-            mSelectionGrid.SetGrid(this.ImagePanel, Map.TileDimensions, (x, y) => this.Map.GetTileAtCoordinates(x, y));
+            mSelectionGrid.SetGrid(this.ImagePanel,map.TileDimensions, (x, y) => map.GetTileAtGridCoordinates(x, y));
             this.AddOverlayItem(mSelectionGrid);
 
             this.RefreshImage(true);
+
+         
         }
 
 
@@ -120,7 +135,15 @@ namespace Editor
             if (SelectionGrid == null)
                 return new TileInstance[] { };
 
-            return SelectionGrid.SelectedPoints().Select(p => Map.GetTileAtCoordinates(p.X, p.Y));
+            return SelectionGrid.SelectedPoints().Select(p => ActiveMap.GetTileAtGridCoordinates(p.X, p.Y));
+        }
+
+        public TileInstance HighlightedTile
+        {
+            get
+            {
+                return SelectionGrid.HighlightedItem;
+            }
         }
 
         #region Common
@@ -161,14 +184,16 @@ namespace Editor
     class TilePanel : ImagePanel
     {
         private TilePanelUserControl mControl;
-        private Map Map { get { return mControl.Map; } }
+        private IEnumerable<Map> Maps { get { return mControl.Maps.NeverNull(); } }
         public TileSet Tileset { get { return mControl.Tileset; } }
+
+        public Map ActiveMap { get { return mControl.ActiveMap; } }
 
         public RGSizeI MapSize
         {
             get
             {
-                return new RGSizeI(Map.Size.Width, Map.Size.Height);
+                return new RGSizeI(ActiveMap.Size.Width, ActiveMap.Size.Height);
             }
         }
 
@@ -183,10 +208,10 @@ namespace Editor
         {
             get
             {
-                if (Map == null)
+                if (Maps.IsNullOrEmpty())
                     return new RGSizeI(mControl.Width, mControl.Height);
                 else
-                    return new RGSizeI(Map.Size.Width, Map.Size.Height);
+                    return new RGSizeI(ActiveMap.Size.Width, ActiveMap.Size.Height);
             }
         }
 
@@ -200,20 +225,31 @@ namespace Editor
 
             var img = mControl.Tileset.Texture.GetImage();
 
-            for (int y = 0; y < Map.TileDimensions.Height; y++)
-                for (int x = 0; x < Map.TileDimensions.Width; x++)
-                {
-                    var tile = Map.GetTile(x, y);
-                    if (!tile.IsBlank)
-                        gWorking.DrawImage(Tileset.Texture.GetImage(), new Rectangle(x * Tileset.TileSize.Width, y * Tileset.TileSize.Height, Tileset.TileSize.Width, Tileset.TileSize.Height), tile.SourcePosition.ToSystemRec(), GraphicsUnit.Pixel);
-                }
+            foreach (var map in Maps)
+            {
+                for (int y = 0; y < map.TileDimensions.Height; y++)
+                    for (int x = 0; x < map.TileDimensions.Width; x++)
+                    {
+                        var tile = map.GetTile(x, y);
+                        if (!tile.IsBlank)
+                            gWorking.DrawImage(Tileset.Texture.GetImage(), new Rectangle(x * Tileset.TileSize.Width, y * Tileset.TileSize.Height, Tileset.TileSize.Width, Tileset.TileSize.Height), tile.SourcePosition.ToSystemRec(), GraphicsUnit.Pixel);
+                    }
+            }
 
             return true;
         }
 
         protected override int GetWorkingImageChangeHashCode()
         {
-            return Map.GetHashCode();
+            int hash = 0;
+            unchecked 
+            {
+                foreach(var map in Maps)
+                    hash += map.GetHashCode();
+            }
+
+            return hash;
+                
         }
 
         protected override EditorPoint CreateEditorPoint(int clientX, int clientY)

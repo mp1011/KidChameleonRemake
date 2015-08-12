@@ -26,6 +26,7 @@ namespace Editor.Forms
 
         public frmLog()
         {
+            mNewLines.Clear();
             InitializeComponent();
         }
 

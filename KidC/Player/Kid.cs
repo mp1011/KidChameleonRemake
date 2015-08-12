@@ -11,8 +11,15 @@ namespace KidC
 
         private Player mPlayer;
         private TileInstance mFlipBlock;
-        private TileLayer mLayer;
         protected override bool AllowRetrigger { get { return false; } }
+
+        private WorldCollisionInfo WorldCollisionInfo
+        {
+            get
+            {
+                return this.Sprite.GetWorld().CollisionInfo;
+            }
+        }
 
         public KidFlipController(Sprite s, Player player) : base(s) 
         {
@@ -51,7 +58,6 @@ namespace KidC
 
         protected override void OnEntrance()
         {
-            mLayer = Sprite.DrawLayer as TileLayer;
             base.OnEntrance();
         }
 
@@ -72,10 +78,7 @@ namespace KidC
       
         private bool CheckForFlip()
         {
-            if (mLayer == null)
-                return false;
-
-            if (this.Sprite.IsOnGround(mLayer))
+            if (this.Sprite.IsOnGround())
                  return false;
 
             if (!mPlayer.Input.KeyPressed(KCButton.Jump))
@@ -93,7 +96,7 @@ namespace KidC
             else if (flipDir == Direction.Right)
                 blockPoint = new RGPointI(this.Sprite.Area.Right + 2, blockPoint.Y);
 
-            var tile = mLayer.Map.GetTileAtLocation(blockPoint);
+            var tile = this.WorldCollisionInfo.GetTile(blockPoint).Instance;
             if (tile.TileDef.IsPassable)
                 return false;
 

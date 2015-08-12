@@ -71,54 +71,48 @@ namespace Engine.Collision
 
     class TileCollisionManager<T> : CollisionManager<T> where T : LogicObject, ICollidable
     {
-
-
         public TileCollisionManager(T obj)
             : base(obj)
         {
         }
 
-        protected override IEnumerable<CollisionEvent> CheckCollisions(Layer layer)
+        protected override IEnumerable<CollisionEvent> CheckCollisions(WorldCollisionInfo info)
         {
-            return GetCollisionsInLayer(layer as TileLayer).ToArray(); 
-        }
-
-        private IEnumerable<CollisionEvent> GetCollisionsInLayer(TileLayer layer)
-        {
-            if (layer != null && CollidingObject.CollisionTypes.Contains(ObjectType.Block))
+            if (CollidingObject.CollisionTypes.Contains(ObjectType.Block))     
             {
-                RGPointI tilePosStart = layer.Map.ScreenToTilePoint(this.CollidingObject.Area.TopLeft);
-                RGPointI tilePosEnd = layer.Map.ScreenToTilePoint(this.CollidingObject.Area.BottomRight);
+                RGPointI tilePosStart = info.WorldToTilePoint(this.CollidingObject.Area.TopLeft);
+                RGPointI tilePosEnd = info.WorldToTilePoint(this.CollidingObject.Area.BottomRight);
 
                 for (int y = tilePosStart.Y; y <= tilePosEnd.Y; y++)
                     for (int x = tilePosStart.X; x <= tilePosEnd.X; x++)
                     {
-                        var tileDef = layer.Map.GetTile(x, y);
-
-                        var solid = (tileDef.Flags & TileFlags.Solid) > 0;
-                        var sloped = (tileDef.Flags & TileFlags.Sloped) > 0;
+                        var tileInfo = info.GetTile(x, y);
+                        var tile = tileInfo.Instance;
+                        
+                        var solid = (tile.TileDef.Flags & TileFlags.Solid) > 0;
+                        var sloped = (tile.TileDef.Flags & TileFlags.Sloped) > 0;
                         if (solid || sloped)
                         {
-                            var rec = layer.Map.GetTileLocation(x, y);
+                            var rec = tile.TileArea;
 
                             if (CollidingObject.Area.CollidesWith(rec))
                             {
                                 if (solid)
                                 {
                                     //ignore solid tile if there is a sloped tile above it and to either side
-                                    var tileAbove = layer.Map.GetTile(x, y - 1);
-                                    var tileLeft = layer.Map.GetTile(x-1, y);
-                                    var tileRight = layer.Map.GetTile(x+1, y);
+                                    var tileAbove = tile.GetAdjacentTile(0,-1).TileDef;
+                                    var tileLeft = tile.GetAdjacentTile(-1, 0).TileDef;
+                                    var tileRight = tile.GetAdjacentTile(1, 0).TileDef;
 
                                     if (tileAbove.IsSloped && (tileLeft.IsSloped || tileRight.IsSloped))
                                         continue;
 
-                                    yield return CreateCollisionEvent(layer, tileDef, x, y);
+                                    yield return CreateCollisionEvent(tileInfo);
 
                                 }
                                 if (sloped)
                                 {
-                                    var slopeEvent = CreateSlopedTileCollisionEvent(layer, tileDef, x, y);
+                                    var slopeEvent = CreateSlopedTileCollisionEvent(tileInfo);
                                     if (slopeEvent != null)
                                         yield return slopeEvent;
                                 }
@@ -129,14 +123,14 @@ namespace Engine.Collision
             }
         }
 
-        private CollisionEvent CreateSlopedTileCollisionEvent(TileLayer layer, TileDef tileDef, int tileX, int tileY)
+        private CollisionEvent CreateSlopedTileCollisionEvent(TileCollisionView tileView)
         {
             // Up/Down = The exposed surface
             // Left/Right = The higher side
+            var tile = tileView.Instance;
+            var rec = tile.TileArea;
 
-            var rec = layer.Map.GetTileLocation(tileX, tileY);
-
-            int? yIntercept = tileDef.GetYIntercept(rec, CollidingObject.Location.X);
+            int? yIntercept = tile.TileDef.GetYIntercept(rec, CollidingObject.Location.X);
             if (!yIntercept.HasValue)
                 return null;
 
@@ -149,29 +143,27 @@ namespace Engine.Collision
             if (cy < yIntercept)
                 return null;
 
-            var evt = CreateCollisionEvent(layer, tileDef, tileX, tileY);
+            var evt = CreateCollisionEvent(tileView);
             evt.SlopeIntersectionPoint = new RGPoint(cx, yIntercept.Value);
-            evt.SlopeDirection = tileDef.Sides;
+            evt.SlopeDirection = tile.TileDef.Sides;
 
-            if (tileDef.Sides.Up)
+            if (tile.TileDef.Sides.Up)
                 evt.CollisionSide = Side.Top;
-            else if (tileDef.Sides.Down)
+            else if (tile.TileDef.Sides.Down)
                 evt.CollisionSide = Side.Bottom;
             return evt;
             
         }
 
-        private CollisionEvent CreateCollisionEvent(TileLayer layer, TileDef tileDef, int tileX, int tileY)
+        private CollisionEvent CreateCollisionEvent(TileCollisionView tileView)
         {
-            var rec = layer.Map.GetTileLocation(tileX, tileY);
+            var tile = tileView.Instance;
+            bool leftExposed = tileView.GetAdjacentTile(-1,0).TileDef.IsPassable;
+            bool rightExposed = tileView.GetAdjacentTile(1,0).TileDef.IsPassable;
+            bool topExposed = tileView.GetAdjacentTile(0,-1).TileDef.IsPassable;
+            bool bottomExposed = tileView.GetAdjacentTile(0,1).TileDef.IsPassable;
 
-            bool leftExposed = layer.Map.GetTile(tileX - 1, tileY).IsPassable;
-            bool rightExposed = layer.Map.GetTile(tileX + 1, tileY).IsPassable;
-            bool topExposed = layer.Map.GetTile(tileX, tileY - 1).IsPassable;
-            bool bottomExposed = layer.Map.GetTile(tileX, tileY + 1).IsPassable;
-
-            var instance = layer.Map.GetTileAtCoordinates(tileX, tileY);
-            var collidingTile = instance.CreateCollidingTile(layer as TileLayer);
+            var collidingTile = tile.CreateCollidingTile(tileView.Layer);
             return new CollisionEvent(this.CollidingObject, collidingTile, topExposed, leftExposed, rightExposed, bottomExposed, true, HitboxType.Primary, HitboxType.Primary);
         }
     }

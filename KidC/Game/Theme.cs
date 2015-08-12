@@ -14,7 +14,7 @@ namespace KidC
     interface ILevelTheme
     {
         LevelTheme ThemeType { get; }
-        IEnumerable<Layer> CreateLayers(World world, Map map);
+        IEnumerable<Layer> CreateLayers(World world, IEnumerable<Map> map);
     }
 
 
@@ -37,7 +37,7 @@ namespace KidC
             get { throw new NotImplementedException(); }
         }
 
-        public IEnumerable<Layer> CreateLayers(World world, Map map)
+        public IEnumerable<Layer> CreateLayers(World world, IEnumerable<Map> maps)
         {
             var bg = SpriteSheet.Load("woods_bg", world.Context);
 
@@ -52,7 +52,8 @@ namespace KidC
             thirdLayer.PositionBelow(secondLayer);
             yield return thirdLayer;
 
-            yield return new TileLayer(world, Serializer.Copy(map), RGPointI.Empty, LayerDepth.Foreground);
+            foreach(var map in maps)
+                yield return new TileLayer(world, Serializer.Copy(map), RGPointI.Empty, LayerDepth.Foreground);
 
             yield return new HUD(world);
         }

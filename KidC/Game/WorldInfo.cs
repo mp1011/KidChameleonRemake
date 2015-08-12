@@ -17,6 +17,7 @@ namespace KidC
     {
         public LevelTheme Theme { get; set; }
         public KCSceneType SceneType { get; set; }
+
         private ILevelTheme CreateTheme()
         {
             return ReflectionHelper.CreateObjectByAttribute<ILevelTheme, ThemeAttribute>(this, t => t.Theme == this.Theme);
@@ -46,7 +47,7 @@ namespace KidC
             world.BackgroundColor = this.BackgroundColor;
 
             var levelTheme = this.CreateTheme();
-            foreach (var layer in levelTheme.CreateLayers(world, this.Map))
+            foreach (var layer in levelTheme.CreateLayers(world, this.Maps))
                 world.AddLayer(layer);
 
             var foreground = world.GetLayers(LayerDepth.Foreground).FirstOrDefault();

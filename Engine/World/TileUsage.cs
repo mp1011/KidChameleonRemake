@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Engine.Collision;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -56,47 +57,70 @@ namespace Engine
 
     public class TileUsage
     {
+        public string AutomatchGroup { get; set; }
 
-        private Dictionary<GroupSide, string[]> mSideGroups;
+        public ICollection<String> Groups { get; set; }
 
-        public Dictionary<GroupSide, string[]> SideGroups
+        private Dictionary<Side, List<TileDef>> mSideMatches;
+
+        public void AddMatch(Side s, TileDef match)
         {
-            get
+            AddMatches(s, new TileDef[] { match });
+        }
+
+        public void AddMatches(Side s, IEnumerable<TileDef> matches)
+        {
+            var list = mSideMatches.TryGet(s, null);
+            if (list == null)
             {
-                if (mSideGroups == null)
-                    mSideGroups = new Dictionary<GroupSide, string[]>();
-                return mSideGroups;
+                list = new List<TileDef>();
+                mSideMatches.Add(s, list);
+            }
+
+            matches = matches.Where(p=> ! list.Any(q=>q.Equals(p)));
+            list.AddRange(matches);
+
+            var sorted = list.OrderBy(p => p.TileID).ToArray();
+            list.Clear();
+            list.AddRange(sorted);
+        }
+
+        public void RemoveMatch(Side s, TileDef tile)
+        {
+            var list = mSideMatches.TryGet(s, null);
+            if (list == null)
+            {
+                list = new List<TileDef>();
+                mSideMatches.Add(s, list);
+            }
+
+            list.RemoveAll(p => p.Equals(tile));
+        }
+
+        public void SyncMatches(IEnumerable<TileDef> matches)
+        {
+            foreach (var key in mSideMatches.Keys)
+            {
+                var oldMatches = mSideMatches[key].ToArray();
+                mSideMatches[key].Clear();
+                mSideMatches[key].AddRange(oldMatches.Select(p => matches.FirstOrDefault(q => q.TileID == p.TileID)).Where(p => p != null));
             }
         }
 
-        public IEnumerable<string> DistinctGroupNames
+        public IEnumerable<TileDef> GetMatches(Side s)
         {
-            get
-            {
-                return SideGroups.Values.Where(p => p.NotNullOrEmpty()).SelectMany(p => p).Where(p=>p!="*").Distinct().OrderBy(p => p);
-            }
+            return mSideMatches.TryGet(s, new List<TileDef>());
         }
 
-        public int SideCount(string groupName)
+        public void ClearMatches()
         {
-            return SideGroups.Values.Where(p => p.Contains(groupName)).Count();
+            mSideMatches.Clear();
         }
 
-        public int RandomUsageWeight { get; set; }
-     
         public TileUsage()
         {
+            this.Groups = new List<string>();
+            mSideMatches = new Dictionary<Side, List<TileDef>>();
         }
-
-        public bool ContainsGroups(IEnumerable<string> groups)
-        {
-            return groups.Any(p => this.DistinctGroupNames.Contains(p));
-        }
-
-        //public override string ToString()
-        //{
-        //    return SideGroups.Values.StringJoin(" ");
-        //}
-
     }
 }

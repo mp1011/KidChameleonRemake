@@ -168,17 +168,19 @@ namespace KidC
             SlopeDL=7
         }
 
-        private Map mForeground;
+        private World mWorld;
         private TileLayer mVRLayer;
+        private TileLayer[] mTileLayers;
         private int mBlocksPerTick = 6;
         private RGRectangleI mGridRange;
 
         public VRBlockReplacer(World owner) : base(LogicPriority.World, owner) 
         {
-            mForeground = owner.GetLayers(LayerDepth.Foreground).OfType<TileLayer>().FirstOrDefault().Map;
+            mWorld = owner;
 
-            mVRLayer = new TileLayer(owner,new Map(owner.Context, 
-                new GameResource<TileSet>("vrblocks", PathType.Tilesets),mForeground.TileDimensions.Width, mForeground.TileDimensions.Height),
+            mTileLayers = owner.GetLayers(LayerDepth.Foreground).OfType<TileLayer>().ToArray();
+            mVRLayer = new TileLayer(owner, new Map(owner.Context,
+                new GameResource<TileSet>("vrblocks", PathType.Tilesets), mTileLayers.First().Map.TileDimensions.Width, mTileLayers.First().Map.TileDimensions.Height),
                 RGPointI.Empty, LayerDepth.Foreground);
 
             owner.AddLayer(mVRLayer);
@@ -189,20 +191,22 @@ namespace KidC
 
         protected override void OnResume()
         {
-            var topLeft = mForeground.ScreenToTilePoint(Context.ScreenLocation.TopLeft);
-            var bottomRight = mForeground.ScreenToTilePoint(Context.ScreenLocation.BottomRight);
+            var topLeft = mWorld.CollisionInfo.WorldToTilePoint(Context.ScreenLocation.TopLeft);
+            var bottomRight = mWorld.CollisionInfo.WorldToTilePoint(Context.ScreenLocation.BottomRight);
             mGridRange = RGRectangleI.Create(topLeft, bottomRight);
 
             mCursor = mGridRange.TopLeft;
         }
 
         protected override void Update()
-        {            
+        {
             var count = mBlocksPerTick;
             while (--count > 0)
             {
-                mVRLayer.Map.SetTile(mCursor.X, mCursor.Y, (int)GetVRTile(mForeground.GetTile(mCursor.X, mCursor.Y)));
-                mForeground.SetTile(mCursor.X, mCursor.Y, TileDef.Blank.TileID);
+                mVRLayer.Map.SetTile(mCursor.X, mCursor.Y, (int)GetVRTile(mWorld.CollisionInfo.GetTile(mCursor.X, mCursor.Y).Instance.TileDef));
+
+                foreach(var layer in mTileLayers)
+                    layer.Map.SetTile(mCursor.X, mCursor.Y, TileDef.Blank.TileID);
 
                 mCursor.X++;
                 if (mCursor.X >= mGridRange.Right)

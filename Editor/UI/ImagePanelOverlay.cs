@@ -103,8 +103,11 @@ namespace Editor
 
         public IEnumerable<EditorPoint> GetPoints()
         {
-            yield return Area.TopLeft;
-            yield return Area.BottomRight;
+            if(Area.TopLeft != null)
+                yield return Area.TopLeft;
+
+            if(Area.BottomRight != null)
+                yield return Area.BottomRight;
         }
     }
 
@@ -123,7 +126,9 @@ namespace Editor
         public EditorGridPoint TopLeft { get; private set; }
         public EditorGridPoint BottomRight { get; private set; }
         public bool ShowGridLines { get; set; }
-       
+
+        public T HighlightedItem { get; private set; }
+
         public event EventHandler SelectionChanged;
 
         private Func<int, int, T> mGetItem;
@@ -160,7 +165,7 @@ namespace Editor
         public void DrawToClient(Graphics g)
         {
             var linePen = new Pen(Color.LightBlue);
-            var fillBrush = new SolidBrush(Color.FromArgb(150,Color.Yellow));
+            var fillBrush = new SolidBrush(Color.FromArgb(50,Color.Yellow));
 
             var drawWidth = this.BottomRight.ClientPoint.X - this.TopLeft.ClientPoint.X;
             var drawHeight = this.BottomRight.ClientPoint.Y - this.TopLeft.ClientPoint.Y;
@@ -198,6 +203,10 @@ namespace Editor
 
             var gridPoint = (args.Point as EditorGridPoint);
             bool isFirstClick = args.Buttons == MouseButtons.Left && !mMouseEvents.Any(p => p.Buttons == MouseButtons.Left);
+
+            if(mGetItem != null)
+                this.HighlightedItem = mGetItem(gridPoint.GridPoint.X, gridPoint.GridPoint.Y);
+
             mMouseEvents.Add(args);
 
             bool isSingleCellClick = mMouseEvents.All(p => p.Point.Equals(mMouseEvents.First().Point));

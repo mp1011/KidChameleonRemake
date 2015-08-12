@@ -10,15 +10,13 @@ namespace Engine
     {
         public Listeners(ILogicObject owner)
         {
-            CollisionListener = new CollisionListener(owner);
             SpriteListener = new SpriteListener(owner);
         }
 
-        public CollisionListener CollisionListener { get; private set; }
         public SpriteListener SpriteListener { get; private set; }
     }
 
-    public abstract class Listener<T> : LogicObject
+    public class Listener<T> : LogicObject
     {
         protected List<T> Objects { get; private set; }
 
@@ -39,11 +37,6 @@ namespace Engine
         {
             //todo Objects.Remove(obj);
         }
-    }
-
-    public class CollisionListener : Listener<ICollidable>
-    {
-        public CollisionListener(ILogicObject owner) : base(owner) { }
     }
 
     public class SpriteListener : Listener<Sprite>

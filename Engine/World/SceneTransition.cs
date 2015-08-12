@@ -95,6 +95,7 @@ namespace Engine
         public FadeoutSceneTransition(World current) : base(current) { }
 
         private WorldInfo mNewInfo;
+        private RGColor mOriginalSkyColor;
 
         public FadeoutSceneTransition(World current, WorldInfo newWorld)
             : base(current)
@@ -108,17 +109,19 @@ namespace Engine
             if (mNewInfo != null)
                 this.Trigger(mNewInfo);
 
+            mOriginalSkyColor = this.Context.CurrentWorld.BackgroundColor;
             base.OnEntrance();
         }
 
         protected override void DoTransitionIn(float percentage)
         {
-            this.Context.CurrentWorld.ExtraRenderInfo.FadeColor = RGColor.Black.Fade(RGColor.White, percentage);
+            this.Context.CurrentWorld.ExtraRenderInfo.FadeColor = RGColor.Black.Fade(RGColor.White, percentage);           
         }
 
         protected override void DoTransitionOut(float percentage)
         {
             this.Context.CurrentWorld.ExtraRenderInfo.FadeColor = RGColor.White.Fade(RGColor.Black, percentage);
+            this.Context.CurrentWorld.BackgroundColor = mOriginalSkyColor.Fade(RGColor.Black, percentage);
         }
 
 

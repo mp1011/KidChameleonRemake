@@ -65,7 +65,7 @@ namespace KidC
 
         private static SimpleGraphic CreateGraphic(TileLayer layer)
         {
-            var tileDef = layer.Map.Tileset.GetTiles().FirstOrDefault(p => p.TileID == (int)SpecialTile.Rock + 1000);
+            var tileDef = layer.Map.Tileset.GetSpecialTile(SpecialTile.Rock);
             return new SimpleGraphic(new TextureResource("SpriteSheets_Woods"), tileDef.SourcePosition);
         }
 
@@ -88,7 +88,7 @@ namespace KidC
             {
                 this.Kill(Engine.ExitCode.Removed);
 
-                var tileDef = mLayer.Map.Tileset.GetTiles().FirstOrDefault(p => p.TileID == (int)SpecialTile.Rock + 1000);
+                var tileDef = mLayer.Map.Tileset.GetSpecialTile(SpecialTile.Rock);
                 mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, tileDef.TileID);
 
                 var t = mLayer.Map.GetTile(mTileLocation.X, mTileLocation.Y);

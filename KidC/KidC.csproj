@@ -63,6 +63,7 @@
     <Compile Include="Objects\Factory.cs" />
     <Compile Include="Objects\Flag.cs" />
     <Compile Include="Objects\GeneralBehavior.cs" />
+    <Compile Include="Objects\StompController.cs" />
     <Compile Include="Player\DeathBehavior.cs" />
     <Compile Include="Player\PlayerFactory.cs" />
     <Compile Include="Objects\Prize.cs" />
@@ -81,6 +82,7 @@
     <Compile Include="Tile\PrizeBlock.cs" />
     <Compile Include="Tile\KidCTile.cs" />
     <Compile Include="Tile\RubberBlock.cs" />
+    <Compile Include="Tile\TileExtensions.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">

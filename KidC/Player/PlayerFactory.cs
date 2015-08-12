@@ -96,6 +96,7 @@ namespace KidC
             player.AddAnimation(KCAnimation.IronKnightClimb, new Animation(spriteSheet, Direction.Right, 22, 23, 24)).SetFrameDuration(10);
             player.SetAnimation(KCAnimation.Stand);
 
+            new StompController(player, Sounds.EnemyBounce);
             return playerInfo;
         }
 

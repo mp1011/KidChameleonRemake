@@ -27,7 +27,7 @@ namespace Engine
                 m = new Collision.TileCollisionManager<T>(collidable);
 
             if (collisionTypes.Contains(ObjectType.Border))
-                m = new Collision.BorderCollisionmanager<T>(collidable, layer => layer.Location, DirectionFlags.Horizontal);
+                m = new Collision.LevelBorderCollisionManager<T>(collidable, DirectionFlags.Horizontal);
 
 
             var obj = collisionTypes.Where(p => p.Is(ObjectType.Thing)).ToArray();
@@ -35,7 +35,7 @@ namespace Engine
             {
                 m = new Collision.ObjectCollisionManager<T>(collidable, obj);
                 if(collidable.Context.Listeners != null)
-                    collidable.Context.Listeners.CollisionListener.Register(collidable);
+                    collidable.GetWorld().CollisionInfo.CollisionListener.Register(collidable);
             }
 
             collidable.CollisionTypes = collisionTypes;
@@ -66,6 +66,12 @@ namespace Engine
 
             return true;
         }
+
+        public static World GetWorld(this ICollidable obj)
+        {
+            return obj.Context.CurrentWorld;
+        }
+    
     }
 
 
@@ -82,6 +88,33 @@ namespace Engine.Collision
         Right
     }
 
+    public static class SideExtensions
+    {
+
+        public static RGPointI ToOffset(this Side s)
+        {
+            switch (s)
+            {
+                case Side.Top: return new RGPointI(0, -1);
+                case Side.Left: return new RGPointI(-1, 0);
+                case Side.Bottom: return new RGPointI(0,1);
+                case Side.Right: return new RGPointI(1, 0);
+                default: return RGPointI.Empty;
+            }
+        }
+
+        public static Side Opposite(this Side s)
+        {
+            switch (s)
+            {
+                case Side.Top: return Side.Bottom;
+                case Side.Left: return Side.Right;
+                case Side.Bottom: return Side.Top;
+                case Side.Right: return Side.Left;
+                default: return Side.None;
+            }
+        }
+    }
     struct CorrectionRec
     {
         public Side Side;

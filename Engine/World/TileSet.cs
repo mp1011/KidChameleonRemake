@@ -49,7 +49,7 @@ namespace Engine
         {
             var t = mTiles.ToList();
             t.Add(tile);
-            mTiles = t.ToArray();
+            mTiles = t.OrderBy(p=>p.TileID).ToArray();
         }
         public TileDef GetTile(int tileID)
         {
@@ -133,6 +133,14 @@ namespace Engine
             return ts;
         }
 
+        public void ResetIDs()
+        {
+            int id = 0;
+            foreach (var tile in mTiles)
+                tile.SetValues(++id, null, null, null);
+        }
+
+
         #region Saving
         private class TilesetSaveModel
         {
@@ -157,6 +165,11 @@ namespace Engine
             this.mTileTexture = model.Texture;
             this.mTiles = model.Tiles;
             this.TileSize = model.TileSize;
+
+            ResetIDs();
+            foreach (var tile in mTiles)
+                tile.Usage.SyncMatches(mTiles);
+
         }
         #endregion
 

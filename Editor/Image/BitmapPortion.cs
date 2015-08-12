@@ -354,7 +354,7 @@ namespace Editor
             return ExtractGrid(origin, tileSize).Distinct(new PixelEqualityComparer()).ToArray();
         }
 
-        private IEnumerable<BitmapPortion> ExtractGrid(RGPointI origin, int gridSize)
+        public IEnumerable<BitmapPortion> ExtractGrid(RGPointI origin, int gridSize)
         {
             int oX = origin.X;
             int oY = origin.Y;

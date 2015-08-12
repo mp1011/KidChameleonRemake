@@ -18,4 +18,17 @@ namespace Editor
             return obj.TileLocation.GetHashCode() + obj.TileDef.TileID;
         }
     }
+
+    class TileDefEqualityComparer : IEqualityComparer<TileDef>
+    {
+        public bool Equals(TileDef x, TileDef y)
+        {
+            return x.TileID == y.TileID;
+        }
+
+        public int GetHashCode(TileDef obj)
+        {
+            return obj.TileID;
+        }
+    }
 }

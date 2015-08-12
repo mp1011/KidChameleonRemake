@@ -54,7 +54,7 @@ namespace KidC
                 if (this.Sprite.CurrentAnimationKey == KCAnimation.Attack || this.Sprite.CurrentAnimationKey == KCAnimation.AttackAlt)
                     return;
 
-                if (!this.Sprite.IsOnGround(mLayer))
+                if (!this.Sprite.IsOnGround())
                 {
                     if (!mNoAirSword)
                     {

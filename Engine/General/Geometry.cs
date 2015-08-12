@@ -778,6 +778,13 @@ namespace Engine
         {
             return new RGPointI(this.X - other.X, this.Y - other.Y);
         }
+
+        public static IEnumerable<RGPointI> EnumerateGrid(RGSizeI gridSize)
+        {
+            for(int x = 0; x < gridSize.Width;x++)
+                for(int y =0; y < gridSize.Height;y++)
+                    yield return new RGPointI(x,y);
+        }
     }
 
     public struct RGLine
@@ -1413,10 +1420,18 @@ namespace Engine
     {
         public static RGColor White { get { return RGColor.FromRGB(255, 255, 255); } }
         public static RGColor Black { get { return RGColor.FromRGB(0, 0, 0); } }
+        public bool IsTransparent
+        {
+            get
+            {
+                return Alpha.HasValue && Alpha.Value == 0;
+            }
+        }
 
         public byte Red;
         public byte Green;
         public byte Blue;
+        private byte? Alpha;
 
         public static RGColor FromRGB(byte r, byte g, byte b)
         {
@@ -1426,6 +1441,17 @@ namespace Engine
             c.Blue = b;
             return c;
         }
+
+        public static RGColor FromRGBA(byte r, byte g, byte b, byte a)
+        {
+            var c = new RGColor();
+            c.Red = r;
+            c.Green = g;
+            c.Blue = b;
+            c.Alpha = a;
+            return c;
+        }
+
 
         public override string ToString()
         {

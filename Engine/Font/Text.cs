@@ -24,21 +24,21 @@ namespace Engine
         private bool mTrimSpaces = true;
         public bool TrimSpaces { get { return mTrimSpaces; } set { mTrimSpaces = value; } }
 
-        private String message;
+        private String mMessage;
         public String Text
         {
             get
             {
-                if ((message ?? "").Length == 0 && Updater != null)
+                if ((mMessage ?? "").Length == 0 && Updater != null)
                 {
-                    message = Updater();
+                    mMessage = Updater();
                     if (ColorUpdater != null)
                         this.TextColor = ColorUpdater();
 
-                    SetText(message);
+                    SetText(mMessage);
                 }
 
-                return message;
+                return mMessage;
             }
             set
             {
@@ -160,14 +160,15 @@ namespace Engine
             PositionText(false);
         }
 
-        private void SetText(String p_message)
+        private void SetText(String message)
         {
-            if (message == p_message)
+            message = message.NullToEmpty();
+
+            if (message.Equals(mMessage))
                 return;
 
-            fadePct = 0;
-            message = p_message;
-
+            mMessage = message;
+            fadePct = 0;         
             PositionText(true);
 
             if (Fade == LetterFade.FadeIn)
@@ -196,9 +197,9 @@ namespace Engine
             currentWord.Clear();
 
             int letterIndex = 0;
-            for (int i = 0; i < message.Length; i++)
-            {           
-                char c = message[i];
+            for (int i = 0; i < mMessage.Length; i++)
+            {
+                char c = mMessage[i];
                 if (c == '\n')
                 {
                     currentWord.Clear();

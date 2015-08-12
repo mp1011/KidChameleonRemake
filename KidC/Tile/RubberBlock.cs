@@ -18,11 +18,6 @@ namespace KidC
         public override void HandleCollision(CollisionEvent collision, CollisionResponse collisionResponse)
         {
             collisionResponse.AddInteraction(new PlayerBounce(collision.Invert()), this);
-
-            var bouncingTile = new BouncingRubberBlock(TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer);
-            this.TileLayer.AddObject(bouncingTile);
-           // var bouncingTile = new BouncingMetalBlock(TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer);
-          //  this.TileLayer.AddObject(bouncingTile);                 
         }        
     }
 
@@ -65,7 +60,7 @@ namespace KidC
         {
             if (this.Age >= 30)
             {
-                var tileDef = mLayer.Map.Tileset.GetTiles().FirstOrDefault(p => p.TileID == (int)SpecialTile.Rubber + 1000);
+                var tileDef = mLayer.Map.Tileset.GetSpecialTile(SpecialTile.Rubber);
                 mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, tileDef.TileID);
                 this.Kill(Engine.ExitCode.Removed);
             }
@@ -132,7 +127,7 @@ namespace KidC
             {
                 var ySpeed = mCollisionEvent.CollisionSpeed.Y;
 
-                if (ySpeed <= 0)
+                if (ySpeed <= .5)
                     return;
 
                 SoundManager.PlaySoundIfNotPlaying(Sounds.RubberBounce);
@@ -153,9 +148,12 @@ namespace KidC
                 mHorizontalBounce.Direction = Direction.Left;
                 mHorizontalBounce.TargetSpeed = 0;
                 mHorizontalBounce.CurrentSpeed = this.Stats.SideBounceSpeed;
-
             }
 
+
+            var tileLayer = controller2.TileLayer;
+            var bouncingTile = new BouncingRubberBlock(tileLayer.Map.Tileset.TileSize, controller2.Tile.TileLocation, tileLayer);
+            tileLayer.AddObject(bouncingTile);
         }
     }
 

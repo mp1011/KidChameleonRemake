@@ -201,37 +201,25 @@
   <data name="&gt;&gt;pnlMap.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="chkAutoMode.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
-    <value>Button</value>
+  <data name="lstShow.Location" type="System.Drawing.Point, System.Drawing">
+    <value>244, 10</value>
   </data>
-  <data name="chkAutoMode.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
+  <data name="lstShow.Size" type="System.Drawing.Size, System.Drawing">
+    <value>117, 49</value>
   </data>
-  <data name="chkAutoMode.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
+  <data name="lstShow.TabIndex" type="System.Int32, mscorlib">
+    <value>1</value>
   </data>
-  <data name="chkAutoMode.Location" type="System.Drawing.Point, System.Drawing">
-    <value>181, 39</value>
+  <data name="&gt;&gt;lstShow.Name" xml:space="preserve">
+    <value>lstShow</value>
   </data>
-  <data name="chkAutoMode.Size" type="System.Drawing.Size, System.Drawing">
-    <value>94, 23</value>
+  <data name="&gt;&gt;lstShow.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckedListBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </data>
-  <data name="chkAutoMode.TabIndex" type="System.Int32, mscorlib">
-    <value>6</value>
-  </data>
-  <data name="chkAutoMode.Text" xml:space="preserve">
-    <value>Automatic Mode</value>
-  </data>
-  <data name="&gt;&gt;chkAutoMode.Name" xml:space="preserve">
-    <value>chkAutoMode</value>
-  </data>
-  <data name="&gt;&gt;chkAutoMode.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;chkAutoMode.Parent" xml:space="preserve">
+  <data name="&gt;&gt;lstShow.Parent" xml:space="preserve">
     <value>pnlTop</value>
   </data>
-  <data name="&gt;&gt;chkAutoMode.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;lstShow.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
   <data name="cboGridSnap.Location" type="System.Drawing.Point, System.Drawing">
@@ -254,99 +242,6 @@
   </data>
   <data name="&gt;&gt;cboGridSnap.ZOrder" xml:space="preserve">
     <value>1</value>
-  </data>
-  <data name="btnRandomize.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="btnRandomize.Location" type="System.Drawing.Point, System.Drawing">
-    <value>281, 29</value>
-  </data>
-  <data name="btnRandomize.Size" type="System.Drawing.Size, System.Drawing">
-    <value>70, 33</value>
-  </data>
-  <data name="btnRandomize.TabIndex" type="System.Int32, mscorlib">
-    <value>4</value>
-  </data>
-  <data name="btnRandomize.Text" xml:space="preserve">
-    <value>Randomize</value>
-  </data>
-  <data name="&gt;&gt;btnRandomize.Name" xml:space="preserve">
-    <value>btnRandomize</value>
-  </data>
-  <data name="&gt;&gt;btnRandomize.Type" xml:space="preserve">
-    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;btnRandomize.Parent" xml:space="preserve">
-    <value>pnlTop</value>
-  </data>
-  <data name="&gt;&gt;btnRandomize.ZOrder" xml:space="preserve">
-    <value>2</value>
-  </data>
-  <data name="chkSelect.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
-    <value>Button</value>
-  </data>
-  <data name="chkSelect.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="chkSelect.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="chkSelect.Location" type="System.Drawing.Point, System.Drawing">
-    <value>181, 10</value>
-  </data>
-  <data name="chkSelect.Size" type="System.Drawing.Size, System.Drawing">
-    <value>47, 23</value>
-  </data>
-  <data name="chkSelect.TabIndex" type="System.Int32, mscorlib">
-    <value>3</value>
-  </data>
-  <data name="chkSelect.Text" xml:space="preserve">
-    <value>Select</value>
-  </data>
-  <data name="&gt;&gt;chkSelect.Name" xml:space="preserve">
-    <value>chkSelect</value>
-  </data>
-  <data name="&gt;&gt;chkSelect.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;chkSelect.Parent" xml:space="preserve">
-    <value>pnlTop</value>
-  </data>
-  <data name="&gt;&gt;chkSelect.ZOrder" xml:space="preserve">
-    <value>3</value>
-  </data>
-  <data name="chkDraw.Appearance" type="System.Windows.Forms.Appearance, System.Windows.Forms">
-    <value>Button</value>
-  </data>
-  <data name="chkDraw.AutoSize" type="System.Boolean, mscorlib">
-    <value>True</value>
-  </data>
-  <data name="chkDraw.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
-    <value>NoControl</value>
-  </data>
-  <data name="chkDraw.Location" type="System.Drawing.Point, System.Drawing">
-    <value>229, 10</value>
-  </data>
-  <data name="chkDraw.Size" type="System.Drawing.Size, System.Drawing">
-    <value>42, 23</value>
-  </data>
-  <data name="chkDraw.TabIndex" type="System.Int32, mscorlib">
-    <value>2</value>
-  </data>
-  <data name="chkDraw.Text" xml:space="preserve">
-    <value>Draw</value>
-  </data>
-  <data name="&gt;&gt;chkDraw.Name" xml:space="preserve">
-    <value>chkDraw</value>
-  </data>
-  <data name="&gt;&gt;chkDraw.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
-  </data>
-  <data name="&gt;&gt;chkDraw.Parent" xml:space="preserve">
-    <value>pnlTop</value>
-  </data>
-  <data name="&gt;&gt;chkDraw.ZOrder" xml:space="preserve">
-    <value>4</value>
   </data>
   <data name="chkShowGrid.AutoSize" type="System.Boolean, mscorlib">
     <value>True</value>
@@ -376,7 +271,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;chkShowGrid.ZOrder" xml:space="preserve">
-    <value>5</value>
+    <value>2</value>
   </data>
   <data name="tbZoom.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
     <value>NoControl</value>
@@ -403,7 +298,7 @@
     <value>pnlTop</value>
   </data>
   <data name="&gt;&gt;tbZoom.ZOrder" xml:space="preserve">
-    <value>6</value>
+    <value>3</value>
   </data>
   <data name="pnlTop.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Top</value>
@@ -469,10 +364,10 @@
     <value>Fill</value>
   </data>
   <data name="mapProperties.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 50</value>
+    <value>0, 267</value>
   </data>
   <data name="mapProperties.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 513</value>
+    <value>501, 296</value>
   </data>
   <data name="mapProperties.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -493,7 +388,7 @@
     <value>NoControl</value>
   </data>
   <data name="btnApplyMapInfo.Location" type="System.Drawing.Point, System.Drawing">
-    <value>6, 8</value>
+    <value>3, 234</value>
   </data>
   <data name="btnApplyMapInfo.Size" type="System.Drawing.Size, System.Drawing">
     <value>74, 27</value>
@@ -523,7 +418,7 @@
     <value>0, 0</value>
   </data>
   <data name="pnlMapInfo.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 50</value>
+    <value>501, 267</value>
   </data>
   <data name="pnlMapInfo.TabIndex" type="System.Int32, mscorlib">
     <value>3</value>
@@ -568,10 +463,10 @@
     <value>Fill</value>
   </data>
   <data name="pnlTileset.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 218</value>
+    <value>0, 307</value>
   </data>
   <data name="pnlTileset.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 345</value>
+    <value>501, 256</value>
   </data>
   <data name="pnlTileset.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>
@@ -592,10 +487,10 @@
     <value>Fill</value>
   </data>
   <data name="propSpecialTile.Location" type="System.Drawing.Point, System.Drawing">
-    <value>153, 0</value>
+    <value>302, 154</value>
   </data>
   <data name="propSpecialTile.Size" type="System.Drawing.Size, System.Drawing">
-    <value>348, 218</value>
+    <value>199, 153</value>
   </data>
   <data name="propSpecialTile.TabIndex" type="System.Int32, mscorlib">
     <value>2</value>
@@ -612,29 +507,227 @@
   <data name="&gt;&gt;propSpecialTile.ZOrder" xml:space="preserve">
     <value>0</value>
   </data>
-  <data name="lstGroups.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
-    <value>Left</value>
+  <data name="chkMatchPrev.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
-  <data name="lstGroups.Location" type="System.Drawing.Point, System.Drawing">
-    <value>0, 0</value>
+  <data name="chkMatchPrev.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
-  <data name="lstGroups.Size" type="System.Drawing.Size, System.Drawing">
-    <value>153, 218</value>
+  <data name="chkMatchPrev.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 83</value>
   </data>
-  <data name="lstGroups.TabIndex" type="System.Int32, mscorlib">
+  <data name="chkMatchPrev.Size" type="System.Drawing.Size, System.Drawing">
+    <value>162, 17</value>
+  </data>
+  <data name="chkMatchPrev.TabIndex" type="System.Int32, mscorlib">
+    <value>23</value>
+  </data>
+  <data name="chkMatchPrev.Text" xml:space="preserve">
+    <value>Match Against Previous Only</value>
+  </data>
+  <data name="&gt;&gt;chkMatchPrev.Name" xml:space="preserve">
+    <value>chkMatchPrev</value>
+  </data>
+  <data name="&gt;&gt;chkMatchPrev.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkMatchPrev.Parent" xml:space="preserve">
+    <value>pnlTileMatching</value>
+  </data>
+  <data name="&gt;&gt;chkMatchPrev.ZOrder" xml:space="preserve">
+    <value>0</value>
+  </data>
+  <data name="chkEnableTileMatching.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkEnableTileMatching.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="chkEnableTileMatching.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 37</value>
+  </data>
+  <data name="chkEnableTileMatching.Size" type="System.Drawing.Size, System.Drawing">
+    <value>81, 17</value>
+  </data>
+  <data name="chkEnableTileMatching.TabIndex" type="System.Int32, mscorlib">
+    <value>22</value>
+  </data>
+  <data name="chkEnableTileMatching.Text" xml:space="preserve">
+    <value>Auto Match</value>
+  </data>
+  <data name="&gt;&gt;chkEnableTileMatching.Name" xml:space="preserve">
+    <value>chkEnableTileMatching</value>
+  </data>
+  <data name="&gt;&gt;chkEnableTileMatching.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkEnableTileMatching.Parent" xml:space="preserve">
+    <value>pnlTileMatching</value>
+  </data>
+  <data name="&gt;&gt;chkEnableTileMatching.ZOrder" xml:space="preserve">
     <value>1</value>
   </data>
-  <data name="&gt;&gt;lstGroups.Name" xml:space="preserve">
-    <value>lstGroups</value>
+  <data name="chkDraw.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
   </data>
-  <data name="&gt;&gt;lstGroups.Type" xml:space="preserve">
-    <value>System.Windows.Forms.CheckedListBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  <data name="chkDraw.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
   </data>
-  <data name="&gt;&gt;lstGroups.Parent" xml:space="preserve">
+  <data name="chkDraw.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 14</value>
+  </data>
+  <data name="chkDraw.Size" type="System.Drawing.Size, System.Drawing">
+    <value>51, 17</value>
+  </data>
+  <data name="chkDraw.TabIndex" type="System.Int32, mscorlib">
+    <value>21</value>
+  </data>
+  <data name="chkDraw.Text" xml:space="preserve">
+    <value>Draw</value>
+  </data>
+  <data name="&gt;&gt;chkDraw.Name" xml:space="preserve">
+    <value>chkDraw</value>
+  </data>
+  <data name="&gt;&gt;chkDraw.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkDraw.Parent" xml:space="preserve">
+    <value>pnlTileMatching</value>
+  </data>
+  <data name="&gt;&gt;chkDraw.ZOrder" xml:space="preserve">
+    <value>2</value>
+  </data>
+  <data name="chkAlterNeighbors.AutoSize" type="System.Boolean, mscorlib">
+    <value>True</value>
+  </data>
+  <data name="chkAlterNeighbors.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="chkAlterNeighbors.Location" type="System.Drawing.Point, System.Drawing">
+    <value>6, 60</value>
+  </data>
+  <data name="chkAlterNeighbors.Size" type="System.Drawing.Size, System.Drawing">
+    <value>98, 17</value>
+  </data>
+  <data name="chkAlterNeighbors.TabIndex" type="System.Int32, mscorlib">
+    <value>20</value>
+  </data>
+  <data name="chkAlterNeighbors.Text" xml:space="preserve">
+    <value>Alter Neighbors</value>
+  </data>
+  <data name="&gt;&gt;chkAlterNeighbors.Name" xml:space="preserve">
+    <value>chkAlterNeighbors</value>
+  </data>
+  <data name="&gt;&gt;chkAlterNeighbors.Type" xml:space="preserve">
+    <value>System.Windows.Forms.CheckBox, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;chkAlterNeighbors.Parent" xml:space="preserve">
+    <value>pnlTileMatching</value>
+  </data>
+  <data name="&gt;&gt;chkAlterNeighbors.ZOrder" xml:space="preserve">
+    <value>3</value>
+  </data>
+  <data name="btnRemoveMatches.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnRemoveMatches.Location" type="System.Drawing.Point, System.Drawing">
+    <value>3, 125</value>
+  </data>
+  <data name="btnRemoveMatches.Size" type="System.Drawing.Size, System.Drawing">
+    <value>66, 23</value>
+  </data>
+  <data name="btnRemoveMatches.TabIndex" type="System.Int32, mscorlib">
+    <value>19</value>
+  </data>
+  <data name="btnRemoveMatches.Text" xml:space="preserve">
+    <value>- Matches</value>
+  </data>
+  <data name="&gt;&gt;btnRemoveMatches.Name" xml:space="preserve">
+    <value>btnRemoveMatches</value>
+  </data>
+  <data name="&gt;&gt;btnRemoveMatches.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnRemoveMatches.Parent" xml:space="preserve">
+    <value>pnlTileMatching</value>
+  </data>
+  <data name="&gt;&gt;btnRemoveMatches.ZOrder" xml:space="preserve">
+    <value>4</value>
+  </data>
+  <data name="btnSetMatches.ImeMode" type="System.Windows.Forms.ImeMode, System.Windows.Forms">
+    <value>NoControl</value>
+  </data>
+  <data name="btnSetMatches.Location" type="System.Drawing.Point, System.Drawing">
+    <value>75, 125</value>
+  </data>
+  <data name="btnSetMatches.Size" type="System.Drawing.Size, System.Drawing">
+    <value>66, 23</value>
+  </data>
+  <data name="btnSetMatches.TabIndex" type="System.Int32, mscorlib">
+    <value>18</value>
+  </data>
+  <data name="btnSetMatches.Text" xml:space="preserve">
+    <value>+ Matches</value>
+  </data>
+  <data name="&gt;&gt;btnSetMatches.Name" xml:space="preserve">
+    <value>btnSetMatches</value>
+  </data>
+  <data name="&gt;&gt;btnSetMatches.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Button, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;btnSetMatches.Parent" xml:space="preserve">
+    <value>pnlTileMatching</value>
+  </data>
+  <data name="&gt;&gt;btnSetMatches.ZOrder" xml:space="preserve">
+    <value>5</value>
+  </data>
+  <data name="pnlTileMatching.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Top</value>
+  </data>
+  <data name="pnlTileMatching.Location" type="System.Drawing.Point, System.Drawing">
+    <value>302, 0</value>
+  </data>
+  <data name="pnlTileMatching.Size" type="System.Drawing.Size, System.Drawing">
+    <value>199, 154</value>
+  </data>
+  <data name="pnlTileMatching.TabIndex" type="System.Int32, mscorlib">
+    <value>4</value>
+  </data>
+  <data name="&gt;&gt;pnlTileMatching.Name" xml:space="preserve">
+    <value>pnlTileMatching</value>
+  </data>
+  <data name="&gt;&gt;pnlTileMatching.Type" xml:space="preserve">
+    <value>System.Windows.Forms.Panel, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </data>
+  <data name="&gt;&gt;pnlTileMatching.Parent" xml:space="preserve">
     <value>panel1</value>
   </data>
-  <data name="&gt;&gt;lstGroups.ZOrder" xml:space="preserve">
+  <data name="&gt;&gt;pnlTileMatching.ZOrder" xml:space="preserve">
     <value>1</value>
+  </data>
+  <data name="tileFilter.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
+    <value>Left</value>
+  </data>
+  <data name="tileFilter.Location" type="System.Drawing.Point, System.Drawing">
+    <value>0, 0</value>
+  </data>
+  <data name="tileFilter.Size" type="System.Drawing.Size, System.Drawing">
+    <value>302, 307</value>
+  </data>
+  <data name="tileFilter.TabIndex" type="System.Int32, mscorlib">
+    <value>3</value>
+  </data>
+  <data name="&gt;&gt;tileFilter.Name" xml:space="preserve">
+    <value>tileFilter</value>
+  </data>
+  <data name="&gt;&gt;tileFilter.Type" xml:space="preserve">
+    <value>Editor.GroupFilter, Editor, Version=0.0.0.0, Culture=neutral, PublicKeyToken=null</value>
+  </data>
+  <data name="&gt;&gt;tileFilter.Parent" xml:space="preserve">
+    <value>panel1</value>
+  </data>
+  <data name="&gt;&gt;tileFilter.ZOrder" xml:space="preserve">
+    <value>2</value>
   </data>
   <data name="panel1.Dock" type="System.Windows.Forms.DockStyle, System.Windows.Forms">
     <value>Top</value>
@@ -643,7 +736,7 @@
     <value>0, 0</value>
   </data>
   <data name="panel1.Size" type="System.Drawing.Size, System.Drawing">
-    <value>501, 218</value>
+    <value>501, 307</value>
   </data>
   <data name="panel1.TabIndex" type="System.Int32, mscorlib">
     <value>0</value>

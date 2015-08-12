@@ -1,4 +1,8 @@
-﻿ui to assign groups based on colors of edge
+﻿same mask behavior
 
-tile selector
-	[show][hide] NAME
+
+BLOCKS
+TRANSFORMS
+ENEMIES
+LEVELS
+

@@ -129,7 +129,6 @@ namespace Engine
                 mOriginalCollisionTypes = value;
             }
         }
-
         public Layer DrawLayer { get; private set; }
 
         public void RemoveCollisionType(ObjectType i)

@@ -19,7 +19,7 @@ namespace Editor
         Wheel
     }
 
-    class ImageEventArgs : EventArgs
+    class ImageEventArgs : EventArgs 
     {
         public EditorPoint Point { get; private set; }
         public MouseButtons Buttons { get; private set; }

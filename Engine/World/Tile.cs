@@ -86,6 +86,21 @@ namespace Engine
             }
         }
 
+
+        [DisplayName("Automatch Group")]
+        public string _AutomatchGroupForEditor
+        {
+            get
+            {
+                return this.Usage.AutomatchGroup;
+            }
+            set
+            {
+                this.Usage.AutomatchGroup = value;
+            }
+        }
+
+
         [DisplayName("Flags")]
         public TileFlags _FlagsForEditor { get { return this.Flags; } set { this.Flags = value; } }
      
@@ -196,17 +211,18 @@ namespace Engine
             public RGRectangleI[] SourcePositions;
             public int FrameDuration;
             public DirectionFlags Sides;
-            public Dictionary<GroupSide,string> SideGroups;
+            public Dictionary<Side, int[]> SideMatches = new Dictionary<Side, int[]>();
             public string[] Groups;
-            public int RandomUsageWeight;
+            public String AutomatchGroup;
+
             public object ExtraData;
         }
 
         public object GetSaveModel()
         {
-            var sideGroups = new Dictionary<GroupSide, string>();
-            foreach (var key in this.Usage.SideGroups.Keys)
-                sideGroups.Add(key, this.Usage.SideGroups[key].StringJoin(","));
+            var sideMatches = new Dictionary<Side, int[]>();
+            foreach (Side key in Enum.GetValues(typeof(Side)))
+                sideMatches.Add(key, this.Usage.GetMatches(key).Select(p=>p.TileID).ToArray());
 
             return new TileSaveModel
             {
@@ -215,8 +231,9 @@ namespace Engine
                 SourcePositions = this.SourcePositions,
                 FrameDuration = this.FrameDuration,
                 Sides = this.Sides,
-                SideGroups = sideGroups,
-                RandomUsageWeight = this.Usage.RandomUsageWeight,
+                SideMatches = sideMatches,
+                Groups = this.Usage.Groups.ToArray(),
+                AutomatchGroup = this.Usage.AutomatchGroup,
                 ExtraData = GetSaveModelExtra()
             };
         }
@@ -244,12 +261,19 @@ namespace Engine
             this.SourcePositions = model.SourcePositions;
             this.FrameDuration = model.FrameDuration;
             this.Sides = model.Sides;
+            this.Usage.AutomatchGroup = model.AutomatchGroup;
 
-            foreach (var key in model.SideGroups.Keys)
-                this.Usage.SideGroups.AddOrSet(key, model.SideGroups[key].Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries));
+            foreach (var key in model.SideMatches.Keys)
+            {
+                foreach (var id in model.SideMatches[key])
+                {
+                    var tempDef = new TileDef();
+                    tempDef.SetValues(id, null, null, null);
+                    this.Usage.AddMatch(key, tempDef);
+                }
+            }
 
-            this.Usage.RandomUsageWeight = model.RandomUsageWeight;
-       
+            this.Usage.Groups = model.Groups.NeverNull().ToList();
             this.LoadExtra(model.ExtraData);
         }
 
@@ -345,7 +369,20 @@ namespace Engine
         public TileInstance GetAdjacentTile(int xOff, int yOff)
         {
             var nextTile = TileLocation.Offset(xOff, yOff);
-            return this.Map.GetTileAtCoordinates(nextTile.X, nextTile.Y);
+            return this.Map.GetTileAtGridCoordinates(nextTile.X, nextTile.Y);
+        }
+
+        public TileInstance GetAdjacentTile(RGPointI offset)
+        {
+            return GetAdjacentTile(offset.X, offset.Y);
+        }
+
+        public IEnumerable<TileInstance> GetAdjacentTiles()
+        {
+            yield return GetAdjacentTile(-1, 0);
+            yield return GetAdjacentTile(1, 0);
+            yield return GetAdjacentTile(0,-1);
+            yield return GetAdjacentTile(0, 1);
         }
 
         public IEnumerable<TileInstance> GetTilesInLine(Direction d)
@@ -361,7 +398,7 @@ namespace Engine
 
             while (true)
             {
-                var tile = Map.GetTileAtCoordinates(x, y);
+                var tile = Map.GetTileAtGridCoordinates(x, y);
                 if (tile.TileDef.IsOutOfBounds)
                     break;
                 else
@@ -378,11 +415,11 @@ namespace Engine
                 return this;
 
             this.Map.SetTile(this.TileLocation.X, this.TileLocation.Y, newTile.TileID);
-            return this.Map.GetTileAtCoordinates(this.TileLocation.X, this.TileLocation.Y);
+            return this.Map.GetTileAtGridCoordinates(this.TileLocation.X, this.TileLocation.Y);
         }
 
         public abstract bool IsSpecial { get; }
-        public abstract CollidingTile CreateCollidingTile(TileLayer tileLayer);
+        public abstract CollidingTile CreateCollidingTile(TileLayer layer);
 
         public override bool Equals(object obj)
         {
@@ -393,6 +430,22 @@ namespace Engine
             return other.TileLocation.Equals(this.TileLocation) &&
                 other.TileDef.Equals(this.TileDef);
         }
+
+        #region AdjacentTiles
+
+        [JsonIgnore]
+        public TileInstance LeftTile { get { return GetAdjacentTile(-1, 0); } }
+
+        [JsonIgnore]
+        public TileInstance RightTile { get { return GetAdjacentTile(1, 0); } }
+
+        [JsonIgnore]
+        public TileInstance AboveTile { get { return GetAdjacentTile(0, -1); } }
+
+        [JsonIgnore]
+        public TileInstance BelowTile { get { return GetAdjacentTile(0, 1); } }
+
+        #endregion
     }
 
 

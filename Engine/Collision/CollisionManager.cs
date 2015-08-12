@@ -9,26 +9,25 @@ namespace Engine.Collision
     public abstract class CollisionManager<T> : LogicObject where T : LogicObject, ICollidable
     {
         protected T CollidingObject { get; private set; }
-
         protected LayerDepth LayerDepth { get { return CollidingObject.LayerDepth; } }
+        private World mWorld;
 
         public CollisionManager(T obj)
             : base(LogicPriority.Collision, obj, RelationFlags.DestroyWhenParentDestroyed)
         {
             this.CollidingObject = obj;
+            mWorld = this.CollidingObject.GetWorld();
         }
 
-        protected abstract IEnumerable<CollisionEvent> CheckCollisions(Layer layer);
+        protected abstract IEnumerable<CollisionEvent> CheckCollisions(WorldCollisionInfo collisionInfo);
 
         private IEnumerable<CollisionEvent> CheckCollisions()
         {
             if (CollidingObject.Location.X >= 0 && CollidingObject.Location.Y >= 0)
-            {
-                foreach (var layer in Context.CurrentWorld.GetLayers(this.LayerDepth))
-                {
-                    foreach (var collisionEvent in CheckCollisions(layer))
-                        yield return collisionEvent;
-                }
+            {               
+                foreach (var collisionEvent in CheckCollisions(mWorld.CollisionInfo))
+                    yield return collisionEvent;
+                
             }
         }
 

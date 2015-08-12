@@ -99,23 +99,23 @@ namespace Engine.Collision
         }
     }
 
-    class BorderCollisionmanager<T> : CollisionManager<T> where T : LogicObject, ICollidable    
+    abstract class BorderCollisionmanager<T> : CollisionManager<T> where T : LogicObject, ICollidable    
     {
 
-        private Func<Layer, RGRectangleI> mGetBounds;
+        private Func<WorldCollisionInfo, RGRectangleI> mGetBounds;
         private DirectionFlags mCheckSides;
 
-        public BorderCollisionmanager(T obj, Func<Layer, RGRectangleI> fnGetBounds, DirectionFlags checkSides)
+        public BorderCollisionmanager(T obj, DirectionFlags checkSides)
             : base(obj)
         {
-            mGetBounds = fnGetBounds;
             mCheckSides = checkSides;
         }
 
+        protected abstract RGRectangleI GetBounds(WorldCollisionInfo info);
 
-        protected override IEnumerable<CollisionEvent> CheckCollisions(Layer layer)
+        protected override IEnumerable<CollisionEvent> CheckCollisions(WorldCollisionInfo info)
         {
-            var bounds = mGetBounds(layer);
+            var bounds = GetBounds(info);
             var hb = this.CollidingObject.Area;
 
             if (hb.Left < bounds.Left && mCheckSides.Left)
@@ -134,6 +134,19 @@ namespace Engine.Collision
             return new CollisionEvent(this.CollidingObject, new BorderEdge(bounds, side), true, true, true, true, true, HitboxType.Primary, HitboxType.Primary);
         }
 
+    }
+
+    class LevelBorderCollisionManager<T> : BorderCollisionmanager<T> where T : LogicObject, ICollidable
+    {
+
+        public LevelBorderCollisionManager(T obj, DirectionFlags checkSides)
+            : base(obj, checkSides)        {      }
+
+
+        protected override RGRectangleI GetBounds(WorldCollisionInfo info)
+        {
+            return info.LevelBounds;
+        }
     }
 
    

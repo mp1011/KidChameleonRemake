@@ -7,11 +7,20 @@ using System.Linq;
 using System.Text;
 using System.Windows.Forms;
 using Engine;
+using Engine.Collision;
 
 namespace Editor
 {
     public partial class DirectionSelector : UserControl
     {
+
+        private bool mAllowDiagonals=true;
+
+        public bool AllowDiagonals { get { return mAllowDiagonals; } set { mAllowDiagonals = value; } }
+
+        public delegate void DirectionChangedEventHandler(DirectionSelector sender, EventArgs args);
+        public event DirectionChangedEventHandler DirectionChanged;
+  
         public DirectionSelector()
         {
             InitializeComponent();
@@ -42,6 +51,24 @@ namespace Editor
             }
         }
 
+        public Side SelectedSide
+        {
+            get
+            {
+                var f = this.Flags;
+                if (f.Left)
+                    return Side.Left;
+                if (f.Right)
+                    return Side.Right;
+                if (f.Up)
+                    return Side.Top;
+                if (f.Down)
+                    return Side.Bottom;
+                else
+                    return Side.None;
+            }
+        }
+
         public DirectionFlags Flags
         {
             get
@@ -64,24 +91,37 @@ namespace Editor
 
         private void chkRight_CheckedChanged(object sender, EventArgs e)
         {
+            if (chkRight.Checked && !AllowDiagonals)
+                { chkUp.Checked = false; chkDown.Checked = false; }
+
             if(chkRight.Checked) chkLeft.Checked = false;
             RefreshDirection();
         }
 
         private void chkUp_CheckedChanged(object sender, EventArgs e)
         {
+
+            if (chkUp.Checked && !AllowDiagonals)
+                { chkLeft.Checked = false; chkRight.Checked = false; }
+
             if(chkUp.Checked) chkDown.Checked = false;
             RefreshDirection();
         }
 
         private void chkLeft_CheckedChanged(object sender, EventArgs e)
         {
+            if (chkLeft.Checked && !AllowDiagonals)
+                { chkUp.Checked = false; chkDown.Checked = false; }
+
             if(chkLeft.Checked) chkRight.Checked = false;
             RefreshDirection();
         }
 
         private void chkDown_CheckedChanged(object sender, EventArgs e)
         {
+            if (chkDown.Checked && !AllowDiagonals)
+                { chkLeft.Checked = false; chkRight.Checked = false; }
+
             if(chkDown.Checked) chkUp.Checked = false;
             RefreshDirection();
         }
@@ -90,6 +130,8 @@ namespace Editor
         private void RefreshDirection()
         {
             txtDegrees.Text = this.SelectedDirection.ToString();
+            if (DirectionChanged != null)
+                DirectionChanged(this, new EventArgs());
         }
 
     }

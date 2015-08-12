@@ -69,7 +69,13 @@ namespace Editor.Forms
                         //TODO    dest.Groups = src.Groups;     
                     }
             });
-            chkProperties.Items.Add(new PropertyBinding<TileDef> { Name = "Random Usage", Copy = (src, dest) => dest.Usage.RandomUsageWeight = src.Usage.RandomUsageWeight });
+           // chkProperties.Items.Add(new PropertyBinding<TileDef> { Name = "Random Usage", Copy = (src, dest) => dest.Usage.RandomUsageWeight = src.Usage.RandomUsageWeight });
+            chkProperties.Items.Add(new PropertyBinding<TileDef>
+                {
+                    Name = "Automatch Group",
+                    Copy = (src, dest) => dest._AutomatchGroupForEditor = src._AutomatchGroupForEditor
+                });
+
 
             pnlBase.SelectionMode = SelectionMode.Single;
             pnlTileset.SelectionMode = SelectionMode.Multi;
@@ -90,9 +96,26 @@ namespace Editor.Forms
         }
 
         void pnlTileset_ImageClicked(object sender, ImageEventArgs e)
-        {                  
+        {
             if (e.Action == MouseActionType.Click)
-                OnTileSelected();
+            {
+                if (e.Buttons == System.Windows.Forms.MouseButtons.Left)
+                    OnTileSelected();
+                else if (e.Buttons == System.Windows.Forms.MouseButtons.Right)
+                {
+                    var pt = (e.Point as EditorGridPoint).GridPoint;
+
+                    AddTileMatch(pnlTileset.ActiveMap.GetTileAtGridCoordinates(pt.X, pt.Y).TileDef);
+                }
+            }
+            else if (e.Action == MouseActionType.Move)
+            {
+                var tile = pnlTileset.HighlightedTile;
+                if (tile != null)
+                    DisplayMatchPreview(pnlTileset.HighlightedTile.TileDef);
+                else
+                    DisplayMatchPreview(null);
+            }
         }
 
         private void pnlBase_Load(object sender, EventArgs e)
@@ -114,7 +137,9 @@ namespace Editor.Forms
         public void LoadTileset(TileSet ts)
         {
             mTileset = ts;
-            pnlTileset.SetFromTileset(ts);     
+            pnlTileset.SetFromTileset(ts);
+            InitGroupsTab();
+            tileFilter.LoadData(pnlTileset);
         }
 
         public void Save()
@@ -145,9 +170,6 @@ namespace Editor.Forms
         }
         private void OnTileSelected()
         {
-            if(!mLastSelectedTiles.ContainsAll(SelectedTileDefs))
-                ApplyGroupsToCurrent();
-
             mLastSelectedTiles = this.SelectedTileDefs.ToArray();
 
             var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
@@ -160,7 +182,8 @@ namespace Editor.Forms
             tileProperties.SelectedObject = selectedTile.TileDef;
             tileProperties.Refresh();
 
-            pnlTilePreview.Refresh();
+            RefreshGroups(def);
+            RefreshMatches(def);
 
             if(def != null)
                 Forms.frmLog.AddLine("TileID=" + def.TileID);
@@ -246,8 +269,6 @@ namespace Editor.Forms
 
         private void RefreshFilter()
         {
-            var groups = txtGroup.Text.Split(new char[]{','}, StringSplitOptions.RemoveEmptyEntries);
-
             throw new NotImplementedException();
             //if(groups.Length == 0)
             //    pnlTileset.SetTiles(mTileset.CreateTileset(this.TransparentColor, "tiles", null), TilesPerRow);
@@ -256,46 +277,7 @@ namespace Editor.Forms
             //else
             //    pnlTileset.SetTiles(mTileset.CreateTileset(this.TransparentColor, "tiles", t => t.Usage.ContainsAny(groups)), TilesPerRow);
         }
-
-        private void pnlTilePreview_Paint(object sender, PaintEventArgs e)
-        {
-            try
-            {
-                if (pnlTileset.SelectedTiles().IsNullOrEmpty())
-                {
-                    e.Graphics.Clear(Color.Black);
-                    return;
-                }
-
-                var tile = pnlTileset.SelectedTiles().FirstOrDefault().TileDef;
-                if (tile == null)
-                    return;
-
-                e.Graphics.SetBlockyScaling();
-                e.Graphics.DrawImage(pnlTileset.Tileset.Texture.GetImage(), new Rectangle(0, 0, pnlTilePreview.Width, pnlTilePreview.Height), tile.SourcePosition.ToSystemRec(), GraphicsUnit.Pixel);
-            }
-            catch (Exception ex)
-            {
-                frmLog.AddLine(ex.Message);
-            }
-        }
-
-        private void tileProperties_PropertyValueChanged(object s, PropertyValueChangedEventArgs e)
-        {
-            if (e.ChangedItem.Label == "Groups")
-            {
-                if(!e.OldValue.Equals(e.ChangedItem.Value))
-                    UpdateGroupTextBoxes();
-            }
-        }
-
-       
-
-        private void tileProperties_SelectedObjectsChanged(object sender, EventArgs e)
-        {
-            UpdateGroupTextBoxes();
-        }
-
+      
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.LoadTileset();
@@ -304,87 +286,6 @@ namespace Editor.Forms
         private void saveToolStripMenuItem_Click(object sender, EventArgs e)
         {
             this.Save();
-        }
-
-        #region Tile Groups
-
-        private TileGroupAdder[] mGroupBoxes;
-
-        private void AssignTextboxSides()
-        {
-            txtGroupLeftTop.Tag = GroupSide.LeftTop;
-            txtGroupTopLeft.Tag = GroupSide.TopLeft;
-            txtGroupTopRight.Tag = GroupSide.TopRight;
-            txtGroupRightTop.Tag = GroupSide.RightTop;
-            txtGroupRightBottom.Tag = GroupSide.RightBottom;
-            txtGroupBottomRight.Tag = GroupSide.BottomRight;
-            txtGroupBottomLeft.Tag = GroupSide.BottomLeft;
-            txtGroupLeftBottom.Tag = GroupSide.LeftBottom;
-
-            mGroupBoxes = new TileGroupAdder[] { txtGroupLeftTop, txtGroupTopLeft, txtGroupTopRight, txtGroupRightTop, txtGroupRightBottom, txtGroupBottomRight, txtGroupBottomLeft, txtGroupLeftBottom};
-
-            txtDblClickGroup.NamesAdded += txtDblClickGroup_NamesAdded;
-            txtDblClickGroup.NamesRemoved += txtDblClickGroup_NamesRemoved;
-
-            foreach (var box in mGroupBoxes)
-            {
-                box.MainGroup = txtDblClickGroup;
-            }
-        }
-
-        void txtDblClickGroup_NamesRemoved(TileGroupAdder sender, string[] names)
-        {
-            foreach (var box in mGroupBoxes)
-            {
-                foreach (var name in names)
-                    box.RemoveName(name);
-            }
-        }
-
-        void txtDblClickGroup_NamesAdded(TileGroupAdder sender, string[] names)
-        {
-            foreach (var box in mGroupBoxes)
-            {
-                foreach (var name in names)
-                    box.AddName(name);
-            }
-        }
-
-        private TileGroupAdder GetGroupBox(GroupSide side)
-        {
-            return mGroupBoxes.First(p => p.Tag.Equals(side));
-        }
-
-        private void UpdateGroupTextBoxes()
-        {
-            var selectedTile = pnlTileset.SelectedTiles().FirstOrDefault();
-            if (selectedTile == null)
-                return;
-
-            var usg = selectedTile.TileDef.Usage;
-
-            foreach (var textbox in mGroupBoxes)
-                textbox.Names = usg.SideGroups.TryGet((GroupSide)textbox.Tag, new string[]{});
-        }
-
-        private void ApplyGroupsToCurrent()
-        {
-            if (mLastSelectedTiles.Length > 1)
-                return;
-
-            foreach (var tileDef in mLastSelectedTiles.NeverNull())
-            {             
-                foreach (var textbox in mGroupBoxes)
-                    tileDef.Usage.SideGroups.AddOrSet((GroupSide)textbox.Tag, textbox.Names);
-            }
-        }
-
-
-        #endregion
-
-        private void TilesetEditor_Load(object sender, EventArgs e)
-        {
-            AssignTextboxSides();
         }
 
         private void pnlTileset_Load(object sender, EventArgs e)
@@ -482,22 +383,208 @@ namespace Editor.Forms
 
         #endregion
 
-        private void btnAutoDetectSides_Click(object sender, EventArgs e)
-        {
-            ApplyGroupsToCurrent();
+        #region Matches
 
-            TileDef current = this.SelectedTileDefs.FirstOrDefault();
-            if (current == null)
+        private Map mMatchPreviewMap;
+        private Map mMatchesMap;
+
+        private Side CurrentMatchSide
+        {
+            get
+            {
+                return matchDirectionPicker.SelectedSide;
+            }
+        }
+
+        private void InitGroupsTab()
+        {
+            mMatchPreviewMap = new Map(Program.EditorContext, new InMemoryResource<TileSet>(mTileset), 2, 2);
+            mMatchesMap = new Map(Program.EditorContext, new InMemoryResource<TileSet>(mTileset), 5, 5);
+
+
+            mMatchesMap.SetTile(0, 0, 1);
+            
+            pnlMatchPreview.SetFromMap(mMatchPreviewMap);
+            pnlMatches.SetFromMap(mMatchesMap);
+            DisplayMatchPreview(null);
+
+
+            string[] allGroups = mTileset.GetTiles().SelectMany(p => p.Usage.Groups).Distinct().ToArray();
+            lstGroups.Items.AddRange(allGroups);
+
+            pnlMatches.ImagePanel.MouseAction += ImagePanel_MouseAction;
+        }
+
+        void ImagePanel_MouseAction(object sender, ImageEventArgs e)
+        {
+            var pt = (e.Point as EditorGridPoint).GridPoint;
+            var tile = pnlMatches.ActiveMap.GetTileAtGridCoordinates(pt.X, pt.Y);
+
+            if (e.Action == MouseActionType.Click && e.Buttons == System.Windows.Forms.MouseButtons.Right)
+            {              
+                RemoveTileMatch(tile.TileDef);
+                RefreshMatches(SelectedTileDefs.FirstOrDefault());
+            }
+            else if (e.Action == MouseActionType.Move)
+            {
+                DisplayMatchPreview(tile.TileDef);
+            }
+        }
+
+        private void DisplayMatchPreview(TileDef other)
+        {
+            if (mMatchPreviewMap == null)
                 return;
 
-            TileUsageHelper.AutoDetectSides(current, this.SelectedTileDefs.Skip(1), pnlTileset.Tileset.Texture.GetImage());
-            UpdateGroupTextBoxes();
+            mMatchPreviewMap.SetTile(0, 0, TileDef.Blank.TileID);
+            mMatchPreviewMap.SetTile(0, 1, TileDef.Blank.TileID);
+            mMatchPreviewMap.SetTile(1, 0, TileDef.Blank.TileID);
+            mMatchPreviewMap.SetTile(1, 1, TileDef.Blank.TileID);
+
+            var current = this.SelectedTileDefs.FirstOrDefault();
+            if(current == null)
+                return;
+
+            RGPointI thisTile = RGPointI.Empty;
+            RGPointI otherTile = RGPointI.Empty;
+
+            switch (CurrentMatchSide)
+            {
+                case Side.Left:
+                    thisTile = new RGPointI(1, 0);
+                    otherTile = new RGPointI(0, 0);
+                    break;
+                case Side.Right:
+                    thisTile = new RGPointI(0, 0);
+                    otherTile = new RGPointI(1, 0);
+                    break;
+                case Side.Top:
+                    thisTile = new RGPointI(0, 1);
+                    otherTile = new RGPointI(0, 0);
+                    break;
+                case Side.Bottom:
+                    thisTile = new RGPointI(0, 0);
+                    otherTile = new RGPointI(0, 1);
+                    break;
+
+            }
+
+            mMatchPreviewMap.SetTile(thisTile.X, thisTile.Y, current.TileID);
+            if(other !=null)
+                mMatchPreviewMap.SetTile(otherTile.X, otherTile.Y, other.TileID);
+
+            pnlMatchPreview.RefreshImage();
+            
         }
+
+        private void matchDirectionPicker_DirectionChanged(DirectionSelector sender, EventArgs args)
+        {
+            DisplayMatchPreview(null);
+            RefreshMatches(this.SelectedTileDefs.FirstOrDefault());
+        }
+
+        private void RefreshMatches(TileDef tile)
+        {
+
+         
+            //do this better later
+            RGPointI cursor = RGPointI.Empty;
+
+            if (tile != null)
+            {
+                foreach (var match in tile.Usage.GetMatches(CurrentMatchSide))
+                {
+                    mMatchesMap.SetTile(cursor.X, cursor.Y, match.TileID);
+                    cursor.X++;
+                    if (cursor.X >= mMatchesMap.TileDimensions.Width)
+                    {
+                        cursor.X = 0;
+                        cursor.Y++;
+                    }
+                }
+            }
+
+            while (cursor.Y < mMatchesMap.TileDimensions.Height)
+            {
+                mMatchesMap.SetTile(cursor.X, cursor.Y, TileDef.Blank.TileID);
+                cursor.X++;
+                if (cursor.X >= mMatchesMap.TileDimensions.Width)
+                {
+                    cursor.X = 0;
+                    cursor.Y++;
+                }
+            }
+
+            pnlMatches.SelectionGrid.ShowGridLines = true;
+            pnlMatches.RefreshImage();
+        }
+
+        private void AddTileMatch(TileDef match)
+        {
+            var tile = this.SelectedTileDefs.FirstOrDefault();
+            if (tile == null)
+                return;
+
+            tile.Usage.AddMatch(this.CurrentMatchSide, match);
+            match.Usage.AddMatch(this.CurrentMatchSide.Opposite(), tile);
+            
+            RefreshMatches(tile);
+        }
+
+        private void RemoveTileMatch(TileDef match)
+        {
+            var tile = this.SelectedTileDefs.FirstOrDefault();
+            if (tile == null)
+                return;
+
+            tile.Usage.RemoveMatch(this.CurrentMatchSide,match);
+            match.Usage.RemoveMatch(this.CurrentMatchSide.Opposite(), tile);
+            RefreshMatches(tile);
+        }
+
+        #endregion
+
+        #region Groups
+
+        private void btnAddGroup_Click(object sender, EventArgs e)
+        {
+            if (txtNewGroup.Text.IsNullOrEmpty())
+                return;
+
+            lstGroups.Items.Add(txtNewGroup.Text, true);
+            txtNewGroup.Text = String.Empty;
+        }
+
+        private void RefreshGroups(TileDef tile)
+        {
+            lstGroups.SetItemsChecked<string>(s=> tile.Usage.Groups.Contains(s));
+        }
+
+        private void lstGroups_ItemCheck(object sender, ItemCheckEventArgs e)
+        {
+            bool isChecked = lstGroups.GetItemChecked(e.Index,e);
+            string group = lstGroups.Items[e.Index].ToString();
+
+            foreach (var tile in this.SelectedTileDefs)
+            {
+                if (isChecked)
+                    tile.Usage.Groups.Add(group);
+                else
+                    tile.Usage.Groups.Remove(group);
+            }
+
+        }
+
+      
+
+      
+
+        #endregion
 
         private void btnAutoOrganize_Click(object sender, EventArgs e)
         {
-            var newSet =  TileUsageHelper.AutoOrganize(mTileset);
-            LoadTileset(newSet);
+           // var newSet =  TileUsageHelper.AutoOrganize(mTileset);
+          //  LoadTileset(newSet);
         }
 
         private void btnGroupTogether_Click(object sender, EventArgs e)
@@ -512,5 +599,21 @@ namespace Editor.Forms
             var ts = new TileSet(mTileset.Texture, mTileset.TileSize, newOrder);
             LoadTileset(ts);
         }
+
+        private void btnAddSelected_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void btnAutoDetect_Click(object sender, EventArgs e)
+        {
+            TileUsageHelper.AutoDetectMatches(mTileset);
+        }
+
+        private void btnMakeEqual_Click(object sender, EventArgs e)
+        {
+            TileUsageHelper.MakeEqual(this.SelectedTileDefs);
+        }
+
     }
 }

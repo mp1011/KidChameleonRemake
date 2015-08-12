@@ -19,11 +19,21 @@ namespace Engine
 
         public static bool ContainsAll<T>(this IEnumerable<T> list1, IEnumerable<T> list2)        
         {
-            foreach (var item in list1.NeverNull())
-                if (!list2.Contains(item))
+            foreach (var item in list2.NeverNull())
+                if (!list1.Contains(item))
                     return false;
 
             return true;
+
+        }
+
+        public static bool ContainsAny<T>(this IEnumerable<T> list1, IEnumerable<T> list2)
+        {
+            foreach (var item in list1.NeverNull())
+                if (list2.Contains(item))
+                    return true;
+
+            return false;
 
         }
     }

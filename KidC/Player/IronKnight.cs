@@ -42,7 +42,6 @@ namespace KidC
         private XYMotion mClimbMotion;
         private float mCurrentWallX;
         private PlatformerPlayerController mPlatformController;
-        private TileLayer mLayer;
 
         public IronKnightClimbController(Sprite s, Player player, PlatformerPlayerController platformerController) : base(s)
         {
@@ -81,53 +80,93 @@ namespace KidC
         {
             mClimbMotion = new XYMotion("Iron Knight Climb");
             this.Sprite.MotionManager.AddComponent(mClimbMotion);
-            mLayer = this.Sprite.DrawLayer as TileLayer;
+        }
+
+        private bool CanStartClimbing()
+        {
+            return this.Sprite.IsOnGround() &&
+                IsAgainstWall();
+                
+        }
+
+        private bool CanContinueClimbing()
+        {
+            return IsAgainstWall();
+        }
+
+        private bool IsAgainstWall()
+        {
+            return IsPointFacingWall(this.Sprite.Location.Offset(0, -16));
+        }
+
+        private void ClimbStep()
+        {
+            SoundManager.PlaySound(Sounds.IronKnightClimb);
+            mClimbMotion.YSpeed.Current -= 1.0f;
+            this.Climbing = true;
+
+            this.Sprite.MotionManager.StopMotionInDirection(new DirectionFlags(Direction.Down));
+            mClimbMotion.YSpeed.Target = 2f;
+
+            mClimbMotion.YSpeed.Decel = .05f;
+            mClimbMotion.YSpeed.Accel = .05f;
+
+            if (mClimbMotion.YSpeed.Current < -4f)
+                mClimbMotion.YSpeed.Current = -4;
+        }
+
+        private void EndClimb()
+        {
+            if (this.Climbing)
+            {
+                this.Climbing = false;
+                //check if we're at the top, if so give a slight jump
+                if (IsPointFacingWall(this.Sprite.Location))
+                    mPlatformController.GravityController.CurrentYSpeed = -3f;
+            }
         }
 
         protected override void Update()
-        {        
+        {
+            var climbKeyPressed = mPlayer.Input.KeyPressed(KCButton.Special);
+
             if (Climbing && mPlatformController.CheckWallJump())
             {
                 this.Climbing = false;
                 return;
             }
 
-            if (!IsPointFacingWall(this.Sprite.Location.Offset(0, -16)))
+            if (!Climbing && CanStartClimbing() && climbKeyPressed)
+                ClimbStep();
+            else if (Climbing)
             {
-                if (this.Climbing)
-                {
-                    this.Climbing = false;
-                    //check if we're at the top, if so give a slight jump
-                    if (IsPointFacingWall(this.Sprite.Location))                 
-                        mPlatformController.GravityController.CurrentYSpeed = -3f;                    
-                }
+                if (!CanContinueClimbing())
+                    EndClimb();
+                else if(climbKeyPressed)
+                    ClimbStep();
             }
-            else if (mPlayer.Input.KeyPressed(KCButton.Special))
-            {
-                SoundManager.PlaySound(Sounds.IronKnightClimb);
-                mClimbMotion.YSpeed.Current -= 1.0f;
-                this.Climbing = true;
 
-                this.Sprite.MotionManager.StopMotionInDirection(new DirectionFlags(Direction.Down));
-                mClimbMotion.YSpeed.Target = 2f;
-
-                mClimbMotion.YSpeed.Decel = .05f;
-                mClimbMotion.YSpeed.Accel = .05f;
-
-                if (mClimbMotion.YSpeed.Current < -4f)
-                    mClimbMotion.YSpeed.Current = -4;
-            }
-          
-//            if (Climbing)
-  //              this.Sprite.Location = new RGPoint(mCurrentWallX, this.Sprite.Y);          
+            //if (!IsPointFacingWall(this.Sprite.Location.Offset(0, -16)))
+            //{
+            //    if (this.Climbing)
+            //    {
+            //        this.Climbing = false;
+            //        //check if we're at the top, if so give a slight jump
+            //        if (IsPointFacingWall(this.Sprite.Location))                 
+            //            mPlatformController.GravityController.CurrentYSpeed = -3f;                    
+            //    }
+            //}
+            //else if ()
+            //{
+                
+            
+            //}
+  
         }
 
         private bool IsPointFacingWall(RGPointI pt)
         {
-            if (mLayer == null)
-                return false;
-
-            var tile = mLayer.Map.GetTileAtLocation(pt);
+            var tile = this.Context.CurrentWorld.CollisionInfo.GetTile(pt);
 
             var wallTile = tile.GetTilesInLine(this.Sprite.Direction).Take(2).FirstOrDefault(p => p.TileDef.IsSolid);
             if (wallTile == null)
@@ -138,7 +177,7 @@ namespace KidC
                 return false;
 
             mCurrentWallX = wallPoint.Value.X;
-            return wallPoint.Value.GetDistanceTo(pt) < 20;
+            return wallPoint.Value.GetDistanceTo(pt) <= 10;
         }
 
         protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)

@@ -4,310 +4,401 @@ using System.Linq;
 using System.Text;
 using Engine;
 using System.Drawing;
+using Engine.Collision;
+using System.IO;
+using Editor.Forms;
 
 namespace Editor
 {
-    class TileMatchInfo
-    {
-        public TileDef[] PossibleTiles { get; private set; }
-        public TileInstance[] TilesToMatch { get; private set; }
-
-        public TileMatchInfo(IEnumerable<TileDef> possibleTiles, IEnumerable<TileInstance> tilesToMatch)
-        {
-            this.PossibleTiles = possibleTiles.NeverNull().ToArray();
-            this.TilesToMatch = tilesToMatch.NeverNull().ToArray();
-        }
-
-        public TileMatchInfo()
-        {
-            PossibleTiles = new TileDef[] { };
-            TilesToMatch = new TileInstance[] { };
-        }
-    
-    }
-
     class TileUsageHelper
     {
-       
 
-        /// <summary>
-        /// Returns the next tile that is able to fit with the current adjacent tiles
-        /// </summary>
-        /// <param name="tile"></param>
-        /// <returns></returns>
-        public static TileDef GetNextTileReplacement(TileInstance tile)
+        public static void LogMatchInfo(TileInstance tile)
         {
-            return GetNextTileReplacement(tile, null);
-        }
 
-        /// <summary>
-        /// Returns the next tile that is able to fit with the current adjacent tiles
-        /// </summary>
-        /// <param name="tile"></param>
-        /// <returns></returns>
-        public static TileDef GetNextTileReplacement(TileInstance tile, TileMatchInfo matchInfo)
-        {
-            return GetTilesStartingAt(tile).FirstOrDefault(p => CanFitTile(p, tile, matchInfo));
-        }
-
-        public static TileDef GetRandomTileReplacement(TileInstance tile, TileMatchInfo matchInfo)
-        {
-            return GetTilesStartingAt(tile).Where(p => CanFitTile(p, tile, matchInfo)).RandomItem();
-        }
-
-        private static IEnumerable<TileDef> GetTilesStartingAt(TileInstance tile)
-        {
-            foreach(var nextTile in tile.Map.Tileset.GetTiles().SkipWhile(p=>p != tile.TileDef).Skip(1))
-                yield return nextTile;
-
-            foreach (var nextTile in tile.Map.Tileset.GetTiles().TakeWhile(p => p != tile.TileDef))
-                yield return nextTile;
-        }
-
-        private static bool CanFitTile(TileDef tile, TileInstance location, TileMatchInfo matchInfo)
-        {
-            if (matchInfo.PossibleTiles.Count() > 1 && !matchInfo.PossibleTiles.Contains(tile))
-                return false;
-
-            bool matchesAny = false;
-
-            foreach (var groupSide in Util.GetEnumValues<GroupSide>())
+            frmLog.AddLine("Tile #" + tile.TileDef.TileID);
+            frmLog.AddLine(tile.TileDef.Usage.Groups.StringJoin(","));
+          
+            foreach (var side in Util.GetEnumValues<Side>())
             {
-                var offset = groupSide.ToOffset();
-                var adjacentTile = location.GetAdjacentTile(offset.X, offset.Y);
-
-            //    if(matchInfo.TilesToMatch.NotNullOrEmpty() && !matchInfo.TilesToMatch.Any(p=>p.Equals(adjacentTile)))
-             //       continue;
-
-                var theseGroups = tile.Usage.SideGroups.TryGet(groupSide, new string[] { });
-                var otherGroups = adjacentTile.TileDef.Usage.SideGroups.TryGet(groupSide.GetAdjacentSide(), new string[] { });
-
-                //special case, blank tile has "empty" on all sides
-                if (adjacentTile.TileDef.IsBlank)
-                {
-                    otherGroups = new string[] { "empty" };
-                   // continue;
-                }
-
-                if (adjacentTile.TileDef.IsOutOfBounds)
+                if (side == Side.None)
                     continue;
 
-                if (theseGroups.Length == 0)
-                    theseGroups = new string[] { "empty" };
+                 var adjacent = tile.GetAdjacentTile(side.ToOffset());
 
-                if (otherGroups.Length == 0)
-                    otherGroups = new string[] { "empty" };
+                var matches = tile.TileDef.Usage.GetMatches(side).Contains(adjacent.TileDef, new TileDefEqualityComparer());
+                var matches2 = adjacent.TileDef.Usage.GetMatches(side.Opposite()).Contains(tile.TileDef,new TileDefEqualityComparer());
 
-                if (DoGroupsMatch(theseGroups, otherGroups))
+                if (matches && matches2)
+                    frmLog.AddLine("Matches both ways with tile on " + side.ToString());
+                else if(matches)
+                    frmLog.AddLine("Matches with tile on " + side.ToString());
+                else if(matches2)
+                    frmLog.AddLine("Tile on " + side.ToString() + " matches this");
+                else
+                    frmLog.AddLine("Does not match on " + side.ToString());
+
+
+                frmLog.AddLine("---------------");
+            }
+
+        }
+
+        #region Auto Detect
+        public static void AutoDetectMatches(TileSet tileset)
+        {
+            var image = tileset.Texture.GetImage();
+
+            foreach (var tile in tileset.GetTiles())
+            {
+                foreach (Side side in Util.GetEnumValues<Side>())
+                    tile.Usage.AddMatches(side, GetSuggestedMatches(tile, tileset, side, image));
+            }
+        }
+
+        public static IEnumerable<TileDef> GetSuggestedMatches(TileDef tile, TileSet tileset, Side matchSide, Bitmap tilesetImage)
+        {
+            var tiles = tileset.GetTiles();
+
+            //remove any tile that does not share at least one group
+            tiles = tiles.Where(p => p.Equals(tile) || p.Usage.Groups.ContainsAny(tile.Usage.Groups));
+
+            tiles = tiles.Where(p => p.Equals(tile) || CheckPixelMatch(tile, p, matchSide, tilesetImage));
+
+            return tiles;
+        }
+
+        private static bool CheckPixelMatch(TileDef tile, TileDef other, Side matchSide, Bitmap tilesetImage)
+        {
+            var thisTilePixels = GetEdgeColors(matchSide, tile.SourcePosition, tilesetImage);
+            var otherTilePixels = GetEdgeColors(matchSide.Opposite(), other.SourcePosition, tilesetImage);
+
+            int matchCount = 0;
+            for (int i = 0; i < thisTilePixels.Length; i++)
+            {
+                var thisColor = thisTilePixels[i];
+                var otherColor = otherTilePixels[i];
+
+                if (thisColor.IsTransparent || otherColor.IsTransparent)
                 {
-                    if (!theseGroups.IsNullOrEmpty())
-                        matchesAny = true;
+                    if (thisColor.IsTransparent && otherColor.IsTransparent)
+                        matchCount++;
                 }
                 else
-                    return false;
-                
+                {
+                    if (otherTilePixels.Contains(thisColor))
+                        matchCount++;
+                }
             }
 
-            return matchesAny;
+            return matchCount > thisTilePixels.Length * .75;
         }
 
-
-        private static bool DoGroupsMatch(string[] group1, string[] group2)
+        private static RGColor[] GetEdgeColors(Side side, RGRectangleI area, Bitmap tileImage)
         {
-            if (group1.IsNullOrEmpty() && group2.IsNullOrEmpty())
-                return true;
+            List<RGColor> colors = new List<RGColor>();
+            if (area.IsEmpty)
+                return colors.ToArray();
 
+            int xMin = 0, xMax = 0, yMin = 0, yMax = 0;
 
-            foreach(var g1 in group1)
-                foreach (var g2 in group2)
-                {
-                    if (DoGroupsMatch(g1, g2))
-                        return true;
-                }
-
-            return false;
-        }
-
-        private static bool DoGroupsMatch(string group1, string group2)
-        {
-            if(group1.Equals(group2))
-                return true;
-
-            if (group1 == "*")
-                return true;
-
-            return false;
-                               
-        }
-
-
-        public static IEnumerable<TileInstance> RandomizeTiles(Map map, TileMatchInfo matchInfo)
-        {
-            var matches = matchInfo.TilesToMatch.Select(p => new TileMatch(p, matchInfo)).ToArray();
-
-            foreach (var m in matches)
+            switch (side)
             {
-                if (m.PossibleMatches.IsNullOrEmpty())
+                case Side.Top:
+                    xMin = area.Left; xMax = area.Right - 1;
+                    yMin = area.Top; yMax = area.Top;
+                    break;
+                case Side.Bottom:
+                    xMin = area.Left; xMax = area.Right - 1;
+                    yMin = area.Bottom - 1; yMax = area.Bottom - 1;
+                    break;
+                case Side.Left:
+                    xMin = area.Left; xMax = area.Left;
+                    yMin = area.Top; yMax = area.Bottom - 1;
+                    break;
+                case Side.Right:
+                    xMin = area.Right - 1; xMax = area.Right - 1;
+                    yMin = area.Top; yMax = area.Bottom - 1;
+                    break;
+            }
+
+            for (int x = xMin; x <= xMax; x++)
+                for (int y = yMin; y <= yMax; y++)
+                    colors.Add(tileImage.GetPixel(x, y).ToRGColor());
+
+            return colors.ToArray();
+
+        }
+        #endregion
+
+        public static TileDef GetNextTileReplacement(TileInstance tile, IEnumerable<TileDef> possibleTiles)
+        {
+            possibleTiles = GetPossibleTiles(tile, new TileInstance[] { }, new TileInstance[] { },possibleTiles);
+            possibleTiles = possibleTiles.OrderBy(p => p.TileID).ToArray();
+
+            return possibleTiles.FirstOrDefault(p => p.TileID > tile.TileDef.TileID) ?? possibleTiles.FirstOrDefault();
+        }
+
+        public static TileDef GetNextTileReplacement(TileInstance tile, IEnumerable<TileDef> possibleTiles, TileInstance matchTile)
+        {
+            possibleTiles = GetPossibleTiles(tile, new TileInstance[] { }, new TileInstance[] { matchTile }, possibleTiles);
+            possibleTiles = possibleTiles.OrderBy(p => p.TileID).ToArray();
+
+            return possibleTiles.FirstOrDefault(p => p.TileID > tile.TileDef.TileID) ?? possibleTiles.FirstOrDefault();
+        }
+
+        public static IEnumerable<TileInstance> RandomizeAddedTiles(IEnumerable<TileInstance> addedTiles, IEnumerable<TileDef> possibleTiles)
+        {
+            if (addedTiles.IsNullOrEmpty())
+                return addedTiles.NeverNull();
+
+            var tilesRemaining = new LinkedList<TileInstance>(addedTiles);
+            var output = new List<TileInstance>();
+
+            output.Add(addedTiles.First());
+            tilesRemaining.RemoveFirst();
+
+            var unmatched = new List<TileInstance>();
+            while (tilesRemaining.First != null)
+            {
+                var tile = tilesRemaining.First();
+                tilesRemaining.RemoveFirst();
+                var newTile = RandomizeTile(tile, tilesRemaining, addedTiles, possibleTiles,true);
+                
+                if (newTile != null)
+                    output.Add(newTile);
+                else
+                    unmatched.Add(tile);
+            }
+
+            return output;
+        }
+
+        private static TileInstance RandomizeTile(TileInstance tile, IEnumerable<TileInstance> tilesToIgnore, IEnumerable<TileInstance> tilesToConsider, IEnumerable<TileDef> possibleTiles, bool mustMatchGroups)
+        {
+            possibleTiles = GetPossibleTiles(tile, tilesToIgnore,tilesToConsider, possibleTiles);
+
+            if(mustMatchGroups)
+                possibleTiles = possibleTiles.Where(p => {
+                    
+                  var g1 = p.Usage.Groups;
+                    var g2 = tile.TileDef.Usage.Groups;
+                    return g1.ContainsAll(g2) && g2.ContainsAll(g1);
+                }).ToArray();
+
+            if(!possibleTiles.IsNullOrEmpty())
+            {
+                var chosen = possibleTiles.RandomItem();
+                tile.Map.SetTile(tile.TileLocation.X, tile.TileLocation.Y, chosen.TileID);
+                return tile.Map.GetTileAtGridCoordinates(tile.TileLocation.X, tile.TileLocation.Y);     
+            }
+
+            return null;
+
+       
+        }
+
+        private static IEnumerable<TileDef> GetPossibleTiles(TileInstance tile, 
+            IEnumerable<TileInstance> tilesToIgnore,
+            IEnumerable<TileInstance> tilesToConsider,            
+            IEnumerable<TileDef> possibleTiles)
+        {
+            possibleTiles = possibleTiles.Where(p => !p.IsBlank);
+            foreach (var side in Util.GetEnumValues<Side>())
+            {
+                if (side == Side.None)
                     continue;
 
-                var tile = m.PossibleMatches.RandomItem();
-                var loc = m.Instance.TileLocation;
-                map.SetTile(loc.X, loc.Y, tile.TileID);
-                yield return map.GetTileAtCoordinates(loc.X, loc.Y);
-            }
-        }
+                var adjacentTile = tile.GetAdjacentTile(side.ToOffset());
+                if (tilesToIgnore.Contains(adjacentTile))
+                    continue;
 
-        /// <summary>
-        /// Gets any tiles adjacent to the given ones that are not already in the list
-        /// </summary>
-        /// <param name="tiles"></param>
-        /// <returns></returns>
-        private static IEnumerable<TileInstance> GetAdjacentTiles(IEnumerable<TileInstance> tiles)
-        {
-            var adjacentTiles = tiles.SelectMany(t =>
-            {
-                return new TileInstance[]{t.GetAdjacentTile(-1,0),t.GetAdjacentTile(1,0),t.GetAdjacentTile(0,-1),t.GetAdjacentTile(0,1)};
-            });
+                if (!tilesToConsider.IsNullOrEmpty() && !tilesToConsider.Contains(adjacentTile))
+                    continue;
 
-            adjacentTiles = adjacentTiles.Distinct(new TileEqualityComparer()).Where(p=> ! tiles.Contains(p));
-            return adjacentTiles;
-        }
+                var validTilesForSide = adjacentTile.TileDef.Usage.GetMatches(side.Opposite());
+                if (!validTilesForSide.IsNullOrEmpty())
+                    possibleTiles = possibleTiles.Intersect(validTilesForSide, new TileDefEqualityComparer()).ToArray();
 
-
-        class TileMatch
-        {
-            public TileInstance Instance;
-            public List<TileDef> PossibleMatches;
-            public TileDef Original;
-
-            public TileMatch(TileInstance instance, TileMatchInfo info)
-            {
-                Original = instance.TileDef;
-                this.Instance = instance;
-                this.PossibleMatches = TileUsageHelper.GetTilesStartingAt(instance)
-                    .Where(p => CanFitTile(p, instance, info)).ToList();
-            }
-        }
-
-        public static void AutoDetectSides(TileDef keyTile, IEnumerable<TileDef> tileDefs, Bitmap tileImage)
-        {
-            var colorMap = new TileGroupAutodetectInfo(keyTile, tileImage);
-
-            foreach (var tile in tileDefs)
-                colorMap.TryFill(tile, tileImage);            
-        }
-
-        class TileGroupAutodetectInfo
-        {
-            public string Group { get; private set; }
-            public RGColor[] Colors { get; private set; }
-
-            public TileGroupAutodetectInfo(TileDef input, Bitmap tileImage)
-            {
-                this.Group = input.Usage.DistinctGroupNames.FirstOrDefault().NotNull();
-                List<RGColor> edgeColors = new List<RGColor>();
-                
-                foreach(GroupSide side in Enum.GetValues(typeof(GroupSide)))
-                    edgeColors.AddRange(GetEdgeColors(side, input.SourcePosition, tileImage));
-
-
-                Colors = edgeColors.Distinct().ToArray();
-            }
-
-
-            private RGColor[] GetEdgeColors(GroupSide side, RGRectangleI area, Bitmap tileImage)
-            {
-                List<RGColor> colors= new List<RGColor>();
-                if (area.IsEmpty)
-                    return colors.ToArray();
-
-                int xMin = 0, xMax = 0, yMin = 0, yMax = 0;
-
-                switch (side)
+                //now check the tiles own side matches
+                possibleTiles = possibleTiles.Where(p =>
                 {
-                    case GroupSide.TopLeft:
-                        xMin = area.Left; xMax = area.Center.X;
-                        yMin = area.Top; yMax=area.Top;
-                        break;
-                    case GroupSide.TopRight:
-                        xMin = area.Center.X; xMax = area.Right-1;
-                        yMin = area.Top; yMax = area.Top;
-                        break;
-                    case GroupSide.BottomLeft:
-                        xMin = area.Left; xMax = area.Center.X;
-                        yMin = area.Bottom-1; yMax = area.Bottom-1;
-                        break;
-                    case GroupSide.BottomRight:
-                        xMin = area.Center.X; xMax = area.Right-1;
-                        yMin = area.Bottom-1; yMax = area.Bottom-1;
-                        break;
-                    case GroupSide.LeftTop:
-                        xMin = area.Left;xMax=area.Left;
-                        yMin = area.Top; yMax = area.Center.Y;
-                        break;
-                    case GroupSide.LeftBottom:
-                        xMin = area.Left; xMax = area.Left;
-                        yMin = area.Center.Y; yMax = area.Bottom-1;
-                        break;
-                    case GroupSide.RightTop:
-                        xMin = area.Right-1; xMax = area.Right-1;
-                        yMin = area.Top; yMax = area.Center.Y;
-                        break;
-                    case GroupSide.RightBottom:
-                        xMin = area.Right-1; xMax = area.Right-1;
-                        yMin = area.Center.Y; yMax = area.Bottom-1;
-                        break;
-                }
-
-                for (int x = xMin; x <= xMax; x++)
-                    for (int y = yMin; y <= yMax; y++)
-                        colors.AddDistinct(tileImage.GetPixel(x, y).ToRGColor());
-
-                return colors.OrderBy(p=>p.GetHashCode()).ToArray();
-
+                    var sideMatches = p.Usage.GetMatches(side);
+                    return sideMatches.IsNullOrEmpty() ||
+                        sideMatches.Contains(adjacentTile.TileDef, new TileDefEqualityComparer());
+                }).ToArray();
             }
 
+            var output = possibleTiles.ToArray();
 
-            public void TryFill(TileDef other, Bitmap tileImage)
+            frmLog.AddLine("Found " + output.Length + " possible matches");
+            return output;
+        }
+
+        public static void AddTileMatches(TileSet tileset, IEnumerable<TileInstance> tiles)
+        {
+            foreach (var tile in tiles)
             {
-                foreach (GroupSide side in Enum.GetValues(typeof(GroupSide)))
+                foreach (var side in Util.GetEnumValues<Side>())
                 {
-                    var sideColors = GetEdgeColors(side, other.SourcePosition, tileImage);
+                    if (side == Side.None)
+                        continue;
 
-                    int matchCount = sideColors.Where(p => this.Colors.Contains(p)).Count();
-                    if (matchCount >= 2)
+                    var adjacentTile = tile.GetAdjacentTile(side.ToOffset());
+                    if (tiles.Contains(adjacentTile))
                     {
-                        var currentSides = other.Usage.SideGroups.TryGet(side, new string[]{}).ToList();
-                        currentSides.AddDistinct(this.Group);
-                        other.Usage.SideGroups.AddOrSet(side, currentSides.ToArray());
+                        tile.TileDef.Usage.AddMatch(side, adjacentTile.TileDef);
+                        adjacentTile.TileDef.Usage.AddMatch(side.Opposite(), tile.TileDef);
                     }
                 }
             }
-        
         }
 
-
-        public static TileSet AutoOrganize(TileSet set)
+        public static void RemoveTileMatches(TileSet tileset, IEnumerable<TileInstance> tiles)
         {
-            var specialTiles = set.GetTiles().Where(p => p.IsSpecial).ToArray();
-            var allGroupNames = set.GetTiles().SelectMany(p => p.Usage.DistinctGroupNames).Distinct().ToArray();
-            var oldOrder = set.GetTiles().ToList();
-            var newOrder = new List<TileDef>();
-
-            oldOrder.Transfer(newOrder, specialTiles);
-
-            string[] groups = oldOrder.Select(p => p.Usage.DistinctGroupNames.StringJoin(",")).Distinct().ToArray();
-
-            foreach (var group in groups)
+            foreach (var tile in tiles)
             {
-                oldOrder.Transfer(newOrder, oldOrder.Where(p => p.Usage.DistinctGroupNames.StringJoin(",").Equals(group)));
+                foreach (var side in Util.GetEnumValues<Side>())
+                {
+                    if (side == Side.None)
+                        continue;
+
+                    var adjacentTile = tile.GetAdjacentTile(side.ToOffset());
+                    if (tiles.Contains(adjacentTile))
+                    {
+                        tile.TileDef.Usage.RemoveMatch(side, adjacentTile.TileDef);
+                        adjacentTile.TileDef.Usage.RemoveMatch(side.Opposite(), tile.TileDef);
+                    }
+                }
+            }
+        }
+
+        #region Extract from Images
+
+        public static void BuildMatchesFromFolder(string folder, string tilesetName)
+        {
+
+            var tilesetResource = new GameResource<TileSet>(tilesetName, PathType.Tilesets);
+            var tileset = tilesetResource.GetObject(Program.EditorContext);
+
+            foreach (var tile in tileset.GetTiles())
+                tile.Usage.ClearMatches();
+
+
+            foreach (var mapPath in Directory.GetFiles(folder, "*.png"))
+            {
+                var map = ImageToMap.CreateMapFromImage(mapPath, tilesetResource);
+                AddMatchesFromMap(tileset, map);
             }
 
-            oldOrder.Transfer(newOrder, oldOrder);
-            return  new TileSet(set.Texture, set.TileSize, newOrder);
+            FileDialog.SaveObject(tileset, tilesetResource.Path.FullPath);
+        }
+
+        private static void AddMatchesFromMap(TileSet tileset, Map map)
+        {
+            for(int x =0; x < map.TileDimensions.Width; x++)
+                for (int y = 0; y < map.TileDimensions.Height; y++)
+                {
+                    var tile = map.GetTileAtGridCoordinates(x,y);
+                    if (tile.IsSpecial)
+                        continue;
+
+                    foreach(var side in Util.GetEnumValues<Side>())
+                    {
+                        if(side == Side.None)
+                            continue;
+
+                        var adjacentTile = tile.GetAdjacentTile(side.ToOffset());
+                        if(!adjacentTile.IsSpecial)
+                            tile.TileDef.Usage.AddMatch(side, adjacentTile.TileDef);
+                    }
+                }
+        }
+
+        #endregion 
+
+        public static void RandomizeNeighbors(IEnumerable<TileInstance> changedTiles, IEnumerable<TileDef> possibleTiles)
+        {
+            var neighbors = GetMismatchedEdgeTiles(changedTiles);
+            if (neighbors.IsNullOrEmpty())
+                return;
+
+            foreach (var tile in neighbors)            
+                RandomizeTile(tile, new List<TileInstance>(), new List<TileInstance>(), possibleTiles,false);
 
         }
 
+        /// <summary>
+        /// Returns all tiles that neighbor the given list of tiles that are not included in that list and which 
+        /// do not match with their neighbor
+        /// </summary>
+        /// <param name="changedTiles"></param>
+        /// <returns></returns>
+        private static IEnumerable<TileInstance> GetMismatchedEdgeTiles(IEnumerable<TileInstance> changedTiles)
+        {
+            if(changedTiles.IsNullOrEmpty())
+                return changedTiles;
+
+
+            var adjacent = new List<TileInstance>();
+            foreach (var tile in changedTiles)
+                adjacent.AddRangeDistinct(tile.GetAdjacentTiles(),new TileEqualityComparer());
+
+            adjacent = adjacent.Except(changedTiles, new TileEqualityComparer()).ToList();
+            adjacent = adjacent.Where(t => !TileUsageHelper.DoesTileMatch(t)).ToList();
+
+            return adjacent;
+        }
+
+
+        private static bool DoesTileMatch(TileInstance tile)
+        {
+            foreach (var side in Util.GetEnumValues<Side>())
+            {
+                if (side == Side.None)
+                    continue;
+
+                var adjacent = tile.GetAdjacentTile(side.ToOffset());
+
+                var matches = tile.TileDef.Usage.GetMatches(side).Contains(adjacent.TileDef, new TileDefEqualityComparer());
+                if(!matches)
+                    return false;
+            }
+
+            return true;
+        }
+
+
+        public static void MakeEqual(IEnumerable<TileDef> tiles)
+        {
+            if (tiles.IsNullOrEmpty())
+                return;
+
+            var first = tiles.FirstOrDefault();
+            foreach (var tile in tiles.Skip(1))
+            {
+                foreach (var side in Util.GetEnumValues<Side>())
+                {
+                    if (side == Side.None)
+                        continue;
+
+                    first.Usage.AddMatches(side, tile.Usage.GetMatches(side));
+                }
+            }
+
+            foreach (var tile in tiles)
+            {
+                foreach (var side in Util.GetEnumValues<Side>())
+                {
+                    if (side == Side.None)
+                        continue;
+
+                    tile.Usage.AddMatches(side, first.Usage.GetMatches(side));
+                    foreach (var match in tile.Usage.GetMatches(side))
+                        match.Usage.AddMatch(side.Opposite(), tile);
+                }
+            }
+        }
 
     }
 }

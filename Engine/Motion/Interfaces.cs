@@ -15,6 +15,11 @@ namespace Engine
 
     public static class IWithPositionExtensions
     {
+        public static WorldCollisionInfo GetWorldCollisionInfo(this IWithPosition obj)
+        {
+            return obj.Context.CurrentWorld.CollisionInfo;
+        }
+
         public static void SnapToGround(this IWithPosition obj, Map map)
         {
             obj.SnapToSurface(map, Direction.Down);
@@ -68,9 +73,10 @@ namespace Engine
             return m.MotionManager.Vector;
         }
 
-        public static bool IsOnGround(this IWithPosition item, TileLayer layer)
+        public static bool IsOnGround(this IWithPosition item)
         {
-            var groundTile = layer.Map.GetTileAtLocation(item.Location).GetTilesInLine(Direction.Down).Take(2).FirstOrDefault(p => p.TileDef.IsSolid);
+            var collisionInfo = item.GetWorldCollisionInfo();
+            var groundTile = collisionInfo.GetTile(item.Location).GetTilesInLine(Direction.Down).Take(2).FirstOrDefault(p => p.TileDef.IsSolid);
             return groundTile != null && (item.Location.Y - groundTile.TileArea.Top) < 1f;
         }
     }
