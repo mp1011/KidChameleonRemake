@@ -10,11 +10,12 @@ namespace Engine.Collision
     {
         private RGRectangleI mArea;
         private Side mSide;
-
-        public BorderEdge(RGRectangleI area, Side side)
+   
+        public BorderEdge(GameContext context, RGRectangleI area, Side side)
         {
             mArea = area;
             mSide = side;
+            this.Context = context;
         }
 
         public LayerDepth LayerDepth
@@ -45,7 +46,8 @@ namespace Engine.Collision
 
         public GameContext Context
         {
-            get { throw new NotImplementedException(); }
+            get;
+            private set;
         }
 
         public RGPointI Location
@@ -97,6 +99,27 @@ namespace Engine.Collision
         {
             get { return mDummyCollection; }
         }
+
+        public bool Alive
+        {
+            get { return true; }
+        }
+
+        public bool Paused
+        {
+            get;
+            set;
+        }
+
+        public ExitCode ExitCode
+        {
+            get { return ExitCode.StillAlive; }
+        }
+
+        public void Kill(ExitCode exitCode)
+        {
+            throw new NotImplementedException();
+        }
     }
 
     abstract class BorderCollisionmanager<T> : CollisionManager<T> where T : LogicObject, ICollidable    
@@ -104,11 +127,13 @@ namespace Engine.Collision
 
         private Func<WorldCollisionInfo, RGRectangleI> mGetBounds;
         private DirectionFlags mCheckSides;
+        private GameContext mContext;
 
         public BorderCollisionmanager(T obj, DirectionFlags checkSides)
             : base(obj)
         {
             mCheckSides = checkSides;
+            mContext = obj.Context;
         }
 
         protected abstract RGRectangleI GetBounds(WorldCollisionInfo info);
@@ -131,7 +156,7 @@ namespace Engine.Collision
 
         private CollisionEvent GetBorderCollisionEvent(RGRectangleI bounds, Side side)
         {
-            return new CollisionEvent(this.CollidingObject, new BorderEdge(bounds, side), true, true, true, true, true, HitboxType.Primary, HitboxType.Primary);
+            return new CollisionEvent(this.CollidingObject, new BorderEdge(mContext,bounds, side), true, true, true, true, true, HitboxType.Primary, HitboxType.Primary);
         }
 
     }

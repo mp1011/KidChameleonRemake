@@ -7,173 +7,100 @@ using Engine;
 
 namespace KidC
 {
-    class RubberBlock : CollidingTile
+
+    class RubberBlock : KCCollidingTile
     {
-        public RubberBlock(TileInstance tile, TileLayer layer)
-            : base(tile, layer) 
-        {
-         
-        }
-
-        public override void HandleCollision(CollisionEvent collision, CollisionResponse collisionResponse)
-        {
-            collisionResponse.AddInteraction(new PlayerBounce(collision.Invert()), this);
-        }        
-    }
-
-
-    class BouncingRubberBlock : LogicObject, IDrawableRemovable, IWithPosition
-    {
-        private TileLayer mLayer;
-        private RGPointI mTileLocation;
         private SimpleAnimation mAnimation;
-        private static KCTileDef BlankRubber;
 
-        public BouncingRubberBlock(RGSizeI tileSize, RGPointI tileLocation, TileLayer layer)
-            : base(LogicPriority.Behavior, layer)
+        public bool DoBounce { get; set; }
+
+        public RubberBlock(KCTileInstance tile, TileCollisionView collisionView)
+            : base(tile, collisionView) 
         {
-            this.Location = new RGPointI((tileLocation.X * tileSize.Width) + (tileSize.Width / 2), (tileLocation.Y * tileSize.Height) + (tileSize.Height / 2));
-            this.mLayer = layer;
+            mAnimation = KidCGraphic.RubberBlockBounce.CreateSimpleAnimation(this.Context);
+        }
 
-            mTileLocation = tileLocation;
-            mAnimation = new SimpleAnimation("rubberblock", 2, layer.Context, 0, 1);
-            layer.AddObject(this);
+        protected override SoundResource HitSound
+        {
+            get { return Sounds.RubberBounce; }
+        }
 
-            if (BlankRubber == null)
+        protected override SpecialTile? FinalTile
+        {
+            get
             {
-                BlankRubber = new KCTileDef(TileDef.BlankSolid);
-                BlankRubber.SpecialType = SpecialTile.Rubber;
+                return SpecialTile.Rubber;
             }
         }
 
-        protected override void OnEntrance()
+        protected override bool ShouldInteract(CollisionEvent collision, CollisionResponse response)
         {
-            mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, TileDef.BlankSolid.TileID);
+      //      response.AddInteraction(new PlayerBounce(collision.Invert()), this);
+            return DoBounce;
         }
 
-        protected override void OnExit()
-        {
-
-        }
-
-        protected override void Update()
-        {
-            if (this.Age >= 30)
-            {
-                var tileDef = mLayer.Map.Tileset.GetSpecialTile(SpecialTile.Rubber);
-                mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, tileDef.TileID);
-                this.Kill(Engine.ExitCode.Removed);
-            }
-        }
-
-        public RGPointI Location
-        {
-            get;
-            set;
-        }
-
-        public RGRectangleI Area
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public Direction Direction
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
+        protected override void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
         {
             mAnimation.Location = this.Location;
             mAnimation.Draw(p, canvas);
         }
+
+        protected override void Update()
+        {
+            if (this.Age >= 30)           
+                this.Kill(Engine.ExitCode.Removed);            
+        }
     }
 
-
-    class PlayerBounce : Interaction<PlatformerPlayerController, CollidingTile>
+    class PlayerBounceController : ITypedCollisionResponder<RubberBlock>
     {
-        private CollisionEvent mCollisionEvent;
+        private PlatformerPlayerController mPlatformCtl;
+        private TransformationStats Stats { get { return mPlatformCtl.MotionStats; } }
         private DirectedMotion mHorizontalBounce;
-        private GameContext mContext;
 
-        class BounceStats : Stats 
+        public PlayerBounceController(Sprite s, PlatformerPlayerController platformCtl)
         {
-            public float SideBounceDecel { get; set; }
-            public float SideBounceSpeed { get; set; }
-            public float VerticalBounceStrength { get; set; }
-        }
-        private GameResource<BounceStats> mBounceStatsResource;
-
-        private BounceStats Stats { get { return mBounceStatsResource.GetObject(this.mContext); } }
-
-        public PlayerBounce(CollisionEvent collisionEvent)
-        {
-            mCollisionEvent = collisionEvent;
-            mBounceStatsResource = new DevelopmentResource<BounceStats>(new GamePath(PathType.Stats, "Bounce"));
-            mContext = collisionEvent.OtherObject.Context;
+            this.RegisterTypedCollider(s);
+            mPlatformCtl = platformCtl;
         }
 
-        protected override void DoAction(PlatformerPlayerController controller1, CollidingTile controller2)
+        public void HandleCollision(RubberBlock rubberBlock, CollisionEvent collision, CollisionResponse response)
         {
+
             if(mHorizontalBounce == null)
             {
                 mHorizontalBounce = new DirectedMotion("Horizontal Bounce");
                 mHorizontalBounce.Inactive=true;
                 mHorizontalBounce.Decel = this.Stats.SideBounceDecel;
-                controller1.Sprite.MotionManager.AddComponent(mHorizontalBounce);
+                mPlatformCtl.Sprite.MotionManager.AddComponent(mHorizontalBounce);
             }
 
-            if (mCollisionEvent.CollisionSide == Side.Bottom)
+            if (collision.CollisionSide == Side.Bottom)
             {
-                var ySpeed = mCollisionEvent.CollisionSpeed.Y;
+                var ySpeed = collision.CollisionSpeed.Y;
 
                 if (ySpeed <= .5)
                     return;
 
-                SoundManager.PlaySoundIfNotPlaying(Sounds.RubberBounce);
-                controller1.DoBounce((Math.Min(ySpeed, this.Stats.VerticalBounceStrength)));
+                mPlatformCtl.DoBounce((Math.Min(ySpeed, this.Stats.VerticalBounceStrength)));
+                rubberBlock.DoBounce = true;
             }
-            else if (mCollisionEvent.CollisionSide == Side.Left)
+            else if (collision.CollisionSide == Side.Left)
             {
-                SoundManager.PlaySoundIfNotPlaying(Sounds.RubberBounce);
+                rubberBlock.DoBounce = true;
                 mHorizontalBounce.Inactive = false;
                 mHorizontalBounce.Direction = Direction.Right;
                 mHorizontalBounce.TargetSpeed = 0;
                 mHorizontalBounce.CurrentSpeed = this.Stats.SideBounceSpeed;
             }
-            else if (mCollisionEvent.CollisionSide == Side.Right)
+            else if (collision.CollisionSide == Side.Right)
             {
-                SoundManager.PlaySoundIfNotPlaying(Sounds.RubberBounce);
+                rubberBlock.DoBounce = true;
                 mHorizontalBounce.Inactive = false;
                 mHorizontalBounce.Direction = Direction.Left;
                 mHorizontalBounce.TargetSpeed = 0;
                 mHorizontalBounce.CurrentSpeed = this.Stats.SideBounceSpeed;
             }
-
-
-            var tileLayer = controller2.TileLayer;
-            var bouncingTile = new BouncingRubberBlock(tileLayer.Map.Tileset.TileSize, controller2.Tile.TileLocation, tileLayer);
-            tileLayer.AddObject(bouncingTile);
         }
-    }
-
-    class BounceController : SpriteBehavior
-    {
-        public PlatformerPlayerController mPlatformerController;
-
-        public BounceController(Sprite s, PlatformerPlayerController platformerController)
-            : base(s) 
-        {
-            this.mPlatformerController = platformerController;
-        }
-
-        protected override void HandleCollisionEx(CollisionEvent cEvent, CollisionResponse response)
-        {
-            if (cEvent.OtherType.Is(ObjectType.Block))
-                response.AddInteraction(new PlayerBounce(cEvent), mPlatformerController);
-        }
-
-       
-
     }
 }

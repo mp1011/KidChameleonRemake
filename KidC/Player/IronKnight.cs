@@ -7,34 +7,18 @@ using Engine.Collision;
 
 namespace KidC
 {
-    class IronKnightBrickBreakerController : SpriteBehavior 
+    class IronKnightBrickBreakerController : BlockBreaker  
     {
         public IronKnightBrickBreakerController(Sprite s)
             : base(s)
         {
         }
 
-        protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
+        protected override bool ShouldBreakBlock(IBreakableTile block, Engine.Collision.CollisionEvent cEvent)
         {
-            if (cEvent.OtherType.Is(ObjectType.Block) && cEvent.CollisionSide == Engine.Collision.Side.Bottom) //TBD- block types
-                response.AddInteraction(new IronKnightHitsBrick(), this);
-
-            base.HandleCollisionEx(cEvent, response);
+            return cEvent.ThisCollisionTimeSpeed.Y > 2f; 
         }
     }
-
-    class IronKnightHitsBrick : Interaction<IronKnightBrickBreakerController, IBreakableTile>
-    {
-        protected override void DoAction(IronKnightBrickBreakerController controller1, IBreakableTile controller2)
-        {
-            var knight = controller1.Sprite;
-
-            if(knight.OriginalSpeed.Y > 2f)
-                controller2.Break();
-        }
-    }
-
-
 
     class IronKnightClimbController : SpriteBehavior 
     {

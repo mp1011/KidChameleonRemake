@@ -7,100 +7,80 @@ using Engine;
 
 namespace KidC
 {
-    class PrizeBlock : CollidingTile, IBreakableTile 
+    class PrizeBlock : KCCollidingTile, IBreakableTile 
     {
-        private ObjectType mPrize;
-        private KCTileInstance mInstance;
-
-        public PrizeBlock(KCTileInstance tile, TileLayer layer, ObjectType prize)
-            : base(tile, layer) 
-        {
-            mPrize = prize;
-            mInstance = tile;
-        }
-
-        public override void HandleCollision(CollisionEvent collision, CollisionResponse response)
-        {
-            if (collision.OtherType.Is(KCObjectType.IronKnight))
-                response.AddInteraction(new IronKnightHitsBrick(), this);
-            else if (collision.OtherType.Is(KCObjectType.RedStealth))
-                response.AddInteraction(new RedStealthHitsBrick(), this);
-
-            if (mInstance.ShouldBreak(collision))
-            {
-                this.Break();
-            }
-        }
-
-        public void Break()
-        {
-            SoundManager.PlaySound(Sounds.BlockHit);
-            BreakingPrizeTile tile = new BreakingPrizeTile(TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer, mPrize);
-
-            this.TileLayer.AddObject(tile);               
-        }
-    }
-
-    class BreakingPrizeTile : SimpleObject
-    {
-
-        private TileLayer mLayer;
-        private RGPointI mTileLocation;
-
-        private ObjectType mPrize;
-        private int mInitialY;
+        private SimpleGraphic mGraphic;
         private int mMotion = 2;
-        private int mRange = 2;
+        private int mRange = 4;
 
-        public BreakingPrizeTile(RGSizeI tileSize, RGPointI tileLocation, TileLayer layer, ObjectType prize)
-            : base(layer, BreakingPrizeTile.CreateGraphic(layer))
+        public PrizeBlock(KCTileInstance tile, TileCollisionView collisionView)
+            : base(tile, collisionView) 
         {
-            this.Location = new RGPointI((tileLocation.X * tileSize.Width) + (tileSize.Width / 2), (tileLocation.Y * tileSize.Height) + (tileSize.Height / 2));
-            this.mLayer = layer;
-            this.mPrize = prize;
-
-            mTileLocation = tileLocation;
-            mInitialY = this.Location.Y;           
+            mGraphic = KidCGraphic.RockBlock.CreateSimpleGraphic(this.Context);
         }
 
-        private static SimpleGraphic CreateGraphic(TileLayer layer)
+        protected override SoundResource HitSound
         {
-            var tileDef = layer.Map.Tileset.GetSpecialTile(SpecialTile.Rock);
-            return new SimpleGraphic(new TextureResource("SpriteSheets_Woods"), tileDef.SourcePosition);
+	        get { return Sounds.BlockHit;}
         }
 
-        protected override void OnEntrance()
+        protected override SpecialTile? FinalTile
         {
-            mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, TileDef.BlankSolid.TileID);
+	        get 
+	        { 
+		        return SpecialTile.Rock; 
+	        }
         }
-       
+
+        protected override bool ShouldInteract(CollisionEvent collision, CollisionResponse response)
+        {
+            return this.ShouldBreak;
+        }
+
         protected override void Update()
         {
+
+            var initialY = Tile.TileArea.Center.Y;
             this.Location = this.Location.Offset(0, mMotion);
 
-            if (this.Location.Y > mInitialY + mRange)
+            if (this.Location.Y > initialY + mRange)
                 mMotion = -1 * Math.Abs(mMotion);
-            else if (this.Location.Y < mInitialY - mRange)
+            else if (this.Location.Y < initialY - mRange)
                 mMotion = Math.Abs(mMotion);
-
 
             if (this.Age > 30)
             {
                 this.Kill(Engine.ExitCode.Removed);
 
-                var tileDef = mLayer.Map.Tileset.GetSpecialTile(SpecialTile.Rock);
-                mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, tileDef.TileID);
+                var puff = KCObjectType.Puff.CreateSpriteInstance(this.TileLayer, this.Context).Sprite;
+                puff.Location = this.Location.Offset(0, -12);
 
-                var t = mLayer.Map.GetTile(mTileLocation.X, mTileLocation.Y);
+                new CreateObjectWhenDestroyed(puff, this.Prize, RGPointI.Empty);
+            }
+        }
 
-                var puff = KCObjectType.Puff.CreateSpriteInstance(mLayer, this.Context).Sprite;
-                puff.Location = this.Location.Offset(0, -24);
-
-                new CreateObjectWhenDestroyed(puff, mPrize, RGPointI.Empty);
+        private ObjectType Prize
+        {
+            get
+            {
+                if (this.TileInstance.Prize == PrizeType.None)
+                    return ObjectType.None;
+                else
+                    return new ObjectType((int)this.TileInstance.Prize, this.TileInstance.Prize.ToString());
             }
         }
 
 
-    }
+        public bool ShouldBreak { get; private set; }
+        public void Break(CollisionEvent evt)
+        {
+            this.ShouldBreak = true;
+        }
 
+        protected override void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
+        {
+            mGraphic.Position = this.Location;
+            mGraphic.Draw(p, canvas);
+        }
+    }
 }

@@ -12,8 +12,7 @@ namespace KidCXNA
         static void Main(string[] args)
         {
             var engine = new XNAEngine();
-            var game = new KidCGame();
-           
+            var game = new KidCGame();          
             engine.Run(game);
 
         }

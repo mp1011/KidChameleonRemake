@@ -13,7 +13,9 @@ namespace Engine
         public LayerDepth Depth;
         public TileLayer Layer;
         public WorldCollisionInfo CollisionInfo;
-        
+
+        public TileDef TileDef { get { return Instance.TileDef; } }
+
         public IEnumerable<TileInstance> GetTilesInLine(Direction d)
         {
             var pt = d.ToPoint();
@@ -44,20 +46,20 @@ namespace Engine
         }
     }
 
-    public class WorldCollisionInfo
+    public class WorldCollisionInfo  
     {
 
         private TileCollisionView[,] mGrid;
         private TileLayer mForeground;
         private World mWorld;
 
-        public Listener<ICollidable> CollisionListener { get; private set; }
+        public CollidableListener CollisionListener { get; private set; }
         public RGRectangleI LevelBounds { get; private set; }
 
         public WorldCollisionInfo(World world)
         {
             this.mWorld = world;
-            this.CollisionListener = new Listener<ICollidable>(world);
+            this.CollisionListener = new CollidableListener(world);
             this.mForeground = world.GetLayers(LayerDepth.Foreground).FirstOrDefault(p => p is TileLayer) as TileLayer;
             this.LevelBounds = mForeground.Location;
             FillGrid();

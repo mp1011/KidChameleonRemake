@@ -21,7 +21,7 @@ namespace Engine.XNA
 
         protected override Texture2D CreateTexture(TextureResource resource, GraphicsDevice device)
         {
-            var fs = resource.OpenFileStream();
+            var fs = resource.Path.OpenFileStream();
             var texture = Microsoft.Xna.Framework.Graphics.Texture2D.FromStream(device, fs);
             fs.Close();
             return texture;

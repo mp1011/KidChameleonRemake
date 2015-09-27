@@ -349,12 +349,17 @@ namespace Engine
 
     public abstract class TileInstance
     {
+        [Browsable(false)]
         public abstract TileDef TileDef { get; set; }
+
+        [Browsable(false)]
         public RGPointI TileLocation { get; set; }
 
         [JsonIgnore]
+        [Browsable(false)]
         public Map Map { get; set; }
 
+        [Browsable(false)]
         public RGRectangleI TileArea
         {
             get
@@ -419,7 +424,7 @@ namespace Engine
         }
 
         public abstract bool IsSpecial { get; }
-        public abstract CollidingTile CreateCollidingTile(TileLayer layer);
+        public abstract CollidingTile CreateCollidingTile(TileCollisionView collisionView);
 
         public override bool Equals(object obj)
         {
@@ -434,15 +439,19 @@ namespace Engine
         #region AdjacentTiles
 
         [JsonIgnore]
+        [Browsable(false)]
         public TileInstance LeftTile { get { return GetAdjacentTile(-1, 0); } }
 
         [JsonIgnore]
+        [Browsable(false)]
         public TileInstance RightTile { get { return GetAdjacentTile(1, 0); } }
 
         [JsonIgnore]
+        [Browsable(false)]
         public TileInstance AboveTile { get { return GetAdjacentTile(0, -1); } }
 
         [JsonIgnore]
+        [Browsable(false)]
         public TileInstance BelowTile { get { return GetAdjacentTile(0, 1); } }
 
         #endregion

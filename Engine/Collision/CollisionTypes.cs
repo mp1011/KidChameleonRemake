@@ -114,15 +114,30 @@ namespace Engine.Collision
                 default: return Side.None;
             }
         }
+
+        public static Direction ToDirection(this Side s)
+        {
+            switch (s)
+            {
+                case Side.Top: return Direction.Up;
+                case Side.Left: return Direction.Left;
+                case Side.Right: return Direction.Right;
+                case Side.Bottom: return Direction.Down;
+                default: return Direction.Default;
+            }
+        }
+    
     }
+
     struct CorrectionRec
     {
         public Side Side;
         public RGRectangleI Rec;
     }
 
-    public interface ICollidable : IWithPosition, IMoveable
+    public interface ICollidable : IWithPosition, IMoveable 
     {
+        bool Alive { get; }
         LayerDepth LayerDepth { get; }
         ObjectType ObjectType { get; }
         ObjectType[] CollisionTypes { get; set; }
@@ -130,18 +145,16 @@ namespace Engine.Collision
         ICollection<ICollisionResponder> CollisionResponders { get; }
     }
 
-    public interface ICollisionResponder
-    {
-        void HandleCollision(CollisionEvent collision, CollisionResponse response);
-    }
+  
 
     public class CollisionEvent
     {
         private ICollidable mThisPosition;
         private ICollidable mOtherPosition;
 
+        public ulong CollisionTime { get; private set; }
 
-        #region Collision Time Values
+        #region Collision Values
 
         public RGRectangleI ThisCollisionTimeArea { get; private set; }
         public RGRectangleI OtherCollisionTimeArea { get; private set; }
@@ -224,6 +237,7 @@ namespace Engine.Collision
 
         public CollisionEvent(ICollidable thisPos, ICollidable otherPos, bool topExposed, bool leftExposed, bool rightExposed, bool bottomExposed, bool isBlocking, HitboxType thisHitboxType, HitboxType otherHitboxType)
         {
+            this.CollisionTime = thisPos.Context.CurrentFrameNumber;
             this.OtherLeftExposed = leftExposed;
             this.OtherRightExposed = rightExposed;
             this.OtherTopExposed = topExposed;
@@ -258,6 +272,5 @@ namespace Engine.Collision
             }
         }
     }
-
 
 }

@@ -1,5 +1,0 @@
-{
-"SideBounceDecel":0.15,
-"SideBounceSpeed":2.0,
-"VerticalBounceStrength":7.0
-}

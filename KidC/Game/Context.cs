@@ -15,6 +15,7 @@ namespace KidC
         public KCContext(EngineBase engine, GameBase game) : base(engine,game)
         {
             this.Stats = new PlayerStats();
+            KidCResource.Init(this);
         }
     }
 }

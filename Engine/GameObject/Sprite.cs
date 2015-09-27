@@ -149,6 +149,9 @@ namespace Engine
             mCollisionTypes = list.ToArray();
         }
 
+        public Sprite(Layer drawLayer, ObjectType type)
+            : this(drawLayer.Context, drawLayer, type) { }
+  
         public Sprite(GameContext ctx, Layer drawLayer, ObjectType type)
             : base(LogicPriority.Behavior, drawLayer, RelationFlags.DestroyWhenParentDestroyed | RelationFlags.PauseWhenParentPaused)
         {
@@ -283,7 +286,39 @@ namespace Engine
         }
 
 
+        #region Helpers
 
-    }
+        public Sprite SetSingleAnimation(GameResource<SpriteSheet> spriteSheetResource, int frame)
+        {
+            var spriteSheet = spriteSheetResource.GetObject(this.Context);
+            this.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, frame));
+            return this;
+        }
 
+        public Sprite SetMotion(Direction direction, float speed)
+        {
+            this.MotionManager.MainMotion.Set(direction, speed);
+            return this;
+        }
+
+        public static Sprite Create(ObjectType type, Layer layer, RGPointI location)
+        {
+            var sprite = new Sprite(layer, type);
+            layer.AddObject(sprite);
+            return sprite;
+        }
+
+        public static Sprite Create(Layer layer, RGPointI location)
+        {
+            return Create(ObjectType.Thing, layer, location);
+        }
+
+        public Sprite CreateChild(ObjectType newType, RGPointI offset)
+        {
+            return Sprite.Create(newType,this.DrawLayer, this.Location.Offset(offset));
+        }
+
+        #endregion 
+
+    }    
 }

@@ -21,6 +21,7 @@ namespace KidC
 
         protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
         {
+
             if (cEvent.OtherType.Is(ObjectType.Block) && cEvent.ThisCollisionTimeSpeed.Y >= mMinYSpeed &&
                 cEvent.CollisionSide == Engine.Collision.Side.Bottom)
                 SoundManager.PlaySound(mSound);

@@ -7,22 +7,22 @@ namespace Engine
 {
     public static class ObjectFactory
     {
-        private static Dictionary<int, Func<GameContext, Layer, LogicObject>> mFactories = new Dictionary<int, Func<GameContext, Layer, LogicObject>>();
-        private static Dictionary<int, Func<GameContext, Layer, SpriteCreationInfo>> mSpriteFactories = new Dictionary<int, Func<GameContext, Layer, SpriteCreationInfo>>();
+        private static Dictionary<int, Func<Layer, LogicObject>> mFactories = new Dictionary<int, Func<Layer, LogicObject>>();
+        private static Dictionary<int, Func<Layer, SpriteCreationInfo>> mSpriteFactories = new Dictionary<int, Func<Layer, SpriteCreationInfo>>();
 
-        public static void AddLogicObjectFactoryMethod(ObjectType o, Func<GameContext, Layer, LogicObject> factory)
+        public static void AddLogicObjectFactoryMethod(ObjectType o, Func<Layer, LogicObject> factory)
         {
             mFactories.Add(o.Value, factory);
         }
 
-        public static void AddSpriteFactoryMethod(ObjectType o, Func<GameContext, Layer, SpriteCreationInfo> factory)
+        public static void AddSpriteFactoryMethod(ObjectType o, Func<Layer, SpriteCreationInfo> factory)
         {
             mSpriteFactories.Add(o.Value, factory);
         }
 
         public static T CreateLogicObjectInstance<T>(this ObjectType type, Layer layer, GameContext ctx) where T : LogicObject, IDrawableRemovable
         {
-            var item = mFactories[type.Value](ctx, layer);
+            var item = mFactories[type.Value](layer);
             var itemT = item as T;
             layer.AddObject(itemT);
             return itemT;
@@ -30,7 +30,7 @@ namespace Engine
 
         public static SpriteCreationInfo CreateSpriteInstance(this ObjectType type, Layer layer, GameContext ctx) 
         {
-            var item = mSpriteFactories[type.Value](ctx, layer);
+            var item = mSpriteFactories[type.Value](layer);
             var itemT = item as SpriteCreationInfo;
             layer.AddObject(itemT.Sprite);
             return itemT;

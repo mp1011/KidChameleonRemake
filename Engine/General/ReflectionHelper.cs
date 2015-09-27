@@ -9,10 +9,8 @@ namespace Engine
     public static class ReflectionHelper
     {
 
-        public static Assembly MainAssembly
-        {
-            get { return Assembly.GetExecutingAssembly(); }
-        }
+        public static Assembly EngineAssembly { get; set; }
+        public static Assembly GameAssembly { get; set; }
 
         public static Assembly GetAssembly(object o)
         {

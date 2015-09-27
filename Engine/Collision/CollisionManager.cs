@@ -126,7 +126,12 @@ namespace Engine.Collision
             }
 
             var correctionVector = correctionRectangle.Rec.TopLeft.Difference(CollidingObject.Area.TopLeft);
-      
+            if (correctionVector.Magnitude > 16)
+            {
+                //temporary - need to be smarter about "false positive" collisions
+                return new CollisionResponse { ShouldBlock = false };
+            }
+
             collisionEvent.CollisionSide = correctionRectangle.Side;
 
             
@@ -135,7 +140,8 @@ namespace Engine.Collision
             var finalY = CollidingObject.Location.Y + correctionVector.Y;
 
             collisionResponse.NewLocation = new RGPointI(finalX, finalY);
-            return collisionResponse;
+
+             return collisionResponse;
         }
 
         private CollisionResponse HandleSlopeCollision(CollisionEvent collisionEvent)

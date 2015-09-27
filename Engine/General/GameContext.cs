@@ -35,6 +35,9 @@ namespace Engine
 
         public void SetWorld(World w)
         {
+            if (CurrentWorld == w)
+                return;
+
             if (CurrentWorld != null)
                 CurrentWorld.Kill(ExitCode.Removed);
             CurrentWorld = w;

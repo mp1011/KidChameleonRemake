@@ -33,6 +33,11 @@ namespace Engine
         [EditorVisible]
         public static ObjectType Dragon { get { return new ObjectType(ObjectType.CustomIDStart + 4001, "Dragon"); } }
 
+
+        public static ObjectType FromString(string str)
+        {            
+            return (ObjectType)(typeof(KCObjectType).GetProperty(str) ?? typeof(ObjectType).GetProperty(str)).GetValue(null, null);
+        }
     
     }
 

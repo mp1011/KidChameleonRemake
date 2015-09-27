@@ -39,20 +39,20 @@ namespace KidC
 
         public IEnumerable<Layer> CreateLayers(World world, IEnumerable<Map> maps)
         {
-            var bg = SpriteSheet.Load("woods_bg", world.Context);
+            var bg = world.Context.Game.SpriteSheetResources.GetByName("woods_bg");
 
-            var firstLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(bg, 1), .2f, new RGPointI(0, 200));
+            var firstLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(world.Context, bg, 1), .2f, new RGPointI(0, 200));
             yield return firstLayer;
 
-            var secondLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(bg, 0), .6f);
+            var secondLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(world.Context, bg, 0), .6f);
             secondLayer.PositionBelow(firstLayer);
             yield return secondLayer;
 
-            var thirdLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(bg, 2), .6f);
+            var thirdLayer = ImageLayer.CreateRepeatingHorizontal(world, new SimpleGraphic(world.Context, bg, 2), .6f);
             thirdLayer.PositionBelow(secondLayer);
             yield return thirdLayer;
 
-            foreach(var map in maps)
+            foreach (var map in maps)
                 yield return new TileLayer(world, Serializer.Copy(map), RGPointI.Empty, LayerDepth.Foreground);
 
             yield return new HUD(world);

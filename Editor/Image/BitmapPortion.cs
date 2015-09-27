@@ -366,6 +366,18 @@ namespace Editor
                     yield return Extract(RGRectangleI.FromXYWH(x, y, gridSize, gridSize));
         }
 
+        public IEnumerable<BitmapPortion> ExtractGrid(int gridSize)
+        {
+            int oX = this.Region.X;
+            int oY = this.Region.Y;
+            while (oX >= gridSize) oX -= gridSize;
+            while (oY >= gridSize) oY -= gridSize;
+
+            for (int y = oY; y <= this.Region.Bottom - gridSize; y += gridSize)
+                for (int x = oX; x <=  this.Region.Right - gridSize; x += gridSize)
+                    yield return Extract(RGRectangleI.FromXYWH(x, y, gridSize, gridSize));
+        }
+
         #endregion
 
         #region Flood Fill

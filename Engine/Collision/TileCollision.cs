@@ -5,10 +5,11 @@ using System.Text;
 
 namespace Engine.Collision
 {
-    public abstract class CollidingTile : ICollidable, ICollisionResponder 
+    public abstract class CollidingTile : LogicObject, ICollidable, ICollisionResponder 
     {
-        public TileInstance Tile { get; private set; }
-        public TileLayer TileLayer { get; private set; }
+        public TileCollisionView CollisionView { get; private set; }
+        public TileInstance Tile { get { return CollisionView.Instance; } }
+        public TileLayer TileLayer { get { return CollisionView.Layer; } }
 
         public GameContext Context { get { return TileLayer.Context; } }
         public LayerDepth LayerDepth { get { return TileLayer.Depth; } }
@@ -21,23 +22,25 @@ namespace Engine.Collision
 
         public RGPointI Location
         {
-            get { return Area.TopLeft; }
-            set
-            {
-                throw new NotImplementedException(); 
-            }
+            get;
+            set;
         }
 
         public RGRectangleI Area
         {
-            get { return Tile.TileArea; }
+            get;
+            set;
         }
 
-        public CollidingTile(TileInstance tile, TileLayer layer)
-        {
-            Tile = tile;
-            TileLayer = layer;
+        public CollidingTile(TileInstance tile, TileCollisionView collisionView) : base(LogicPriority.AfterCollision,collisionView.Layer)
+        {         
+            CollisionView = collisionView;
             this.CollisionTypes = new ObjectType[] { ObjectType.Thing };
+
+            this.Location = tile.TileArea.Center;
+            this.Area = tile.TileArea;
+             mResponders = new List<ICollisionResponder>();
+             mResponders.Add(this);
         }
 
         public ObjectMotion MotionManager
@@ -63,9 +66,10 @@ namespace Engine.Collision
             throw new NotImplementedException();
         }
 
+        private List<ICollisionResponder> mResponders;
         public ICollection<ICollisionResponder> CollisionResponders
         {
-            get { return new ICollisionResponder[] { this }; }
+            get { return mResponders; }
         }
     }
 
@@ -163,7 +167,7 @@ namespace Engine.Collision
             bool topExposed = tileView.GetAdjacentTile(0,-1).TileDef.IsPassable;
             bool bottomExposed = tileView.GetAdjacentTile(0,1).TileDef.IsPassable;
 
-            var collidingTile = tile.CreateCollidingTile(tileView.Layer);
+            var collidingTile = tile.CreateCollidingTile(tileView);
             return new CollisionEvent(this.CollidingObject, collidingTile, topExposed, leftExposed, rightExposed, bottomExposed, true, HitboxType.Primary, HitboxType.Primary);
         }
     }

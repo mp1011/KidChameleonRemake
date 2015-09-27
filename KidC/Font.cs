@@ -21,7 +21,8 @@ namespace KidC
         {
 
             var scoreFont = new FixedSpaceFont(new TextureResource("scorefont"), new RGSizeI(8, 8), RGPointI.Empty);
-            scoreFont.AddCharacters("9876543210", RGPointI.Empty);
+            scoreFont.AddCharacters("9876543210 ", RGPointI.Empty);
+            scoreFont.AddCharacter('.', new RGPointI(10, 0)); //temp
             ScoreFont = scoreFont;
 
             var clockFont = new FixedSpaceFont(new TextureResource("clockfont"), new RGSizeI(8, 8), RGPointI.Empty);

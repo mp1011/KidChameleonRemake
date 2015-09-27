@@ -26,7 +26,18 @@ namespace KidC
 
         public override Func<EngineBase, GameBase, GameContext> GameContextCreate
         {
-            get { return (e, g) => new KCContext(e, g); }
+            get
+            {
+                return (e, g) =>
+                    {
+                        var ctx = new KCContext(e, g);
+                        KidCGraphic.Load(ctx);
+                        TransformationStats.LoadResource(ctx);
+                        KidCObject.Load(ctx);
+                        return ctx;
+                    };
+            }
+            
         }
 
         public override Func<WorldInfo> WorldInfoCreate
@@ -59,6 +70,9 @@ namespace KidC
 
         public override void OnStartup()
         {
+            ReflectionHelper.EngineAssembly = System.Reflection.Assembly.Load("Engine");
+            ReflectionHelper.GameAssembly = System.Reflection.Assembly.Load("KidC");
+
          //   new InputRecorder();
         }
     }

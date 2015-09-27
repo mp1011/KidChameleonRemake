@@ -668,6 +668,12 @@ namespace Editor.Forms
             this.CurrentImage = original;
             return clone;
         }
+
+        public void AddImages(IEnumerable<BitmapPortion> images)
+        {
+            foreach (var image in images)
+                AddImagePanel(image);
+        }
   
 
         #region Extra Images

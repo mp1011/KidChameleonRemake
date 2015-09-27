@@ -7,11 +7,6 @@ namespace Engine
 {
     public class SpriteSheet
     {
-        public static SpriteSheet Load(string name, GameContext ctx)
-        {
-            return GameResource<SpriteSheet>.Load(new GamePath(PathType.SpriteSheets, name), ctx);
-        }
-
         public List<AnimationFrame> Frames = new List<AnimationFrame>();
         public TextureResource Image;
 

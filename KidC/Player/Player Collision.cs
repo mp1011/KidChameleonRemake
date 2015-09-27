@@ -13,31 +13,32 @@ namespace KidC
         private float mHitBounceSpeed;
         private bool mSecondaryHitboxIsDamaging;
         private NoHitBonus mNoHitBonus;
+        private PlayerSprite mPlayer;
 
-        protected override bool AllowRetrigger { get { return false; } }
-
-        public PlayerHitController(Sprite s, bool secondaryHitboxIsDamaging, GravityController gravityController, HealthController healthController) : base(s, 60, healthController)
+        public PlayerHitController(PlayerSprite player, bool secondaryHitboxIsDamaging, GravityController gravityController, HealthController healthController)
+            : base(player, 60, healthController)
         {
             mSecondaryHitboxIsDamaging = secondaryHitboxIsDamaging;
             mGravityController = gravityController;
             mNoHitBonus = this.Context.GetBonusTrackers().OfType<NoHitBonus>().FirstOrDefault();
+            mPlayer = player;
         }
 
-        protected override bool ShouldHandleCollision(Engine.Collision.CollisionEvent evt)
+        protected override bool ShouldHandleCollision(HitInfo hitInfo)
         {
-            return evt.OtherType.Is(KCObjectType.Enemy);
+            return hitInfo.DamagingType.Is(KCObjectType.Enemy);
         }
 
         public override int GetAttackDamage(Engine.Collision.CollisionEvent evt)
         {
-            if (evt.OtherHitboxType == HitboxType.Secondary)
-                return 0;
+            //if (evt.OtherHitboxType == HitboxType.Secondary)
+            //    return 0;
 
-            if (evt.IsStomp())
-                return 1; //todo
+            //if (evt.IsStomp())
+            //    return 1; //todo
 
-            if(evt.ThisHitboxType == HitboxType.Secondary && mSecondaryHitboxIsDamaging)
-                return 1; //todo
+            //if(evt.ThisHitboxType == HitboxType.Secondary && mSecondaryHitboxIsDamaging)
+            //    return 1; //todo
 
             return 0;
         }
@@ -55,22 +56,6 @@ namespace KidC
             }
 
             base.Update();
-        }
-
-        protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
-        {
-            if (cEvent.OtherType.Is(KCObjectType.Enemy) && cEvent.IsStomp())
-            {
-                var ySpeed = cEvent.CollisionSpeed.Y;
-
-                if (ySpeed >= 0)
-                    mHitBounceSpeed = Math.Max(2f, ySpeed);
-
-                response.ShouldBlock = true;
-                response.CorrectionVector = new RGPointI(0, -(cEvent.ThisCollisionTimeArea.Bottom - cEvent.OtherCollisionTimeArea.Top));
-            }
-
-            base.HandleCollisionEx(cEvent, response);
         }
 
         protected override void OnHit(HitInfo hitInfo)
@@ -92,14 +77,6 @@ namespace KidC
         protected override void WhileHit()
         {
             this.Sprite.CurrentAnimation.RenderOptions.SetFlashOn(Context.CurrentFrameNumber);
-        }
-
-        protected override SoundResource GetHitSound(Engine.Collision.CollisionEvent evt)
-        {
-            if (evt == null)
-                return Sounds.None;
-
-            return Sounds.PlayerHit;
         }
     }
 }

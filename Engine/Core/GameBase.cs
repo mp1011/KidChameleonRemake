@@ -14,23 +14,27 @@ namespace Engine.Core
      
         protected GameBase() 
         {
-            GameBase.Current = this;            
+            GameBase.Current = this;
+            this.SpriteSheetResources = new ResourceCache<SpriteSheet>(PathType.SpriteSheets);
         }
 
-#region Abstract Properties and Methods
-      
+#region Abstract Properties and Methods      
         public abstract ObjectTypeRelations Relations { get; }
         public abstract Func<TileInstance> TileInstanceCreate { get; }
         public abstract Func<WorldInfo> WorldInfoCreate { get; }
 
         public abstract Func<EngineBase, GameBase, GameContext> GameContextCreate { get; }
         public abstract GameResource<WorldInfo> StartingWorld { get; }
-
+       
         public abstract void OnStartup();
      //   public abstract void OnShutdown();
 #endregion
 
+        #region Resources
 
+        public ResourceCache<SpriteSheet> SpriteSheetResources { get; private set; }
+
+        #endregion
     }
 
 

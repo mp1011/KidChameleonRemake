@@ -3,10 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Newtonsoft.Json;
+using System.IO;
 
 namespace Engine
 {
-
     public abstract class GameResource : ISerializable 
     {
         public GamePath Path { get; private set; }
@@ -24,30 +24,80 @@ namespace Engine
         {
             this.Path = saveModel as GamePath;
         }
-
-        public System.IO.FileStream OpenFileStream()
-        {
-            return new System.IO.FileStream(this.Path.FullPath, System.IO.FileMode.Open);
-        }
     }
 
-    public class GameResource<T> : GameResource where T : new()
+    public interface IGameResource<T>
     {
-        private Type mOverrideType;
+        T GetObject(GameContext ctx);
+    }
+
+    public class TypedResource<T> : GameResource, IGameResource<T>
+    {
+        private IResourceLoader<T> mLoader;
         private T content;
         private bool mLoaded = false;
 
+        public TypedResource(GamePath path, IResourceLoader<T> loader) : base(path)
+        {
+            mLoader = loader;
+        }
+
+        public T Load(GameContext context)
+        {
+            return mLoader.Load(context,this.Path);
+        }
+                 
+        public bool NeedsLoad()
+        {
+            return !mLoaded;
+        }
+
+        public T GetObject(GameContext context)
+        {
+            if (!NeedsLoad())
+                return content;
+
+            content = CreateNewObject(context);
+
+            mLoaded = true;
+            return content;
+        }
+
+        protected virtual T CreateNewObject(GameContext context)
+        {
+            return mLoader.Load(context, this.Path);
+        }
+
+        public void Unload()
+        {
+            mLoaded = false;
+            content = default(T);
+        }
+    }
+
+
+    public class GameResource<T> : GameResource where T : new()
+    {
+        private JSONLoader<T> mLoader;
+        private T content;
+        private bool mLoaded = false;
 
         public GameResource(GamePath path, Type deserializeType) : this(path) 
         {
-            mOverrideType = deserializeType;
+            mLoader = new JSONLoader<T>(deserializeType);
         }
 
-        public GameResource(GamePath path) : base(path) { }
+        public GameResource(GamePath path) : base(path) 
+        {
+            mLoader = new JSONLoader<T>();
+        }
 
         public GameResource(string name, PathType pathType) : this(new GamePath(pathType,name)) { }
 
-        public GameResource() : base(GamePath.Undefined) { }
+        public GameResource() : base(GamePath.Undefined) 
+        {
+            mLoader = new JSONLoader<T>();
+        }
 
         protected virtual bool NeedsLoad()
         {
@@ -67,18 +117,14 @@ namespace Engine
 
         protected virtual T CreateNewObject(GameContext context)
         {
-            var json = System.IO.File.ReadAllText(this.Path.FullPath);
-            if (mOverrideType != null)
-                return (T)Serializer.FromJson(json, mOverrideType);
-            else 
-                return Serializer.FromJson<T>(json);
+            return mLoader.Load(context, this.Path);
         }
 
         public static T Load(GamePath path, GameContext ctx)
         {
             var res = new GameResource<T>(path);
             return res.GetObject(ctx);
-        } 
+        }
     }
 
     public class TextureResource : GameResource
@@ -91,6 +137,17 @@ namespace Engine
         {
             return new TextureResource(this.Path.Name + "_flash");
         }
+
+        public static TextureResource FromCache(string name)
+        {
+            throw new NotImplementedException();
+           // return GameResource.FromCache<TextureResource>(name);
+        }
+    }
+
+    public class StringResource : TypedResource<String>
+    {
+        public StringResource(string name) : base(new GamePath(PathType.Info, name), new StringLoader()){}
     }
 
     public class InMemoryResource<T> : GameResource<T> where T:new()
@@ -108,4 +165,11 @@ namespace Engine
             return mItem;
         }
     }
+
+    public class CSVResource<T> : TypedResource<T[]> where T:IFromCSV,new()
+    {
+        public CSVResource(string name) : base(new GamePath(PathType.Info,name), new CSVLoader<T>()) { } 
+    }
+
+
 }

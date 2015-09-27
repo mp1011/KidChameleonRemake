@@ -19,7 +19,7 @@ namespace KidC
         public HealthGuage(Layer layer)
             : base(LogicPriority.World, layer)
         {
-            mCellGraphic = new SimpleGraphic(SpriteSheet.Load("items",this.Context), 7, 8);
+            mCellGraphic = KidCGraphic.HealthGuage.CreateSimpleGraphic(this.Context);
 
             this.MaxHealth = 3;
             this.CurrentHealth = 2;

@@ -3,45 +3,51 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Engine;
-using Engine.Input;
+
 
 namespace KidC
 {
-    static partial class KCObjectFactory
+    class PlayerSprite : Sprite, IDamageable
     {
+        private PlayerHitController mHitController;
 
-        
+        private PlayerSprite(Layer layer, ObjectType objectType) : base(layer, objectType) { }
 
-        private static SpriteCreationInfo CreatePlayer(GameContext ctx, Layer layer, ObjectType playerType, int maxHealth, bool secondaryHitboxIsDamaging) 
+        private static SpriteCreationInfo CreatePlayer(GameContext ctx, Layer layer, ObjectType playerType, int maxHealth, bool secondaryHitboxIsDamaging)
         {
-            var sprite = new Sprite(ctx, layer, playerType);
+            var sprite = new PlayerSprite(layer, playerType);
             var spriteInfo = new SpriteCreationInfo(sprite);
 
             sprite.Location = new RGPointI(120, 125);
-            
+
             sprite.AddCollisionChecks(ObjectType.Block, ObjectType.Border, KCObjectType.Collectable, KCObjectType.Enemy);
 
             var player = KidCGame.CreatePlayer(ctx);
-          
+
             var transformationController = spriteInfo.AddBehavior(new TransformationController(sprite, maxHealth));
 
-           
+
             var gravityCtl = new GravityController(sprite);
             spriteInfo.AddBehavior(new PlayerHitController(sprite, secondaryHitboxIsDamaging, gravityCtl, new HealthController(sprite, 9999)));
             var playerCtl = spriteInfo.AddBehavior(new PlatformerPlayerController(sprite, player, gravityCtl));
-
-            spriteInfo.AddBehavior(new BounceController(sprite, playerCtl));
+            new PlatformerBlockBreaker(sprite);
+            new IceWalkController(playerCtl);
+            new PlayerBounceController(sprite, playerCtl);
+            new StompDamager(sprite, gravityCtl);
+         
+            sprite.mHitController = spriteInfo.GetBehavior<PlayerHitController>();
             return spriteInfo;
         }
 
-        private static SpriteCreationInfo CreateKid(GameContext ctx, Layer layer)
+        public static SpriteCreationInfo CreateKid(Layer layer)
         {
-            var playerInfo = CreatePlayer(ctx, layer, KCObjectType.JamesKid, 2,false);
+            var ctx = layer.Context;
+            var playerInfo = CreatePlayer(ctx, layer, KCObjectType.JamesKid, 2, false);
             var player = playerInfo.Sprite;
             var flipController = new KidFlipController(player, ctx.FirstPlayer);
 
             new BehaviorExclusionController(player, flipController, playerInfo.GetBehavior<PlatformerPlayerController>());
-         
+
             var spriteSheet = GameResource<SpriteSheet>.Load(new GamePath(PathType.SpriteSheets, "kid"), ctx);
             player.AddAnimation(KCAnimation.Stand, new Animation(spriteSheet, Direction.Right, 0));
             player.AddAnimation(KCAnimation.Walk, new Animation(spriteSheet, Direction.Right, 1, 2, 3, 4, 5, 6));
@@ -66,9 +72,10 @@ namespace KidC
             return playerInfo;
         }
 
-        private static SpriteCreationInfo CreateIronKnight(GameContext ctx, Layer layer)
+        public static SpriteCreationInfo CreateIronKnight(Layer layer)
         {
-            var playerInfo = CreatePlayer(ctx, layer, KCObjectType.IronKnight,4,false);
+            var ctx = layer.Context;
+            var playerInfo = CreatePlayer(ctx, layer, KCObjectType.IronKnight, 4, false);
             var player = playerInfo.Sprite;
 
             new IronKnightClimbController(player, ctx.FirstPlayer, playerInfo.GetBehavior<PlatformerPlayerController>());
@@ -100,27 +107,28 @@ namespace KidC
             return playerInfo;
         }
 
-        private static SpriteCreationInfo CreateRedStealth(GameContext ctx, Layer layer)
+        public static SpriteCreationInfo CreateRedStealth(Layer layer)
         {
-            var playerInfo = CreatePlayer(ctx, layer, KCObjectType.RedStealth,3,true);
+            var ctx = layer.Context;
+            var playerInfo = CreatePlayer(ctx, layer, KCObjectType.RedStealth, 3, true);
             var player = playerInfo.Sprite;
-            new RedStealthSwordController(player,  playerInfo.GetBehavior<PlatformerPlayerController>());
+            new RedStealthSwordController(player, playerInfo.GetBehavior<PlatformerPlayerController>());
             var spriteSheet = GameResource<SpriteSheet>.Load(new GamePath(PathType.SpriteSheets, "redstealth"), ctx);
             player.AddAnimation(KCAnimation.Stand, new Animation(spriteSheet, Direction.Right, 4));
-            player.AddAnimation(KCAnimation.Walk, new Animation(spriteSheet, Direction.Right, 12,13, 14, 15, 16)).SetFrameDuration(6);
+            player.AddAnimation(KCAnimation.Walk, new Animation(spriteSheet, Direction.Right, 12, 13, 14, 15, 16)).SetFrameDuration(6);
 
             player.AddAnimation(KCAnimation.Jump, new Animation(spriteSheet, Direction.Right, 8));
             player.AddAnimation(KCAnimation.Fall, new Animation(spriteSheet, Direction.Right, false, 9));
 
             player.AddAnimation(KCAnimation.ClimbDown, new Animation(spriteSheet, Direction.Left, 10, 11)).SetFrameDuration(5);
-      
+
             player.AddAnimation(KCAnimation.Crawl, new Animation(spriteSheet, Direction.Right, 17, 18, 19, 18)).SetFrameDuration(10);
-       
+
             player.AddAnimation(KCAnimation.TransitionIn, CreateTransitionAnimation(spriteSheet, Direction.Right, 1, 3, 60, false));
             player.AddAnimation(KCAnimation.TransitionOut, CreateTransitionAnimation(spriteSheet, Direction.Right, 1, 3, 30, true));
 
-            player.AddAnimation(KCAnimation.Attack, new Animation(spriteSheet, Direction.Right,false, 5, 6, 7)).SetFrameDuration(2);
-            player.AddAnimation(KCAnimation.AttackAlt, new Animation(spriteSheet, Direction.Right, false, 20,23,22,21)).SetFrameDuration(1);
+            player.AddAnimation(KCAnimation.Attack, new Animation(spriteSheet, Direction.Right, false, 5, 6, 7)).SetFrameDuration(2);
+            player.AddAnimation(KCAnimation.AttackAlt, new Animation(spriteSheet, Direction.Right, false, 20, 23, 22, 21)).SetFrameDuration(1);
 
 
             player.SetAnimation(KCAnimation.Stand);
@@ -136,7 +144,7 @@ namespace KidC
 
             int index = 0;
             int count = 0;
-            while (index < (totalFrames-1))
+            while (index < (totalFrames - 1))
             {
                 frames.Add(startFrame + index);
                 frames.Add(startFrame + index + 1);
@@ -151,12 +159,26 @@ namespace KidC
             if (reverse)
                 frames.Reverse();
 
-            var a = new Animation(sheet, dir,false,frames.ToArray());
+            var a = new Animation(sheet, dir, false, frames.ToArray());
             a.SetFrameDuration(frameDuration);
             return a;
         }
 
+        public void Damage(HitInfo hitInfo)
+        {
+            mHitController.RegisterHit(hitInfo);
+        }
+
+        public ulong InvincibleUntil
+        {
+            get
+            {
+                return mHitController.InvincibleUntil;
+            }
+            set
+            {
+                mHitController.InvincibleUntil = value;
+            }
+        }
     }
-
-
 }

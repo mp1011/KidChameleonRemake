@@ -8,12 +8,12 @@ namespace KidC
 {
     class Flag
     {
-        public static SpriteCreationInfo Create(GameContext context, Layer layer)
+        public static SpriteCreationInfo Create(Layer layer)
         {
+            var context = layer.Context;
             var flag = new Sprite(context, layer, KCObjectType.Flag);
-
-            var spriteSheet = SpriteSheet.Load("flag", context);
-            flag.SetSingleAnimation(new Animation(spriteSheet,Direction.Right, 0, 1, 2, 3, 4, 5));
+            var spriteSheet =  KidCResource.SpriteSheets.Flag.GetObject(context);
+            flag.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, 0, 1, 2, 3, 4, 5));
             flag.CurrentAnimation.SetFrameDuration(8);
             flag.AddCollisionChecks(KCObjectType.Player);
             flag.OnCollision(KCObjectType.Player, new EndLevel(flag));
@@ -99,13 +99,9 @@ namespace KidC
 
             mBackgrounds = new LinkedList<SimpleAnimation>();
 
-            int frameDuration = 2;
-            mBackgrounds.AddLast(new SimpleAnimation("vrbackground1", frameDuration, this.Context, 0, 1, 2, 3, 4, 5));
-            mBackgrounds.AddLast(new SimpleAnimation("vrbackground2", frameDuration, this.Context, 0, 1, 2, 3, 4));
-            mBackgrounds.AddLast(new SimpleAnimation("vrbackground3", frameDuration, this.Context, 0, 1, 2, 3,4));
-
-
-          
+            mBackgrounds.AddLast(KidCGraphic.VRBackground1.CreateSimpleAnimation(this.Context));
+            mBackgrounds.AddLast(KidCGraphic.VRBackground2.CreateSimpleAnimation(this.Context));
+            mBackgrounds.AddLast(KidCGraphic.VRBackground3.CreateSimpleAnimation(this.Context));         
         }
 
         protected override void OnResume()
@@ -289,10 +285,10 @@ namespace KidC
             new SimpleMover(this, mHUD.GemsCounter, Direction.Right, moveoutSpeed);
             new SimpleMover(this, mHUD.LivesCounter, Direction.Right, moveoutSpeed);
 
-            new DestroyWhenOutOfFrame<Clock>(mHUD.Clock, true);
-            new DestroyWhenOutOfFrame<HealthGuage>(mHUD.HealthGuage, true);
-            new DestroyWhenOutOfFrame<Counter>(mHUD.GemsCounter, true);
-            new DestroyWhenOutOfFrame<Counter>(mHUD.LivesCounter, true);
+            new DestroyWhenOutOfFrameGeneric<Clock>(mHUD.Clock, true);
+            new DestroyWhenOutOfFrameGeneric<HealthGuage>(mHUD.HealthGuage, true);
+            new DestroyWhenOutOfFrameGeneric<Counter>(mHUD.GemsCounter, true);
+            new DestroyWhenOutOfFrameGeneric<Counter>(mHUD.LivesCounter, true);
         }
 
         protected override void Update()

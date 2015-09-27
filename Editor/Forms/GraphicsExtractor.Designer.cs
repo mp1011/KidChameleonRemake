@@ -39,6 +39,9 @@
             this.openTilesetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.saveTilesetToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.pnlTools = new System.Windows.Forms.Panel();
+            this.gridCollapseDesired = new System.Windows.Forms.NumericUpDown();
+            this.gridCollapseActual = new System.Windows.Forms.NumericUpDown();
+            this.btnCollapseGrid = new System.Windows.Forms.Button();
             this.chkCreateFlashTexture = new System.Windows.Forms.CheckBox();
             this.chkCenterOrigin = new System.Windows.Forms.CheckBox();
             this.btnCrop = new System.Windows.Forms.Button();
@@ -66,8 +69,11 @@
             this.pnlTransparentColor = new System.Windows.Forms.Panel();
             this.label1 = new System.Windows.Forms.Label();
             this.pnlImage = new Editor.BitmapPortionPanelUserControl();
+            this.button1 = new System.Windows.Forms.Button();
             this.menuStrip1.SuspendLayout();
             this.pnlTools.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCollapseDesired)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCollapseActual)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtMoveRecAmount)).BeginInit();
             this.pnlClickAction.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.txtFloodFillRes)).BeginInit();
@@ -153,6 +159,9 @@
             // 
             // pnlTools
             // 
+            this.pnlTools.Controls.Add(this.gridCollapseDesired);
+            this.pnlTools.Controls.Add(this.gridCollapseActual);
+            this.pnlTools.Controls.Add(this.btnCollapseGrid);
             this.pnlTools.Controls.Add(this.chkCreateFlashTexture);
             this.pnlTools.Controls.Add(this.chkCenterOrigin);
             this.pnlTools.Controls.Add(this.btnCrop);
@@ -172,6 +181,60 @@
             this.pnlTools.Name = "pnlTools";
             this.pnlTools.Size = new System.Drawing.Size(819, 125);
             this.pnlTools.TabIndex = 3;
+            // 
+            // gridCollapseDesired
+            // 
+            this.gridCollapseDesired.Location = new System.Drawing.Point(443, 97);
+            this.gridCollapseDesired.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+            this.gridCollapseDesired.Minimum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            -2147483648});
+            this.gridCollapseDesired.Name = "gridCollapseDesired";
+            this.gridCollapseDesired.Size = new System.Drawing.Size(40, 20);
+            this.gridCollapseDesired.TabIndex = 19;
+            this.gridCollapseDesired.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            // 
+            // gridCollapseActual
+            // 
+            this.gridCollapseActual.Location = new System.Drawing.Point(400, 97);
+            this.gridCollapseActual.Maximum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            0});
+            this.gridCollapseActual.Minimum = new decimal(new int[] {
+            64,
+            0,
+            0,
+            -2147483648});
+            this.gridCollapseActual.Name = "gridCollapseActual";
+            this.gridCollapseActual.Size = new System.Drawing.Size(40, 20);
+            this.gridCollapseActual.TabIndex = 18;
+            this.gridCollapseActual.Value = new decimal(new int[] {
+            8,
+            0,
+            0,
+            0});
+            // 
+            // btnCollapseGrid
+            // 
+            this.btnCollapseGrid.Location = new System.Drawing.Point(296, 94);
+            this.btnCollapseGrid.Name = "btnCollapseGrid";
+            this.btnCollapseGrid.Size = new System.Drawing.Size(98, 25);
+            this.btnCollapseGrid.TabIndex = 17;
+            this.btnCollapseGrid.Text = "Collapse Grid";
+            this.btnCollapseGrid.UseVisualStyleBackColor = true;
+            this.btnCollapseGrid.Click += new System.EventHandler(this.btnCollapseGrid_Click);
             // 
             // chkCreateFlashTexture
             // 
@@ -291,6 +354,7 @@
             // 
             // dirNextPixel
             // 
+            this.dirNextPixel.AllowDiagonals = true;
             this.dirNextPixel.BorderStyle = System.Windows.Forms.BorderStyle.FixedSingle;
             this.dirNextPixel.Location = new System.Drawing.Point(154, 3);
             this.dirNextPixel.Name = "dirNextPixel";
@@ -299,6 +363,7 @@
             // 
             // pnlClickAction
             // 
+            this.pnlClickAction.Controls.Add(this.button1);
             this.pnlClickAction.Controls.Add(this.rdoFindTiles);
             this.pnlClickAction.Controls.Add(this.chkCropToNew);
             this.pnlClickAction.Controls.Add(this.rdoHitbox2);
@@ -504,6 +569,16 @@
             this.pnlImage.Size = new System.Drawing.Size(819, 367);
             this.pnlImage.TabIndex = 4;
             // 
+            // button1
+            // 
+            this.button1.Location = new System.Drawing.Point(260, 91);
+            this.button1.Name = "button1";
+            this.button1.Size = new System.Drawing.Size(54, 25);
+            this.button1.TabIndex = 14;
+            this.button1.Text = "button1";
+            this.button1.UseVisualStyleBackColor = true;
+            this.button1.Click += new System.EventHandler(this.button1_Click);
+            // 
             // GraphicsExtractor
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -521,6 +596,8 @@
             this.menuStrip1.PerformLayout();
             this.pnlTools.ResumeLayout(false);
             this.pnlTools.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCollapseDesired)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.gridCollapseActual)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.txtMoveRecAmount)).EndInit();
             this.pnlClickAction.ResumeLayout(false);
             this.pnlClickAction.PerformLayout();
@@ -571,5 +648,9 @@
         private System.Windows.Forms.CheckBox chkCreateFlashTexture;
         private System.Windows.Forms.CheckBox chkCropToNew;
         private System.Windows.Forms.RadioButton rdoFindTiles;
+        private System.Windows.Forms.NumericUpDown gridCollapseDesired;
+        private System.Windows.Forms.NumericUpDown gridCollapseActual;
+        private System.Windows.Forms.Button btnCollapseGrid;
+        private System.Windows.Forms.Button button1;
     }
 }

@@ -16,26 +16,42 @@ namespace Engine
         public SpriteListener SpriteListener { get; private set; }
     }
 
-    public class Listener<T> : LogicObject
+    public class Listener<T> : LogicObject 
     {
-        protected List<T> Objects { get; private set; }
+        protected LinkedList<T> Objects { get; private set; }
 
-        public IEnumerable<T> GetObjects() { return this.Objects.ToArray(); }
+        public IEnumerable<T> GetObjects() { return this.Objects; }
 
         public Listener(ILogicObject owner)
             : base(LogicPriority.World, owner)
         {
-            this.Objects = new List<T>();
+            this.Objects = new LinkedList<T>();
         }
 
         public void Register(T obj)
         {
-            Objects.Add(obj);
+            Objects.AddLast(obj);
         }
 
-        public void Unregister(T obj)
+        
+    }
+
+    public class CollidableListener : Listener<ICollidable>
+    {
+        public CollidableListener(ILogicObject owner)
+            : base(owner)
         {
-            //todo Objects.Remove(obj);
+        }
+
+        protected override void Update()
+        {
+            var o = Objects.First;
+            while (o != null)
+            {
+                if (!o.Value.Alive)
+                    Objects.Remove(o);
+                o = o.Next;
+            }
         }
     }
 

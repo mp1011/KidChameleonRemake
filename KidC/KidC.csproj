@@ -58,14 +58,18 @@
     <Compile Include="HUD\Counter.cs" />
     <Compile Include="HUD\HealthGuage.cs" />
     <Compile Include="HUD\HUDLayer.cs" />
+    <Compile Include="KidCResource.cs" />
+    <Compile Include="Objects\BlockBreaker.cs" />
     <Compile Include="Objects\Collision.cs" />
-    <Compile Include="Objects\Decoration.cs" />
     <Compile Include="Objects\Factory.cs" />
     <Compile Include="Objects\Flag.cs" />
     <Compile Include="Objects\GeneralBehavior.cs" />
     <Compile Include="Objects\StompController.cs" />
+    <Compile Include="Objects\Templates.cs" />
     <Compile Include="Player\DeathBehavior.cs" />
-    <Compile Include="Player\PlayerFactory.cs" />
+    <Compile Include="Player\IceWalkController.cs" />
+    <Compile Include="Player\Player.cs" />
+    <Compile Include="Player\PlayerEnemyCollision.cs" />
     <Compile Include="Objects\Prize.cs" />
     <Compile Include="Objects\Relations.cs" />
     <Compile Include="Player\Player Collision.cs" />
@@ -75,14 +79,20 @@
     <Compile Include="Player\PlatformerPlayerController.cs" />
     <Compile Include="Player\RedStealth.cs" />
     <Compile Include="Player\SimpleDirectionController.cs" />
+    <Compile Include="Player\TransformationStats.cs" />
     <Compile Include="Sounds.cs" />
     <Compile Include="TestObjects.cs" />
     <Compile Include="Tile\BreakableTile.cs" />
+    <Compile Include="Tile\IceBlock.cs" />
     <Compile Include="Tile\MetalBlock.cs" />
+    <Compile Include="Tile\MushroomBlock.cs" />
     <Compile Include="Tile\PrizeBlock.cs" />
     <Compile Include="Tile\KidCTile.cs" />
+    <Compile Include="Tile\RockBlock.cs" />
     <Compile Include="Tile\RubberBlock.cs" />
+    <Compile Include="Tile\ActiveTile.cs" />
     <Compile Include="Tile\TileExtensions.cs" />
+    <Compile Include="Tile\VanishingBlock.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Engine\Engine.csproj">

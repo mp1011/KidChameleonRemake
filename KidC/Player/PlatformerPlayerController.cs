@@ -8,45 +8,22 @@ using Engine.Input;
 namespace KidC
 {
 
-    public class PlayerMotionStats : Stats
-    {
-        public float WalkSpeed { get; set; }
-        public float WalkAccel { get; set; }
-
-        public float RunSpeed { get; set; }
-        public float RunAccel { get; set; }
-
-        public float StopAccel { get; set; }
-        public float AirDecel { get; set; }
-        public float TurnAccel { get; set; }
-        public float AirTurnAccel { get; set; }
 
 
-        public float CrawlSpeed { get; set; }
-        public float CrawlAccel { get; set; }
-        public float CrawlDecel { get; set; }
-
-        public float UpHillSpeedMod { get; set; }
-        public float DownHillSpeedMod { get; set; }
-
-        public float JumpSpeed { get; set; }
-        public float RunJumpSpeedMod { get; set; }
-
-        public ulong LongJumpDuration { get; set; }
-        public ulong ShortJumpDuration { get; set; }
-
-    }
-
-
-    public class PlatformerPlayerController : SpriteBehavior, IDamager
+    class PlatformerPlayerController : SpriteBehavior, IDamagerxxx
     {
         private TimedAction<GravityController> mJump;
         private float mJumpSpeed;
         private ulong mJumpBeginFrame;
         private bool mIsOnGround = false;
 
-        private GameResource<PlayerMotionStats> mStatsResource;
-        private PlayerMotionStats MotionStats { get { return mStatsResource.GetObject(this.Context); } }
+        public TransformationStats MotionStats
+        {
+            get
+            {
+                return TransformationStats.GetStats(this.Sprite);
+            }
+        }
                
         public Player Player { get; private set;}
         public bool NoAnimationChanges { get; set; }
@@ -63,13 +40,12 @@ namespace KidC
             this.Player = player;
             this.Context.SetCameraCenter(this.Sprite);
             this.GravityController = gravityController;
-            mStatsResource = new DevelopmentResource<PlayerMotionStats>(new GamePath(PathType.Stats, this.Sprite.ObjectType.ToString() + "_stats")); 
         }
 
         protected override void OnEntrance()
         {
             Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
-            Sprite.MotionManager.MainMotion.Decel = this.MotionStats.StopAccel;
+            Sprite.MotionManager.MainMotion.Decel = this.Deceleration;
             mJump = new TimedAction<GravityController>(GravityController,a=> a.CurrentYSpeed = -1 * mJumpSpeed);
         }
 
@@ -197,11 +173,7 @@ namespace KidC
         private void HandleWalk()
         {
             var player = this.Context.FirstPlayer;
-
-            if(mIsOnGround)
-                Sprite.MotionManager.MainMotion.Decel = this.MotionStats.StopAccel;
-            else
-                Sprite.MotionManager.MainMotion.Decel = this.MotionStats.AirDecel;
+            Sprite.MotionManager.MainMotion.Decel = Deceleration;
 
             Sprite.MotionManager.MainMotion.Accel = WalkOrRunAccel;
             var dir = player.Input.InputDirection(Orientation.Horizontal);
@@ -213,7 +185,7 @@ namespace KidC
             {
                 Sprite.Direction = dir.Value;
                 Sprite.MotionManager.MainMotion.TargetSpeed = WalkOrRunSpeed;              
-                Sprite.MotionManager.MainMotion.Direction = dir.Value;
+                Sprite.MotionManager.MainMotion.ChangeDirectionAndPreserveVector(dir.Value);
             }
 
             if (!mIsOnGround)
@@ -368,6 +340,30 @@ namespace KidC
 
         }
 
+        public bool OnIce { get; set; }
+
+        private float IceMod
+        {
+            get
+            {
+                if (OnIce)
+                    return this.MotionStats.IceMod;
+                else
+                    return 1f;
+            }
+        }
+
+        private float Deceleration
+        {
+            get
+            {
+                if (mIsOnGround)
+                    return this.MotionStats.StopAccel * IceMod;
+                else
+                    return this.MotionStats.AirDecel;
+            }
+        }
+
         private float WalkOrRunSpeed
         {
             get
@@ -384,9 +380,9 @@ namespace KidC
             get
             {
                 if (Player.Input.KeyDown(KCButton.Run))
-                    return this.MotionStats.RunAccel;
+                    return this.MotionStats.RunAccel * IceMod;
                 else
-                    return this.MotionStats.WalkAccel;
+                    return this.MotionStats.WalkAccel * IceMod;
             }
         }
 

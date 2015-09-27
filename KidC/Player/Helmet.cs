@@ -7,6 +7,28 @@ using Engine;
 namespace KidC
 {
 
+    class Helmet : Sprite
+    {
+        private Helmet(Layer layer, ObjectType helmetType) : base(layer.Context, layer, helmetType) { }
+
+        public HelmetController HelmetController  { get; private set; }
+
+        public static SpriteCreationInfo Create(Layer layer, ObjectType helmetType, ObjectType playerType, SoundResource transformSound, GraphicCreator helmetAnimation)
+        {
+            var ctx = layer.Context;
+            var sprite = new Helmet(layer, helmetType);
+
+            sprite.SetSingleAnimation(helmetAnimation.CreateAnimation(ctx));
+            new CollectableController(sprite, Sounds.None, null, null);
+            new PrizeCollisionDelayer(sprite);
+            new GravityController(sprite, GravityStrength.Low);
+            sprite.AddCollisionChecks(ObjectType.Block, KCObjectType.Player);
+            sprite.HelmetController = new HelmetController(sprite, playerType, transformSound);
+
+            return new SpriteCreationInfo(sprite);
+        }
+    }
+
     /// <summary>
     /// Handles the differences between helmets
     /// </summary>
@@ -24,13 +46,13 @@ namespace KidC
 
         protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
         {
-            if (cEvent.OtherType.Is(KCObjectType.Player))
-                response.AddInteraction(new PlayerPicksUpHelmet(), this);    
+          //  if (cEvent.OtherType.Is(KCObjectType.Player))
+             //   response.AddInteraction(new PlayerPicksUpHelmet(), this);    
         }
 
     }
 
-    class TransformationController : TriggeredController<HelmetController>
+    class TransformationController : TriggeredController<HelmetController>, ITypedCollisionResponder<Helmet>
     {
         private int mDefaultMaxHealth;
         private bool mPlayIntroAnimation = false;
@@ -44,13 +66,13 @@ namespace KidC
             : base(s) 
         {
             this.mDefaultMaxHealth = maxHealth;
+            this.RegisterTypedCollider(s);
         }
 
-        //Player picks up a helmet, which triggers this controller
-        protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
+        public void HandleCollision(Helmet other, Engine.Collision.CollisionEvent collision, CollisionResponse response)
         {
-            if (cEvent.OtherType.Is(KCObjectType.Helmet))
-                response.AddInteraction(new PlayerPicksUpHelmet(), this);
+            this.Trigger(other.HelmetController);
+            other.Kill(Engine.ExitCode.Collected);
         }
 
         //Upon being triggered, we play the sound for the new helmet and begin the transition out animation
@@ -127,8 +149,9 @@ namespace KidC
                 new CreateObjectWhenDestroyed(transform, KCObjectType.JamesKid, RGPointI.Empty,s=>
                     {
                         SoundManager.PlaySound(Sounds.Bummer);
-                        var hitCtl = s.GetBehavior<PlayerHitController>();
-                        hitCtl.Trigger(new HitInfo { Damage = 0 });                        
+                        throw new NotImplementedException();
+                      //  var hitCtl = s.GetBehavior<PlayerHitController>();
+                       // hitCtl.Trigger(new HitInfo { Damage = 0 });                        
                     });
             }
         }
@@ -147,16 +170,10 @@ namespace KidC
             this.Sprite.DrawLayer.AddObject(newCharacter.Sprite);
         }
 
-     
 
-       
+
+
     }
 
-    class PlayerPicksUpHelmet : Interaction<TransformationController, HelmetController>
-    {
-        protected override void DoAction(TransformationController controller1, HelmetController controller2)
-        {
-            controller1.Trigger(controller2);
-        }
-    }
+
 }

@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using Engine;
 
-namespace KidC
+namespace Engine
 {
     /// <summary>
     /// Plays its animation once and then disappears.
     /// </summary>
-    class VanishingDecoration 
+    public class VanishingDecoration 
     {
 
         public static Sprite Create(GameContext ctx, ObjectType type, Layer layer, Animation animation, int animationSpeed)
@@ -22,19 +22,18 @@ namespace KidC
         }
     }
 
-    class FlyingDebris 
+    public class FlyingDebris 
     {
 
-        public static void Create(RGPointI location, Layer layer, Direction d, float speed, int ySpeed, string spriteSheetName, int frame)
+        public static void Create(RGPointI location, Layer layer, Direction d, float speed, int ySpeed, Animation graphic)
         {
-            var debris = new Sprite(layer.Context, layer, ObjectType.Decoration);
+             var debris = new Sprite(layer.Context, layer, ObjectType.Decoration);
 
-            var spriteSheet = SpriteSheet.Load(spriteSheetName, layer.Context);
-            debris.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, frame));
+             debris.SetSingleAnimation(graphic);
 
             var g = new GravityController(debris);
             g.CurrentYSpeed = ySpeed;
-            new DestroyWhenOutOfFrame<Sprite>(debris,false);
+            new DestroyWhenOutOfFrame(debris);
 
             debris.MotionManager.MainMotion.Set(d, speed);
             layer.AddObject(debris);

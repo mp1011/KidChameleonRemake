@@ -5,12 +5,11 @@ namespace KidC
 
     class EnemyHitController : HitController
     {
-        public EnemyHitController(Sprite s, HealthController healthController) : base(s, 30, healthController) { }
-        protected override bool AllowRetrigger { get { return true; } }
-
-        protected override bool ShouldHandleCollision(Engine.Collision.CollisionEvent evt)
+        public EnemyHitController(Sprite s, HealthController healthController) : base(s, 10, healthController) { }
+     
+        protected override bool ShouldHandleCollision(HitInfo hitInfo)
         {
-            return evt.OtherType.Is(KCObjectType.Player);
+            return hitInfo.DamagingType.Is(KCObjectType.Player);
         }
 
         public override int GetAttackDamage(Engine.Collision.CollisionEvent evt)
@@ -18,8 +17,8 @@ namespace KidC
             if (evt.OtherHitboxType == HitboxType.Secondary)
                 return 0;
 
-            if (evt.Invert().IsStomp())
-                return 0;
+            //if (evt.Invert().IsStomp())
+            //    return 0;
 
             return 1; //todo
         }
@@ -36,16 +35,6 @@ namespace KidC
 
         protected override void WhileHit()
         {
-        }
-
-
-
-        protected override SoundResource GetHitSound(Engine.Collision.CollisionEvent evt)
-        {
-            if (evt.IsStomp())
-                return Sounds.EnemyBounce;
-            else
-                return Sounds.EnemyHit;
         }
     }
 

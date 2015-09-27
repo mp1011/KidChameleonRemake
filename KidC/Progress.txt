@@ -1,8 +1,3 @@
-﻿same mask behavior
-
-
-BLOCKS
-TRANSFORMS
-ENEMIES
-LEVELS
-
+﻿interactions are way too difficult
+collisions should be declared centrally
+and left to the controllers to handle

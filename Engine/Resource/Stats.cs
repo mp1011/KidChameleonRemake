@@ -9,7 +9,7 @@ namespace Engine
     public class StatsResource<T> : GameResource<T> where T : Stats, new() 
     {
 
-        public StatsResource(string name)  : base(new GamePath(PathType.Stats,name)) {
+        public StatsResource(string name)  : base(new GamePath(PathType.Info,name)) {
         }
 
     }

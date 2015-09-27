@@ -9,25 +9,31 @@ namespace Engine
     /// <summary>
     /// Resource that allows its file to be updated at run-time, and will reload if neccessary
     /// </summary>
-    public class DevelopmentResource<T> : GameResource<T> where T:new ()
+    public class DevelopmentResource<T> : IGameResource<T>
     {
+        private TypedResource<T> mBaseResource;
         private DateTime mFileUpdated;
 
-        public DevelopmentResource(GamePath path) : base(path) 
+        public GamePath Path { get { return mBaseResource.Path; } }
+
+        public DevelopmentResource(TypedResource<T> baseResource)
         {
+            mBaseResource = baseResource;
             mFileUpdated = File.GetLastWriteTime(this.Path.FullPath);
         }
 
 
-        protected override bool NeedsLoad()
+        public T GetObject(GameContext context)
         {
-            return base.NeedsLoad() || File.GetLastWriteTime(this.Path.FullPath) > mFileUpdated;
+            if (File.GetLastWriteTime(this.Path.FullPath) > mFileUpdated)
+            {
+                mBaseResource.Unload();
+                mFileUpdated = File.GetLastWriteTime(this.Path.FullPath);          
+            }
+
+            return mBaseResource.GetObject(context);
         }
 
-        protected override T CreateNewObject(GameContext context)
-        {
-            mFileUpdated = File.GetLastWriteTime(this.Path.FullPath);
-            return base.CreateNewObject(context);
-        }
+
     }
 }

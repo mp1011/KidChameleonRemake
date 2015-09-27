@@ -485,7 +485,8 @@ namespace Editor.Forms
 
         private void RefreshMatches(TileDef tile)
         {
-
+            if (mMatchesMap == null)
+                return;
          
             //do this better later
             RGPointI cursor = RGPointI.Empty;

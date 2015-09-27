@@ -1,0 +1,2 @@
+Name,Texture,FrameDuration,Frames,Direction,Speed,Behaviors
+IceFragment,woods_specialtiles,0,5,Down,4,DestroyWhenOutOfFrame;BlockBreaker;DestroyOnCollision;

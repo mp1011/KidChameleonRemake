@@ -55,12 +55,14 @@
     <Compile Include="Behavior\BehaviorChain.cs" />
     <Compile Include="Behavior\BehaviorPresets.cs" />
     <Compile Include="Behavior\Common.cs" />
-    <Compile Include="Behavior\Interaction.cs" />
+    <Compile Include="Behavior\DestroyBehaviors.cs" />
     <Compile Include="Behavior\LevelEffects.cs" />
     <Compile Include="Behavior\Movement.cs" />
     <Compile Include="Behavior\OnCollidedWith.cs" />
     <Compile Include="Collision\Border.cs" />
+    <Compile Include="Collision\CollisionEvent.cs" />
     <Compile Include="Collision\CollisionManager.cs" />
+    <Compile Include="Collision\CollisionResponder.cs" />
     <Compile Include="Collision\CollisionResponse.cs" />
     <Compile Include="Collision\Hitbox.cs" />
     <Compile Include="Collision\TileCollision.cs" />
@@ -83,6 +85,7 @@
     <Compile Include="GameObject\ObjectEntry.cs" />
     <Compile Include="GameObject\Sprite.cs" />
     <Compile Include="General\ButtonListener.cs" />
+    <Compile Include="General\Creator.cs" />
     <Compile Include="General\Extensions.cs" />
     <Compile Include="General\GameContext.cs" />
     <Compile Include="General\intx.cs" />
@@ -109,6 +112,9 @@
     <Compile Include="Motion\Interfaces.cs" />
     <Compile Include="Motion\ObjectMotion.cs" />
     <Compile Include="Motion\Physics.cs" />
+    <Compile Include="Objects\Decoration.cs" />
+    <Compile Include="Objects\SimpleProjectile.cs" />
+    <Compile Include="Objects\SpriteCreator.cs" />
     <Compile Include="Paths.cs" />
     <Compile Include="Player\Input.cs" />
     <Compile Include="Player\InputRecorder.cs" />
@@ -117,6 +123,8 @@
     <Compile Include="Resource\DevelopmentResource.cs" />
     <Compile Include="Resource\GamePath.cs" />
     <Compile Include="Resource\GameResource.cs" />
+    <Compile Include="Resource\ResourceCache.cs" />
+    <Compile Include="Resource\ResourceLoader.cs" />
     <Compile Include="Serialization\Saving.cs" />
     <Compile Include="SharpDX\Engine.cs" />
     <Compile Include="Resource\Stats.cs" />

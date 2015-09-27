@@ -12,14 +12,21 @@ namespace KidC
         
         public override World CreateWorld(GameContext context)
         {
+            KidCGraphic.Load(context);
+
             var w = new World(context, this);
-
+            context.SetWorld(w);
             var screenWidth = (w.ScreenLayer.Location.Width/2)+35;
+         
 
-            var gt= new GameText(w, FontManager.GetBigFontGreen(context), "\"no prize bonus\"", new RGPointI(0, 100), screenWidth, Alignment.Far, Alignment.Near);
-            w.ScreenLayer.AddObject(gt);
+            var csv = new CSVResource<TransformationStats>("Transformations.csv");
+            var dr = new DevelopmentResource<TransformationStats[]>(csv);
 
+            var rows = csv.GetObject(context);
+
+           
             return w;
         }
     }
+
 }

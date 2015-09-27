@@ -40,6 +40,14 @@ namespace KidC
         public static SoundResource ClockTick { get; private set; }
         public static SoundResource ScoreCounter { get; private set; }
 
+        public static SoundResource BlockVanish { get; private set; }
+
+
+        public static SoundResource FromString(string text)
+        {
+            return (SoundResource)typeof(Sounds).GetProperty(text).GetValue(null, null);
+        }
+
         static Sounds()
         {
             List<SoundResource> sounds = new List<SoundResource>();
@@ -66,6 +74,8 @@ namespace KidC
             sounds.Add(Bummer = new SoundResource("Voice - Bummer - (68)"));
             sounds.Add(ClockTick = new SoundResource("Prize - Clock - (0E)"));
             sounds.Add(ScoreCounter = new SoundResource("Score Counter - (0C)"));
+            sounds.Add(BlockVanish = new SoundResource("Block - Evanescent - (14)"));
+
             foreach(var sound in sounds)
                 SoundManager.LoadSound(sound);
 

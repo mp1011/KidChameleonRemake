@@ -74,47 +74,6 @@ namespace Engine
         }           
     }
 
-    public class DestroyWhenOutOfFrame<T> : LogicObject where T:ILogicObject,IWithPosition 
-    {
-        private T mObject;
-        private bool mIsOnScreenLayer;
-
-        public DestroyWhenOutOfFrame(T obj, bool isOnScreenLayer)
-            : base(LogicPriority.Behavior, obj)
-        {
-            mObject = obj;
-            mIsOnScreenLayer = isOnScreenLayer;
-        }
-
-        protected override void Update()
-        {
-            if (mIsOnScreenLayer)
-            {
-                if (!mObject.Area.CollidesWith(Context.CurrentWorld.ScreenLayer.Location))
-                    mObject.Kill(ExitCode.Removed);
-            }
-            else
-            {
-                if (!mObject.Area.CollidesWith(Context.ScreenLocation))
-                    mObject.Kill(ExitCode.Removed);
-            }
-        }
-    }
-
-    public class DestroyWhenAnimationFinished : SpriteBehavior
-    {
-        public DestroyWhenAnimationFinished(Sprite sprite)
-            : base(sprite)
-        {
-        }
-
-        protected override void Update()
-        {
-            if (Sprite.CurrentAnimation.Finished)            
-                this.Sprite.Kill(Engine.ExitCode.Removed);            
-        }
-    }
-
     public class CreateObjectWhenDestroyed : SpriteBehavior
     {
         private ObjectType mType;

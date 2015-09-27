@@ -15,6 +15,8 @@ namespace Engine
             mSources = new List<RGRectangleI>(sources);
         }
 
+        public SimpleGraphic(GameContext context, GameResource<SpriteSheet> spriteSheet, params int[] cells) : this(spriteSheet.GetObject(context), cells) { }
+
         public SimpleGraphic(SpriteSheet spriteSheet, params int[] cells)
         {
             this.Texture = spriteSheet.Image;

@@ -178,12 +178,16 @@ namespace Engine
         public Direction Direction 
         { 
             get { return mTargetVector.Direction; } 
-            set 
-            {
-                var curVector = new MotionVector(this.Direction, CurrentSpeed);
-                CurrentSpeed = curVector.GetMagnitudeInDirection(value);
-                mTargetVector.Direction = value; 
-            } 
+            set { mTargetVector.Direction = value; } 
+        }
+
+        public void ChangeDirectionAndPreserveVector(Direction dir)
+        {
+            var curVector = new MotionVector(this.Direction, CurrentSpeed);
+            var speed = CurrentSpeed;
+
+            CurrentSpeed = curVector.GetMagnitudeInDirection(dir);
+            mTargetVector.Direction = dir; 
         }
 
         public float TargetSpeed { get { return mTargetVector.Magnitude; } set { mTargetVector.Magnitude = value; } }

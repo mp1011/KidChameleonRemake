@@ -250,6 +250,23 @@ namespace Engine
         public static Direction DownRight = Direction.FromAngle(315);
         public static Direction Default = Direction.FromAngle(0);
 
+        public static Direction Parse(string input)
+        {
+            switch (input)
+            {
+                case "Right": return Direction.Right;
+                case "UpRight": return Direction.UpRight;
+                case "Up": return Direction.Up;
+                case "UpLeft": return Direction.UpLeft;
+                case "Left": return Direction.Left;
+                case "DownLeft": return Direction.DownLeft;
+                case "DownRight": return Direction.DownRight;
+                case "Down": return Direction.Down;
+            }
+
+            throw new Exception("Unsupported value: " + input);
+        }
+
         private double degrees;
 
         private Direction(double deg) { degrees = deg.FixDeg(); }

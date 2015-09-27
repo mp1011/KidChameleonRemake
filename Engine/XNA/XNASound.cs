@@ -33,9 +33,11 @@ namespace Engine.XNA
 
             sound.LastPlayTime = DateTime.Now;
 
-            if (sound.EffectInstance == null)
-                sound.EffectInstance = sound.Effect.CreateInstance();
+            if (sound.EffectInstance != null)
+                sound.EffectInstance.Stop();
 
+            sound.EffectInstance = sound.Effect.CreateInstance();
+          
             sound.EffectInstance.Volume = volume;
             sound.EffectInstance.Play();
         }
@@ -45,7 +47,7 @@ namespace Engine.XNA
         {
             try
             {
-                using (var stream = s.OpenFileStream())
+                using (var stream = s.Path.OpenFileStream())
                 {
                     var sound = SoundEffect.FromStream(stream);
                     mSoundLibrary.AddOrSet(s.Path.Name, new XNASound { Effect = sound });

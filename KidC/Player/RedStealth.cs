@@ -74,18 +74,19 @@ namespace KidC
 
         protected override void HandleCollisionEx(Engine.Collision.CollisionEvent cEvent, CollisionResponse response)
         {
-            if (cEvent.OtherType.Is(ObjectType.Block) && cEvent.CollisionSide == Engine.Collision.Side.Bottom) //TBD- block types
-            {
-                if (Sprite.CurrentAnimationKey == KCAnimation.AttackAlt)
-                    response.AddInteraction(new RedStealthHitsBrick(), this);
-                else
-                {
-                    mPlatformCtl.NoAnimationChanges = false;
-                    mNoAirSword = false;
-                }
-            }
+            throw new NotImplementedException();
+            //if (cEvent.OtherType.Is(ObjectType.Block) && cEvent.CollisionSide == Engine.Collision.Side.Bottom) //TBD- block types
+            //{
+            //    if (Sprite.CurrentAnimationKey == KCAnimation.AttackAlt)
+            //        response.AddInteraction(new RedStealthHitsBrick(), this);
+            //    else
+            //    {
+            //        mPlatformCtl.NoAnimationChanges = false;
+            //        mNoAirSword = false;
+            //    }
+            //}
 
-            base.HandleCollisionEx(cEvent, response);
+            //base.HandleCollisionEx(cEvent, response);
         }
 
         public void OnBlockBroken()
@@ -95,18 +96,6 @@ namespace KidC
         }
     }
 
-    class RedStealthHitsBrick : Interaction<RedStealthSwordController, IBreakableTile>
-    {
-        protected override void DoAction(RedStealthSwordController controller1, IBreakableTile controller2)
-        {
-            var ninja = controller1.Sprite;
-
-            if (ninja.CurrentAnimationKey == KCAnimation.AttackAlt && ninja.OriginalSpeed.Y > 2f)
-            {
-                controller2.Break();
-                controller1.OnBlockBroken();
-            }           
-        }
-    }
+   
 
 }

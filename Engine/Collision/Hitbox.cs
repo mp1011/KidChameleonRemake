@@ -40,7 +40,9 @@ namespace Engine
 
     public enum HitboxType
     {
-        Primary = 0,
-        Secondary = 1
+        None = 0,
+        Primary = 1,
+        Secondary = 2,
+        Both = 3
     }
 }

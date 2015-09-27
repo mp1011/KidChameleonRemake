@@ -44,15 +44,13 @@ namespace KidC
 
         public static Counter CreateLivesCounter(Layer layer)
         {
-            var graphic = new SimpleGraphic(SpriteSheet.Load("items",layer.Context),4,5,6);
-            var animation = new SimpleAnimation(graphic, 8, layer.Context, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 1);
+            var animation = KidCGraphic.LivesCounter.CreateSimpleAnimation(layer.Context);
             return new Counter(layer, animation);
         }
 
         public static Counter CreateGemsCounter(Layer layer)
         {
-            var graphic = new SimpleGraphic(SpriteSheet.Load("items", layer.Context), 0,1,2,3);
-            var animation = new SimpleAnimation(graphic, 4, layer.Context, 0, 1, 2, 3);
+            var animation = KidCGraphic.GemsCounter.CreateSimpleAnimation(layer.Context);
             return new Counter(layer, animation);
         }
 

@@ -7,82 +7,61 @@ using System.Text;
 
 namespace KidC
 {
-    class MetalBlock : CollidingTile
+    class MetalBlock : KCCollidingTile
     {
-      //  private KCTileInstance mInstance;
-     
-        public MetalBlock(TileInstance tile, TileLayer layer)
-            : base(tile, layer) 
-        {
-           //mInstance = tile as KCTileInstance;
-        }
-
-        public override void HandleCollision(CollisionEvent collision, CollisionResponse collisionResponse)
-        {
-            if (collision.CollisionSide == Side.Bottom)
-            {
-                SoundManager.PlaySound(Sounds.MetalBlockPing);
-                var bouncingTile = new BouncingMetalBlock(TileLayer.Map.Tileset.TileSize, Tile.TileLocation, TileLayer);
-                this.TileLayer.AddObject(bouncingTile);     
-            }
-        }        
-    }
-
-    class BouncingMetalBlock  : LogicObject, IDrawableRemovable, IWithPosition 
-    {
-        private TileLayer mLayer;
-        private RGPointI mTileLocation;
-
-        private RGPointI mInitialLocation;
+        private SimpleAnimation mAnimation;
         private bool mRestoredTile = false;
 
-        private SimpleAnimation mAnimation;
-
-        public BouncingMetalBlock(RGSizeI tileSize, RGPointI tileLocation, TileLayer layer) :base(LogicPriority.Behavior, layer) 
+        protected override SpecialTile? FinalTile
         {
-            this.Location = new RGPointI((tileLocation.X * tileSize.Width) + (tileSize.Width / 2), (tileLocation.Y * tileSize.Height) + (tileSize.Height / 2));
-            this.mLayer = layer;
-        
-            mTileLocation = tileLocation;
-            mInitialLocation = this.Location;
-            mAnimation = new SimpleAnimation("metalblock", 4, layer.Context, 0, 1, 2, 3, 4,4,4,4,4,4);
-            
-            layer.AddObject(this);
+            get
+            {
+                return SpecialTile.Metal;
+            }
         }
 
-        protected override void OnEntrance()
+        public MetalBlock(KCTileInstance tile, TileCollisionView collisionView) : base(tile,collisionView) 
         {
-            mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, TileDef.BlankSolid.TileID);
+            mAnimation = KidCGraphic.MetalBlockShine.CreateSimpleAnimation(this.Context);
         }
 
-        protected override void OnExit()
+        protected override SoundResource HitSound
         {
+            get { return Sounds.MetalBlockPing; }
+        }
 
+        protected override void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
+        {
+            mAnimation.Location = this.Location;
+            mAnimation.Draw(p, canvas);
+        }
+
+        protected override bool ShouldInteract(CollisionEvent collision, CollisionResponse response)
+        {
+            return collision.CollisionSide == Side.Bottom;
         }
 
         protected override void Update()
         {
-
+            var initialLocation = this.Tile.TileArea.Center;
             if (this.Age < 10)
                 this.Location = this.Location.Offset(0, -1);
-            else if (this.Age < 20 && this.Location.Y < mInitialLocation.Y)
+            else if (this.Age < 20 && this.Location.Y < initialLocation.Y)
                 this.Location = this.Location.Offset(0, 1);
             else
             {
                 if (!mRestoredTile)
                 {
-                    var tileDef = mLayer.Map.Tileset.GetSpecialTile(SpecialTile.Metal);
-                    mLayer.Map.SetTile(mTileLocation.X, mTileLocation.Y, tileDef.TileID);
+                    var tileDef = TileLayer.Map.Tileset.GetSpecialTile(SpecialTile.Metal);
+                    this.Tile.ReplaceWith(tileDef);
                     mRestoredTile = true;
                 }
                 else
                 {
                     //if we already replaced the tile, and it is blank again, the player has hit the tile again and a new bouncing block would have been spawned
-                    if (mLayer.Map.GetTile(mTileLocation.X, mTileLocation.Y).TileID == TileDef.BlankSolid.TileID)
-                        this.Kill(Engine.ExitCode.Removed);
+                    if (TileLayer.Map.GetTile(Tile.TileLocation.X, Tile.TileLocation.Y).TileID == TileDef.BlankSolid.TileID)
+                        this.Kill(Engine.ExitCode.Cancelled);
                 }
-
-                this.Location = mInitialLocation;
             }
 
             if (this.Age > 60)
@@ -91,26 +70,5 @@ namespace KidC
             }
         }
 
-        public RGPointI Location
-        {
-            get;
-            set;
-        }
-
-        public RGRectangleI Area
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public Direction Direction
-        {
-            get { throw new NotImplementedException(); }
-        }
-
-        public void Draw(Engine.Graphics.Painter p, RGRectangleI canvas)
-        {
-            mAnimation.Location = this.Location;
-            mAnimation.Draw(p, canvas);
-        }
     }
 }

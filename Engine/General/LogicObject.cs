@@ -86,7 +86,7 @@ namespace Engine
                 }
 
                 mObjects[i].RemoveAll(p => !p.Alive);
-            }
+            }            
         }
     }
 

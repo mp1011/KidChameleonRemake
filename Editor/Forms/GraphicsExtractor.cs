@@ -652,6 +652,31 @@ namespace Editor.Forms
         {
             this.ResetOverlay();
         }
+
+        #region Grid Collapse
+        private void btnCollapseGrid_Click(object sender, EventArgs e)
+        {
+            var diff = (int)gridCollapseActual.Value - (int)gridCollapseDesired.Value;
+
+            var tiles = this.CurrentImage.ExtractGrid((int)gridCollapseActual.Value).ToArray();
+            foreach(var tile in tiles)
+                tile.Crop(RGRectangleI.FromXYWH(tile.Region.X, tile.Region.Y, tile.Region.Width - diff, tile.Region.Height - diff));
+            
+            TilesetEditor.GetOrOpen().AddNewTiles(tiles);
+
+        }
+
+        #endregion
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            var tiles = this.CurrentImage.ExtractGrid(16);
+            var sel = new ImageSelector(this);
+            sel.AddImages(tiles);
+            sel.Show();
+           
+        }
+
     }
 }
 

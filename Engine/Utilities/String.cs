@@ -35,6 +35,11 @@ namespace Engine
                 return defaultValue;
         }
 
+        public static int[] ParseIntArray(this string input)
+        {
+            return input.Split(' ').Select(p => Int32.Parse(p)).ToArray();
+        }
+
         public static string NullToEmpty(this string s)
         {
             return s ?? "";

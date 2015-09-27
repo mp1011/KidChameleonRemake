@@ -15,15 +15,13 @@ namespace KidC
 
             ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Puff, CreatePuff);
 
-            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.IronKnightHelmet, (ctx, lyr) => CreateHelmet(ctx, lyr, KCObjectType.IronKnightHelmet, KCObjectType.IronKnight, Sounds.IronKnightTransform, "ironknight", 28));
+            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.IronKnightHelmet, (lyr) =>
+                CreateHelmet(lyr, KCObjectType.IronKnightHelmet));
 
-
-            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.RedStealthHelmet, (ctx, lyr) => CreateHelmet(ctx, lyr, KCObjectType.RedStealthHelmet, KCObjectType.RedStealth, Sounds.RedStealthTransform, "redstealth", 0));
-
-            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Player, CreateKid);
-            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.JamesKid, CreateKid);
-            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.IronKnight, CreateIronKnight);
-            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.RedStealth, CreateRedStealth);
+            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Player, PlayerSprite.CreateKid);
+            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.JamesKid, PlayerSprite.CreateKid);
+            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.IronKnight, PlayerSprite.CreateIronKnight);
+            ObjectFactory.AddSpriteFactoryMethod(KCObjectType.RedStealth, PlayerSprite.CreateRedStealth);
 
 
             ObjectFactory.AddSpriteFactoryMethod(KCObjectType.Dragon, Dragon.Create);
@@ -32,31 +30,22 @@ namespace KidC
 
         }
 
-
-        private static SpriteCreationInfo CreateHelmet(GameContext ctx, Layer layer, ObjectType helmetType,  ObjectType playerType, SoundResource transformSound, string spriteSheetName, int spriteSheetIndex)
+        private static SpriteCreationInfo CreateHelmet(Layer layer, ObjectType helmetType)
         {
-            var sprite = new Sprite(ctx, layer, helmetType);
-            var spriteSheet = SpriteSheet.Load(spriteSheetName, ctx);
-
-            sprite.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, spriteSheetIndex));
-            new CollectableController(sprite, Sounds.None,null,null);
-            new PrizeCollisionDelayer(sprite);
-            new GravityController(sprite, GravityStrength.Low);
-            sprite.AddCollisionChecks(ObjectType.Block, KCObjectType.Player);
-            new HelmetController(sprite, playerType, transformSound);
-    
-            return new SpriteCreationInfo(sprite);            
-
+            var stats = TransformationStats.GetStats(layer.Context, helmetType);
+            return Helmet.Create(layer,helmetType, stats.PlayerType,stats.TransformSound, KidCGraphic.FromString(stats.HelmetGraphic));
         }
+
                
-        private static SpriteCreationInfo CreateGem(GameContext ctx, Layer layer)
+        private static SpriteCreationInfo CreateGem(Layer layer)
         {
+            var ctx = layer.Context;
             var sprite = new Sprite(ctx, layer, KCObjectType.Gem);
-            var spriteSheet = SpriteSheet.Load("gem",ctx);
+            var spriteSheet = KidCResource.SpriteSheets.Gem;
 
-            sprite.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, 0, 1, 2, 3));
+            sprite.SetSingleAnimation(new Animation(spriteSheet.GetObject(ctx), Direction.Right, 0, 1, 2, 3));
             sprite.CurrentAnimation.SetFrameDuration(2);
-            new CollectableController(sprite, Sounds.GetDiamond, ctx.CurrentMapHUD().GemsCounter, new AdjustStat(sprite, StatType.Gems,1));          
+            new CollectableController(sprite, Sounds.GetDiamond, ctx.CurrentMapHUD().GemsCounter, new AdjustStat(sprite, StatType.Gems, 1));
             new PrizeCollisionDelayer(sprite);
             new GravityController(sprite, GravityStrength.Low);
             sprite.AddCollisionChecks(ObjectType.Block, KCObjectType.Player);
@@ -64,18 +53,19 @@ namespace KidC
             return new SpriteCreationInfo(sprite);            
         }
 
-        private static SpriteCreationInfo CreateClock(GameContext ctx, Layer layer)
+        private static SpriteCreationInfo CreateClock(Layer layer)
         {
+            var ctx = layer.Context;
             var sprite = new Sprite(ctx, layer, KCObjectType.Clock);
-            var spriteSheet = SpriteSheet.Load("clock", ctx);
+            var spriteSheet = KidCResource.SpriteSheets.Clock;
 
-            sprite.SetSingleAnimation(new Animation(spriteSheet, Direction.Right, 0, 0, 0, 0, 0, 0, 1, 2));
+            sprite.SetSingleAnimation(new Animation(spriteSheet.GetObject(ctx), Direction.Right, 0, 0, 0, 0, 0, 0, 1, 2));
             sprite.CurrentAnimation.SetFrameDuration(8);
 
             var clockPos = ctx.CurrentMapHUD().Clock;
-            var targetPosition = new WorldPoint(ctx, clockPos.Area.Right+8, clockPos.Location.Y);
+            var targetPosition = new WorldPoint(ctx, clockPos.Area.Right + 8, clockPos.Location.Y);
 
-            new CollectableController(sprite, Sounds.None, targetPosition, new DelayWaiter(sprite,3)).ContinueWith(new AdjustStat(sprite, StatType.TimeRemaining,30));
+            new CollectableController(sprite, Sounds.None, targetPosition, new DelayWaiter(sprite, 3)).ContinueWith(new AdjustStat(sprite, StatType.TimeRemaining, 30));
             new PrizeCollisionDelayer(sprite);
             new GravityController(sprite, GravityStrength.Low);
             new PlaySoundWhileAlive(sprite, Sounds.ClockTick);
@@ -84,10 +74,11 @@ namespace KidC
             return new SpriteCreationInfo(sprite);
         }
 
-
-        private static SpriteCreationInfo CreatePuff(GameContext ctx, Layer layer)
+        private static SpriteCreationInfo CreatePuff(Layer layer)
         {
-            var anim = new Animation(SpriteSheet.Load("puff",ctx), Direction.Right,false,0,1,2);
+            var ctx = layer.Context;
+            var spriteSheet = KidCResource.SpriteSheets.Puff.GetObject(ctx);
+            var anim = new Animation(spriteSheet, Direction.Right, false, 0, 1, 2);
             return new SpriteCreationInfo(VanishingDecoration.Create(ctx, KCObjectType.Puff, layer, anim, 4));
         }
     }

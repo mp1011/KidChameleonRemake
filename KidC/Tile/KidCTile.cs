@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Engine.Collision;
 using Engine;
+using System.ComponentModel;
 
 namespace KidC
 {
@@ -13,13 +14,18 @@ namespace KidC
         Rock=10,
         Prize=20,
         Metal=30,
-        Rubber=40 
+        Rubber=40,
+        Platform=50,
+        Elevator=60,
+        Ice=70,
+        Vanishing=80,
+        Mushroom=90,
+        Teleporter=100,
+        Shifter = 110,
+        Ghost
+
     }
 
-    public interface IBreakableTile
-    {
-        void Break();
-    }
 
 
     public class KCTileDef : TileDef
@@ -52,6 +58,7 @@ namespace KidC
     public class KCTileInstance : TileInstance
     {
         private KCTileDef mTiledef = new KCTileDef();
+        [Browsable(false)]
         public override TileDef TileDef
         {
             get
@@ -67,85 +74,71 @@ namespace KidC
                     mTiledef = d;
             }
         }
-
+        [Browsable(false)]
         public KCTileDef KCTileDef { get { return mTiledef; } }
 
         public PrizeType Prize { get; set; }
 
-        private ObjectType GetPrizeType()
+        [Browsable(false)]
+        public DirectionFlags EffectSides { get; set; }
+
+        [DisplayName("EffectSides")]
+        public EditorDirectionFlags _SidesForEditor
         {
-            if (Prize == PrizeType.None)
-                return ObjectType.None;
-            else
-                return new ObjectType((int)this.Prize, Prize.ToString());
+            get
+            {
+                if (EffectSides == null)
+                    return EditorDirectionFlags.None;
+
+                return EffectSides.ToEditorFlags();
+            }
+            set
+            {
+                this.EffectSides = new DirectionFlags(value);
+            }
         }
 
-        public override CollidingTile CreateCollidingTile(TileLayer tileLayer)
+
+        public override CollidingTile CreateCollidingTile(TileCollisionView collisionView)
         {
            
             var flags = this.TileDef.Flags;
 
             switch (this.KCTileDef.SpecialType)
             {
-                case SpecialTile.Prize: return new PrizeBlock(this, tileLayer, this.GetPrizeType());
-                case SpecialTile.Rock: return new BreakableTile(this, tileLayer);
-                case SpecialTile.Metal: return new MetalBlock(this, tileLayer);
-                case SpecialTile.Rubber: return new RubberBlock(this, tileLayer);
-                default: return new PlainTile(this, tileLayer);
+                case SpecialTile.Prize: return new PrizeBlock(this, collisionView);
+                case SpecialTile.Rock: return new RockBlock(this, collisionView);
+                case SpecialTile.Metal: return new MetalBlock(this, collisionView);
+                case SpecialTile.Rubber: return new RubberBlock(this, collisionView);
+                case SpecialTile.Ice: return new IceBlock(this, collisionView);
+                case SpecialTile.Vanishing: return new VanishingBlock(this, collisionView);
+                case SpecialTile.Mushroom: return new MushroomBlock(this, collisionView);
+                default: return new PlainTile(this, collisionView);
             }
 
         }
 
+        [Browsable(false)]
         public override bool IsSpecial
         {
             get { return this.KCTileDef.SpecialType != SpecialTile.Normal; }
         }
 
-        public bool ShouldBreak(CollisionEvent collision)
-        {
-            if (!collision.OtherType.Is(KCObjectType.Player))
-                return false;
-
-            if (collision.CollisionSide != Side.Bottom)
-                return false;
-
-            var x = collision.OtherArea.X + (collision.OtherArea.Width / 2);
-
-            if (collision.OtherArea.Right < this.TileArea.Left || collision.OtherArea.Left > this.TileArea.Right)
-                return false;
-
-            if (ShouldTileBreak(this, x))            
-                return true;           
-
-            var leftTile = this.GetAdjacentTile(-1, 0) as KCTileInstance;
-            var rightTile = this.GetAdjacentTile(1, 0) as KCTileInstance;
-
-            return !ShouldTileBreak(leftTile, x) && !ShouldTileBreak(rightTile, x);
-
-        }
-
-        private static bool ShouldTileBreak(KCTileInstance t, float collisionX)
-        {
-            return t.CanBreak() && collisionX >= t.TileArea.Left && collisionX < t.TileArea.Right;
-        }
-
-        public bool CanBreak()
-        {
-            switch (this.KCTileDef.SpecialType)
-            {
-                case SpecialTile.Rock: case SpecialTile.Prize: return true;
-                default: return false;
-            }
-        }
+        
     
     }
 
     class PlainTile : CollidingTile
     {
-        public PlainTile(TileInstance tile, TileLayer layer) : base(tile, layer) { }
+        public PlainTile(TileInstance tile, TileCollisionView collisionView) : base(tile, collisionView) { }
 
         public override void HandleCollision(CollisionEvent collision, CollisionResponse response)
         {
+        }
+
+        protected override void Update()
+        {
+            this.Kill(Engine.ExitCode.Finished);
         }
     }
 

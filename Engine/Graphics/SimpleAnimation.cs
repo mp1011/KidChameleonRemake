@@ -29,8 +29,8 @@ namespace Engine
         public RGPointI CornerPosition { get { return mGraphic.CornerPosition; } set { mGraphic.CornerPosition = value; } }
 
 
-        public SimpleAnimation(string textureName, int frameDuration, GameContext ctx, params int[] frames)
-            : this(new SimpleGraphic(SpriteSheet.Load(textureName, ctx), frames), frameDuration, ctx, frames)
+        public SimpleAnimation(GameResource<SpriteSheet> spriteSheet, int frameDuration, GameContext ctx, params int[] frames)
+            : this(new SimpleGraphic(ctx, spriteSheet, frames), frameDuration, ctx, frames)
         {           
         }
 
@@ -68,8 +68,7 @@ namespace Engine
                     }
                 }
             }
-
-            mGraphic.SourceIndex = mFrames[mCurrentFrame];
+            mGraphic.SourceIndex = mCurrentFrame;
         }
 
 
@@ -85,4 +84,5 @@ namespace Engine
             mLastFrameChangeTime = Context.CurrentFrameNumber;
         }
     }
+
 }
